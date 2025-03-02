@@ -1,0 +1,51 @@
+/* SplashScreen.module.css */
+
+/* Fuente (Sofia Sans). Puedes importarla en index.css o enlazarla en el index.html */
+@import url('https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@400&display=swap');
+
+.container {
+  /* Toma todo el alto de la ventana */
+  width: 100%;
+  height: 100vh;
+
+  /* Fondo color #FFE5BD */
+  background-color: #FFE5BD;
+
+  /* Para centrar elementos con flex */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+ background: radial-gradient(circle, rgba(255,229,189,1) 20%, rgba(255,205,130,1) 40%, rgba(255,229,189,1) 60%);
+}
+
+.iconContainer {
+  /* Un contenedor para el cuadrado azul */
+  width: 120px;
+  height: 120px;
+  background-color: #294D67;
+  border-radius: 20px; /* esquinas redondeadas */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.icon {
+  width: 70px; /* Ajusta según prefieras */
+  height: auto;
+}
+
+/* Título */
+.title {
+  font-family: 'Sofia Sans', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 40px;
+  color: #294D67;
+  text-align: center;
+
+  /* No uses absolute positioning a menos que sea estrictamente necesario.
+     Con flexbox, el centrado es más sencillo y responsivo. */
+}

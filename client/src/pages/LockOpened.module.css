@@ -1,0 +1,105 @@
+/* src/pages/LockOpened.module.css */
+
+/* Contenedor principal */
+.container {
+    width: 100vw;
+    height: 100vh;
+    background-color: #fff;
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Cabecera (parte superior) para el menú hamburguesa */
+  .header {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+  }
+  
+  .hamburgerIcon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+  }
+  
+  /* Overlay semi-transparente para el menú flotante */
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+  }
+  
+  .menu {
+    position: absolute;
+    left: 50px;
+    background-color: #fff;
+    width: 200px;
+    padding: 20px;
+    margin-top: 0;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .menuItem {
+    padding: 10px 0;
+    border-bottom: 1px solid #c4c4c4;
+    cursor: pointer;
+  }
+
+  .icon {
+    font-size: 1.2rem; /* Ajusta el tamaño */
+    margin-right: 8px; /* Espacio entre el icono y el texto */
+  }
+
+  
+  /* Contenedor del icono de cerradura abierta */
+  .lockIconContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+  }
+  
+  .greenLockIcon {
+    width: 120px; /* Ajusta según tu preferencia */
+    height: auto;
+  }
+  
+  /* Texto principal: "Cerradura abierta" */
+  .openText {
+    text-align: center;
+    color: #00AA4F; /* un verde, ajústalo a tu gusto */
+    font-size: 24px;
+    margin-top: 20px;
+  }
+  
+  /* Contenedor de las acciones inferiores */
+  .actions {
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+    align-items: center;
+    margin-top: 50px;
+    justify-content: ; /* Centra verticalmente */
+}
+
+.actionItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    cursor: pointer;
+    justify-content: center; /* Centra horizontalmente los elementos del menú */
+    width: 100%; /* Asegura que los elementos ocupen todo el ancho disponible */
+}
+
+.actionIcon {
+    margin-right: 8px;
+    font-size: 18px;
+}

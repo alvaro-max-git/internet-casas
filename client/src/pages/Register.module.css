@@ -1,0 +1,97 @@
+/* Register.module.css */
+
+/* Contenedor principal: ocupa toda la pantalla, fondo blanco */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  
+    /* Para ocupar toda la ventana (verifica en index.css que #root también ocupa 100%) */
+    width: 100vw;
+    height: 100vh;
+    background-color: #fff;
+  }
+  
+  /* Cuadrado azul con esquinas redondeadas para el icono */
+  .iconContainer {
+    width: 120px;
+    height: 120px;
+    background-color: #294D67;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Icono (candado) */
+  .icon {
+    width: 70px;
+    height: auto;
+  }
+  
+  /* Título principal */
+  .title {
+    font-family: 'Sofia Sans', sans-serif; /* Asegúrate de importar la fuente en index.css o en <head> */
+    font-weight: 400;
+    font-size: 40px;
+    color: #294D67;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  /* Botón "Regístrate" con color morado */
+  .registerButton {
+    background-color: #761c8f;
+    color: #fff;
+    font-size: 18px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  .registerButton:hover {
+    opacity: 0.9;
+  }
+  
+  /* Enlace "¿Ya tienes cuenta?" con estilo morado */
+  .loginLink {
+    color: #761c8f;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  /* Formulario de login: centrado en columna */
+  .loginForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Campos de texto */
+  .inputField {
+    width: 200px;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  /* Botón de iniciar sesión */
+  .loginButton {
+    background-color: #761c8f;
+    color: #fff;
+    font-size: 16px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .loginButton:hover {
+    opacity: 0.9;
+  }
+  
