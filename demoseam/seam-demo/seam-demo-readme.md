@@ -114,5 +114,6 @@ Cuando extraemos la lista de objetos de tipo Device, su toString nos devuelve un
   "can_remotely_unlock" : true,
   "can_simulate_disconnection" : true
 }
-´´´
 
+´´´
+Fin
