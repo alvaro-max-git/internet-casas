@@ -39,14 +39,13 @@ ActionAttempt actionAttempt = seam.locks()
 Cuando extraemos la lista de objetos de tipo Device, su toString nos devuelve un JSON con el siguiente formato:
 
 ```json
-
 {
-  "device_id" : "e8e159cd-e5b8-4efd-b046-85ae462a2496",
+  "device_id" : "1539df0e-60fd-455c-b4f4-91d8cfc025c4",
   "device_type" : "august_lock",
   "capabilities_supported" : [ "access_code", "lock" ],
   "properties" : {
     "online" : true,
-    "name" : "FRONT DOOR",
+    "name" : "BACK DOOR",
     "model" : {
       "display_name" : "Lock",
       "can_connect_accessory_keypad" : true,
@@ -57,8 +56,8 @@ Cuando extraemos la lista de objetos de tipo Device, su toString nos devuelve un
       "manufacturer_display_name" : "August"
     },
     "august_metadata" : {
-      "lock_id" : "lock-1",
-      "lock_name" : "FRONT DOOR",
+      "lock_id" : "lock-2",
+      "lock_name" : "BACK DOOR",
       "house_name" : "My House",
       "house_id" : "house-1",
       "has_keypad" : true,
@@ -89,7 +88,7 @@ Cuando extraemos la lista de objetos de tipo Device, su toString nos devuelve un
     "door_open" : false,
     "online_access_codes_enabled" : true,
     "appearance" : {
-      "name" : "FRONT DOOR"
+      "name" : "BACK DOOR"
     },
     "supported_code_lengths" : [ 4, 5, 6, 7, 8 ],
     "locked" : false,
@@ -102,18 +101,17 @@ Cuando extraemos la lista de objetos de tipo Device, su toString nos devuelve un
   },
   "connected_account_id" : "8f2c5a3a-97bf-466a-a7af-4df1db69b8ef",
   "workspace_id" : "3336f32c-587a-4a33-8c5f-bab08c47d3d4",
-  "created_at" : "2025-03-13T11:28:30.168Z",
+  "created_at" : "2025-03-13T11:28:30.384Z",
   "is_managed" : true,
   "can_program_online_access_codes" : true,
   "can_simulate_removal" : true,
   "nickname" : "",
   "can_simulate_connection" : false,
-  "display_name" : "FRONT DOOR",
+  "display_name" : "BACK DOOR",
   "can_remotely_lock" : true,
   "custom_metadata" : { },
   "can_remotely_unlock" : true,
   "can_simulate_disconnection" : true
 }
-
 ´´´
 Fin
