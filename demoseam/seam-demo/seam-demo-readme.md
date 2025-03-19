@@ -38,7 +38,7 @@ ActionAttempt actionAttempt = seam.locks()
 ### Formato JSON de Seam
 Cuando extraemos la lista de objetos de tipo Device, su toString nos devuelve un JSON con el siguiente formato:
 
-```json
+```
 {
   "device_id" : "1539df0e-60fd-455c-b4f4-91d8cfc025c4",
   "device_type" : "august_lock",
