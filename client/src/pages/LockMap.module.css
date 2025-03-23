@@ -1,0 +1,9 @@
+/* src/pages/LocksMap.module.css */
+.mapContainer {
+    width: 100%;
+    height: 400px; /* Puedes ajustar la altura según prefieras */
+    margin: 20px auto;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }

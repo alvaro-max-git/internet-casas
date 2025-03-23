@@ -1,0 +1,18 @@
+.backButton {
+    display: inline-flex;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    color: #294D67;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 16px;
+  }
+  
+  .backButton:hover {
+    text-decoration: underline;
+  }
+  
+  .icon {
+    margin-right: 6px;
+  }

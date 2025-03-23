@@ -1,0 +1,52 @@
+/* src/pages/AdminHome.module.css */
+
+.container {
+    width: 100vw;
+    min-height: 100vh;
+    background-color: #fff;
+    padding: 20px;
+  }
+  
+  .title {
+    font-size: 24px;
+    color: #294D67;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  
+  .subtitle {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: #666;
+    text-align: center;
+  }
+  
+  .accessList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+    align-items: center;
+  }
+  
+  .accessItem {
+    width: 300px;
+    border: 1px solid #ccc;
+    padding: 12px;
+    border-radius: 8px;
+  }
+  
+  .configureButton {
+    background-color: #761c8f;
+    color: #fff;
+    font-size: 14px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  
+  .configureButton:hover {
+    opacity: 0.9;
+  }

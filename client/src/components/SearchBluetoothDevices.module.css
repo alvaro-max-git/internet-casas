@@ -1,0 +1,52 @@
+/* src/components/SearchBluetoothDevices.module.css */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .scanButton {
+    padding: 10px 20px;
+    background-color: #294D67;
+    color: #fff;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+  
+  .scanButton:hover {
+    background-color: #1e3f52;
+  }
+  
+  .deviceList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 1rem;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .deviceList li {
+    background-color: #f0f0f0;
+    margin-bottom: 8px;
+    padding: 8px;
+    border-radius: 4px;
+  }
+  
+  .openLockButton {
+    padding: 10px 20px;
+    background-color: #006d77;
+    color: #fff;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .openLockButton:hover {
+    background-color: #005966;
+  }

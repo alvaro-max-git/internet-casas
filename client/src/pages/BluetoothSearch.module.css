@@ -1,0 +1,35 @@
+/* src/pages/BluetoothSearch.module.css */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+  }
+  
+  .scanButton {
+    padding: 10px 20px;
+    background-color: #294D67;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .scanButton:hover {
+    background-color: #1e3f52;
+  }
+  
+  .deviceList {
+    list-style: none;
+    padding: 0;
+    margin-top: 1rem;
+  }
+  
+  .deviceList li {
+    padding: 8px;
+    background: #f0f0f0;
+    margin-bottom: 8px;
+    border-radius: 4px;
+  }

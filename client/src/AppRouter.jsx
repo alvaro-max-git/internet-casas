@@ -1,7 +1,19 @@
-// src/AppRouter.jsx
 import { Routes, Route } from 'react-router-dom';
+
+// Splash y login/registro
 import SplashScreen from './pages/SplashScreen';
 import Register from './pages/Register';
+
+// Cliente
+import ClientHome from './pages/ClientHome';
+import BluetoothSearch from './pages/BluetoothSearch';
+
+// Admin
+import AdminHome from './pages/AdminHome';
+import EditAccessForm from './pages/admin/EditAccessForm';
+import NewAccessForm from './pages/admin/NewAccessForm';
+
+// Legacy (por si los sigues usando)
 import Home from './pages/Home';
 import LockMenu from './pages/LockMenu';
 import LockOpened from './pages/LockOpened';
@@ -9,22 +21,27 @@ import LockOpened from './pages/LockOpened';
 function AppRouter() {
   return (
     <Routes>
-      {/* Ruta raíz -> Splash Screen */}
+      {/* Página inicial */}
       <Route path="/" element={<SplashScreen />} />
 
-      {/* Registro / Login */}
+      {/* Registro/Login */}
       <Route path="/register" element={<Register />} />
 
-      {/* Home del usuario */}
+      {/* === CLIENTE === */}
+      <Route path="/client/home" element={<ClientHome />} />
+      <Route path="/client/scan" element={<BluetoothSearch />} />
+
+      {/* === ADMINISTRADOR === */}
+      <Route path="/admin/home" element={<AdminHome />} />
+      <Route path="/admin/access/:accessId/edit" element={<EditAccessForm />} />
+      <Route path="/admin/access/new" element={<NewAccessForm />} />
+
+      {/* === LEGACY (LockMenu, etc.) === */}
       <Route path="/home" element={<Home />} />
-
-      {/* Menú de cerradura */}
       <Route path="/lock/:lockId" element={<LockMenu />} />
-
-      {/* Cerradura abierta */}
       <Route path="/lock/:lockId/open" element={<LockOpened />} />
 
-      {/* Ruta por defecto (si no encuentra coincidencias) */}
+      {/* Fallback por si no encuentra ruta */}
       <Route path="*" element={<SplashScreen />} />
     </Routes>
   );
