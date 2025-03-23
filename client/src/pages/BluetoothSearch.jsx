@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
 import styles from './BluetoothSearch.module.css';
-import BackButton from '../components/BackButton'; // 👈 Importar botón
+import BackButton from '../components/BackButton'; 
+import ToggleMenu from '../components/ToggleMenu';
 
 function BluetoothSearch() {
   const [devices, setDevices] = useState([]);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+
+  const toggleMenu = (open) => {
+    setMenuOpen(open);
+  };
 
   const handleScan = async () => {
     try {
@@ -20,10 +27,14 @@ function BluetoothSearch() {
 
   return (
     <div className={styles.container}>
-      {/* Botón de volver */}
-      <BackButton to="/lock/portal" /> {/* o to={-1} si prefieres ir atrás dinámicamente */}
 
-      <h2>Buscar dispositivos Bluetooth</h2>
+       {/* === Contenedor de NAV (BackButton + ToggleMenu) === */}
+       <div className={styles.navContainer}>
+        <BackButton to="/register" className={styles.backButtonCustom} />
+        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+      </div>
+      <div className={styles.mainContent}>
+      <h1 className={styles.greeting}>Buscar cerradura por Bluetooth</h1>
 
       <button className={styles.scanButton} onClick={handleScan}>
         Escanear dispositivos
@@ -34,6 +45,7 @@ function BluetoothSearch() {
           <li key={index}>{device.name || `Dispositivo sin nombre (${device.id})`}</li>
         ))}
       </ul>
+    </div>
     </div>
   );
 }

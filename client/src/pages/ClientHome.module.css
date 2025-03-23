@@ -1,37 +1,61 @@
 /* src/pages/ClientHome.module.css */
 
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    text-align: center;
-    background-color: #fff;
-  }
-  
-  .title {
-    font-size: 24px;
-    color: #294D67;
-    margin-bottom: 8px;
-  }
-  
-  .subtitle {
-    font-size: 16px;
-    margin-bottom: 20px;
-    color: #666;
-  }
-  
-  .scanButton {
-    padding: 10px 20px;
-    background-color: #006d77;
-    color: #fff;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  
-  .scanButton:hover {
-    background-color: #005966;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  background-color: #fff;
+}
+
+/* Título “Hola, Administrador” */
+.greeting {
+  text-align: center;
+  font-size: 35px;
+  color: #294d67;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #666;
+}
+
+.scanButton {
+  padding: 10px 20px;
+  background-color: #006d77;
+  color: #fff;
+  font-size: 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.scanButton:hover {
+  background-color: #005966;
+}
+
+
+.navContainer {
+  position: absolute;
+  top: 60px;
+  left: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 999;
+  /* Para que quede por encima del contenido */
+}
+
+/* === CONTENEDOR PRINCIPAL === */
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 300px; /* para dejar espacio a la navContainer arriba */
+  min-height: 100vh;  /* para que crezca con el contenido */
+}

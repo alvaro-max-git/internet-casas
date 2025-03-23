@@ -4,11 +4,11 @@
   background-color: transparent;
   border: none;
   color: #121212;
-  font-size: 24px;  /* Tamaño más grande */
+  font-size: 30px;  /* Tamaño más grande */
   cursor: pointer;
   position: absolute;
-  top: 20px;  /* Alineación del botón en la parte superior */
-  left: 10px;  /* Alineado al lado izquierdo */
+  top: 40px;  /* Alineación del botón en la parte superior */
+  left: -2px;  /* Alineado al lado izquierdo */
 }
 
 .icon {

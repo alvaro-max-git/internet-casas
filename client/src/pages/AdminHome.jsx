@@ -6,7 +6,7 @@ import { FaPlus } from 'react-icons/fa';
 
 import lockIcon from '../assets/IoH-lockiconusermenu.png';
 import BackButton from '../components/BackButton';
-import ToggleMenu from '../components/ToggleMenu'; // Usamos el componente ToggleMenu
+import ToggleMenu from '../components/ToggleMenu';
 import { useAccesses } from '../hooks/useAccesses';
 
 function AdminHome() {
@@ -25,6 +25,7 @@ function AdminHome() {
       setAccesses(updated);
     }
   };
+  
 
   const handleAddAccess = () => {
     navigate('/admin/access/new');
@@ -44,53 +45,52 @@ function AdminHome() {
 
   return (
     <div className={styles.container}>
-       {/* BackButton posicionado */}
-       <div className={styles.backButtonCustom}>
-        <BackButton to="/register" />
+
+      {/* === Contenedor de NAV (BackButton + ToggleMenu) === */}
+      <div className={styles.navContainer}>
+        <BackButton to="/register" className={styles.backButtonCustom} />
+        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       </div>
 
-      {/* Menú flotante */}
-      <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+      {/* === Contenedor principal para “Hola, Administrador”, tarjetas, etc. === */}
+      <div className={styles.mainContent}>
+        <h1 className={styles.greeting}>Hola, Administrador</h1>
+        <h2 className={styles.subtitle}>Accesos activos</h2>
 
-      <div className={styles.greeting}>
-        <h1>Hola, Administrador</h1>
-      </div>
-
-      <div className={styles.subtitle}>Accesos activos</div>
-
-      <div className={styles.accessList}>
-        {accesses.map((access) => (
-          <div
-            key={access.id}
-            className={styles.accessCard}
-            style={{ backgroundColor: access.color }}
-          >
-            <img src={lockIcon} alt="Lock" className={styles.lockIcon} />
-            <p>{access.name}</p>
-            <button
-              className={styles.configureButton}
-              onClick={() => handleConfigure(access.id)}
+        <div className={styles.accessList}>
+          {accesses.map((access) => (
+            <div
+              key={access.id}
+              className={styles.accessCard}
+              style={{ backgroundColor: access.color }}
             >
-              Configurar
-            </button>
-            <button
-              className={styles.deleteButton}
-              onClick={() => handleDelete(access.id)}
-            >
-              Borrar
-            </button>
+              <img src={lockIcon} alt="Lock" className={styles.lockIcon} />
+              <p>{access.name}</p>
+              <button
+                className={styles.configureButton}
+                onClick={() => handleConfigure(access.id)}
+              >
+                Configurar
+              </button>
+              <button
+                className={styles.deleteButton}
+                onClick={() => handleDelete(access.id)}
+              >
+                Borrar
+              </button>
+            </div>
+          ))}
+
+          <div className={styles.accessCard} onClick={handleAddAccess}>
+            <FaPlus className={styles.lockIcon} />
+            <p>Agregar acceso</p>
           </div>
-        ))}
-
-        <div className={styles.accessCard} onClick={handleAddAccess}>
-          <FaPlus className={styles.lockIcon} />
-          <p>Agregar acceso</p>
         </div>
-      </div>
 
-      <button className={styles.resetButton} onClick={resetAccesses}>
-        Resetear accesos
-      </button>
+        <button className={styles.resetButton} onClick={resetAccesses}>
+          Resetear accesos
+        </button>
+      </div>
     </div>
   );
 }

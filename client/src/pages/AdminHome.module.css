@@ -1,109 +1,125 @@
 /* src/pages/AdminHome.module.css */
 
 .container {
-    width: 100vw;
-    min-height: 100vh;
-    background-color: #fff;
-    padding: 20px;
-    position: relative;
-  }
-  
-  .title {
-    font-size: 24px;
-    color: #294d67;
-    margin-bottom: 8px;
-    text-align: center;
-  }
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #fff;
+  position: relative; /* Para position absoluta en navContainer si deseas */
+}
 
-  .subtitle {
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 16px;
-    text-align: center;
-    color: #000;
-  }
-  
-  .accessList {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 30px;
-  }
-  
-  .accessCard {
-    width: 220px;
-    min-height: 300px;
-    border-radius: 24px;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    text-align: center;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
-    transition: transform 0.2s ease;
-    background-color: #f7f7f7;
-  }
-  
-  .accessCard:hover {
-    transform: translateY(-4px);
-  }
-  
-  .lockIcon {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 12px;
-  }
-  
-  .configureButton,
-  .deleteButton {
-    background-color: #f0f0f0;
-    font-size: 14px;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 8px;
-    width: 100%;
-    transition: background-color 0.2s ease;
-  }
-  
-  .configureButton:hover {
-    background-color: #761c8f;
-    color: #fff;
-  }
-  
-  .deleteButton:hover {
-    background-color: #d9534f;
-    color: #fff;
-  }
-  
-  /* Botón Resetear accesos */
-  .resetButton {
-    background-color: #f7b731;
-    color: white;
-    padding: 10px 20px;
-    font-size: 14px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    margin-top: 30px;
-    width: 100%;
-    transition: background-color 0.2s ease;
-  }
-  
-  .resetButton:hover {
-    background-color: #e67e22;
-  }
-
-/* Posiciona el BackButton */
-.backButtonCustom {
+/* === CONTENEDOR NAV (BackButton + ToggleMenu) === */
+.navContainer {
   position: absolute;
-  top: 30px;   /* ajusta a tu gusto */
-  left: 3px; 
-}
-.greeting{
-  text-align: center;
+  top: 60px;
+  left: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 999; /* Para que quede por encima del contenido */
 }
 
+/* Si deseas ajustar el back button en particular */
+.backButtonCustom {
+  /* Sin 'position: absolute' aquí, lo maneja navContainer */
+  margin-left: 0; /* Ajusta si quieres moverlo */
+}
+
+/* === CONTENEDOR PRINCIPAL === */
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 100px; /* para dejar espacio a la navContainer arriba */
+  min-height: 100vh;  /* para que crezca con el contenido */
+}
+
+/* Título “Hola, Administrador” */
+.greeting {
+  text-align: center;
+  font-size: 35px;
+  color: #294d67;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #000;
+}
+
+.accessList {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.accessCard {
+  width: 220px;
+  min-height: 300px;
+  border-radius: 24px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease;
+  background-color: #f7f7f7;
+}
+
+.accessCard:hover {
+  transform: translateY(-4px);
+}
+
+.lockIcon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 12px;
+}
+
+.configureButton,
+.deleteButton {
+  background-color: #f0f0f0;
+  font-size: 14px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 8px;
+  width: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.configureButton:hover {
+  background-color: #761c8f;
+  color: #fff;
+}
+
+.deleteButton:hover {
+  background-color: #d9534f;
+  color: #fff;
+}
+
+/* Botón Resetear accesos */
+.resetButton {
+  background-color: #f7b731;
+  color: white;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  padding: 10px 20px;
+  margin-top: 30px;
+  width: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.resetButton:hover {
+  background-color: #e67e22;
+}

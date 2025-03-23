@@ -8,14 +8,14 @@
   
   .scanButton {
     padding: 10px 20px;
-    background-color: #294D67;
+    background-color: #006d77;
     color: #fff;
+    font-size: 20px;
     border: none;
     border-radius: 8px;
-    margin-top: 1rem;
     cursor: pointer;
-    transition: background-color 0.2s;
   }
+  
   
   .scanButton:hover {
     background-color: #1e3f52;
@@ -33,3 +33,31 @@
     margin-bottom: 8px;
     border-radius: 4px;
   }
+
+
+  /* === CONTENEDOR PRINCIPAL === */
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 100px; /* para dejar espacio a la navContainer arriba */
+  min-height: 100vh;  /* para que crezca con el contenido */
+}
+
+.navContainer {
+  position: absolute;
+  top: 60px;
+  left: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 999; /* Para que quede por encima del contenido */
+}
+
+.greeting {
+  text-align: center;
+  font-size: 35px;
+  color: #294d67;
+  margin-bottom: 8px;
+}
