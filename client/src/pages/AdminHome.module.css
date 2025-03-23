@@ -5,15 +5,16 @@
     min-height: 100vh;
     background-color: #fff;
     padding: 20px;
+    position: relative;
   }
   
   .title {
     font-size: 24px;
-    color: #294D67;
+    color: #294d67;
     margin-bottom: 8px;
     text-align: center;
   }
-  
+
   .subtitle {
     font-size: 20px;
     font-weight: 600;
@@ -42,6 +43,7 @@
     text-align: center;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
     transition: transform 0.2s ease;
+    background-color: #f7f7f7;
   }
   
   .accessCard:hover {
@@ -76,3 +78,32 @@
     background-color: #d9534f;
     color: #fff;
   }
+  
+  /* Botón Resetear accesos */
+  .resetButton {
+    background-color: #f7b731;
+    color: white;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    margin-top: 30px;
+    width: 100%;
+    transition: background-color 0.2s ease;
+  }
+  
+  .resetButton:hover {
+    background-color: #e67e22;
+  }
+
+/* Posiciona el BackButton */
+.backButtonCustom {
+  position: absolute;
+  top: 30px;   /* ajusta a tu gusto */
+  left: 3px; 
+}
+.greeting{
+  text-align: center;
+}
+

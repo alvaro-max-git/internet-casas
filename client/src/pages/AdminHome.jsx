@@ -1,12 +1,12 @@
 // src/pages/AdminHome.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './Home.module.css';
-import { FaUser, FaCog, FaQuestionCircle, FaPlus } from 'react-icons/fa';
+import styles from './AdminHome.module.css';
+import { FaPlus } from 'react-icons/fa';
 
 import lockIcon from '../assets/IoH-lockiconusermenu.png';
-import hamburgerIcon from '../assets/hamburger-icon.png';
 import BackButton from '../components/BackButton';
+import ToggleMenu from '../components/ToggleMenu'; // Usamos el componente ToggleMenu
 import { useAccesses } from '../hooks/useAccesses';
 
 function AdminHome() {
@@ -30,41 +30,27 @@ function AdminHome() {
     navigate('/admin/access/new');
   };
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+  const toggleMenu = (open) => {
+    setMenuOpen(open);
+  };
+
+  const resetAccesses = () => {
+    const confirmReset = window.confirm('¿Seguro que quieres resetear los accesos?');
+    if (confirmReset) {
+      localStorage.removeItem('accesses');
+      window.location.reload();
+    }
   };
 
   return (
     <div className={styles.container}>
-      <BackButton to="/register" />
+       {/* BackButton posicionado */}
+       <div className={styles.backButtonCustom}>
+        <BackButton to="/register" />
+      </div>
 
-      <header className={styles.header}>
-        <img
-          src={hamburgerIcon}
-          alt="Menú"
-          className={styles.hamburgerIcon}
-          onClick={toggleMenu}
-        />
-      </header>
-
-      {menuOpen && (
-        <div className={styles.overlay} onClick={() => setMenuOpen(false)}>
-          <div className={styles.menu} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.menuItem}>
-              <FaUser className={styles.icon} />
-              <span>Mi cuenta</span>
-            </div>
-            <div className={styles.menuItem}>
-              <FaCog className={styles.icon} />
-              <span>Configuración</span>
-            </div>
-            <div className={styles.menuItem}>
-              <FaQuestionCircle className={styles.icon} />
-              <span>Ayuda</span>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Menú flotante */}
+      <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
 
       <div className={styles.greeting}>
         <h1>Hola, Administrador</h1>
@@ -101,6 +87,10 @@ function AdminHome() {
           <p>Agregar acceso</p>
         </div>
       </div>
+
+      <button className={styles.resetButton} onClick={resetAccesses}>
+        Resetear accesos
+      </button>
     </div>
   );
 }

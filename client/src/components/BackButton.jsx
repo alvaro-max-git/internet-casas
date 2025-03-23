@@ -9,7 +9,6 @@ function BackButton({ to = -1 }) {
   return (
     <button className={styles.backButton} onClick={() => navigate(to)}>
       <FaArrowLeft className={styles.icon} />
-      Volver
     </button>
   );
 }

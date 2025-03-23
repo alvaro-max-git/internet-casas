@@ -1,18 +1,20 @@
 .backButton {
-    display: inline-flex;
-    align-items: center;
-    background-color: transparent;
-    border: none;
-    color: #294D67;
-    font-size: 16px;
-    cursor: pointer;
-    margin: 16px;
-  }
-  
-  .backButton:hover {
-    text-decoration: underline;
-  }
-  
-  .icon {
-    margin-right: 6px;
-  }
+  display: inline-flex;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  color: #121212;
+  font-size: 24px;  /* Tamaño más grande */
+  cursor: pointer;
+  position: absolute;
+  top: 20px;  /* Alineación del botón en la parte superior */
+  left: 10px;  /* Alineado al lado izquierdo */
+}
+
+.icon {
+  margin-right: 0;
+}
+
+.backButton:hover {
+  text-decoration: underline;
+}

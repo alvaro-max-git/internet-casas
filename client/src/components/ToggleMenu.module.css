@@ -1,0 +1,48 @@
+/* src/components/ToggleMenu.module.css */
+
+/* src/components/ToggleMenu.module.css */
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+  }
+  
+  .menu {
+    position: absolute;
+    left: 50px;
+    top: 80px; /* Ajustamos el espacio entre el BackButton y el menú */
+    background-color: #fff;
+    width: 200px;
+    padding: 20px;
+    margin-top: 0;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .menuItem {
+    padding: 10px 0;
+    border-bottom: 1px solid #c4c4c4;
+    cursor: pointer;
+  }
+  
+  .icon {
+    font-size: 1.2rem;
+    margin-right: 8px;
+  }
+  /* Icono de menú hamburguesa */
+.hamburgerIcon {
+    cursor: pointer;
+    font-size: 24px;
+    color:#101010;
+
+  }
+
+  
