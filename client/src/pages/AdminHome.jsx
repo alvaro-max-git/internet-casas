@@ -1,19 +1,29 @@
 // src/pages/AdminHome.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './Home.module.css'; // Reutilizamos estilos
+import styles from './Home.module.css';
 import { FaUser, FaCog, FaQuestionCircle, FaPlus } from 'react-icons/fa';
 
 import lockIcon from '../assets/IoH-lockiconusermenu.png';
 import hamburgerIcon from '../assets/hamburger-icon.png';
-import BackButton from '../components/BackButton'; // Asegúrate de tener este componente creado
+import BackButton from '../components/BackButton';
+import { useAccesses } from '../hooks/useAccesses';
 
 function AdminHome() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { accesses, setAccesses } = useAccesses();
 
   const handleConfigure = (accessId) => {
     navigate(`/admin/access/${accessId}/edit`);
+  };
+
+  const handleDelete = (accessId) => {
+    const confirmDelete = window.confirm('¿Estás seguro de que quieres borrar este acceso?');
+    if (confirmDelete) {
+      const updated = accesses.filter((a) => a.id !== accessId);
+      setAccesses(updated);
+    }
   };
 
   const handleAddAccess = () => {
@@ -24,14 +34,9 @@ function AdminHome() {
     setMenuOpen(!menuOpen);
   };
 
-  const accesses = [
-    { id: 'portal', name: 'Calle Falsa 123 Portal', color: '#FFE5BD' },
-    { id: '3A', name: 'Calle Falsa 123 3ªA', color: '#DBD2DA' }
-  ];
-
   return (
     <div className={styles.container}>
-      <BackButton to="/register" /> {/* ⬅ Botón de volver */}
+      <BackButton to="/register" />
 
       <header className={styles.header}>
         <img
@@ -81,6 +86,12 @@ function AdminHome() {
               onClick={() => handleConfigure(access.id)}
             >
               Configurar
+            </button>
+            <button
+              className={styles.deleteButton}
+              onClick={() => handleDelete(access.id)}
+            >
+              Borrar
             </button>
           </div>
         ))}
