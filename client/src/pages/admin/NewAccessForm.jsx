@@ -39,7 +39,7 @@ function NewAccessForm() {
   return (
     <div className={styles.container}>
        <div className={styles.navContainer}>
-        <BackButton to="/register" className={styles.backButtonCustom} />
+        <BackButton to="/admin/home" className={styles.backButtonCustom} />
         <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       </div>
       <h2 className={styles.title}>Agregar nuevo acceso</h2>
