@@ -1,8 +1,13 @@
+// src/pages/NewAccessForm.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '../../components/BackButton';
+import styles from './AccessForm.module.css';
+import ToggleMenu from "../../components/ToggleMenu";
+
 
 function NewAccessForm() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
@@ -15,10 +20,13 @@ function NewAccessForm() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  const toggleMenu = (open) => {
+    setMenuOpen(open);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const id = formData.name.toLowerCase().replace(/\s+/g, '-'); // ejemplo: '3A' => '3a'
+    const id = formData.name.toLowerCase().replace(/\s+/g, '-');
     const newAccess = { id, ...formData };
 
     const stored = JSON.parse(localStorage.getItem('accesses')) || [];
@@ -29,23 +37,36 @@ function NewAccessForm() {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <BackButton to="/admin/home" />
-      <h2>Agregar nuevo acceso</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Nombre</label>
-        <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+    <div className={styles.container}>
+       <div className={styles.navContainer}>
+        <BackButton to="/register" className={styles.backButtonCustom} />
+        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+      </div>
+      <h2 className={styles.title}>Agregar nuevo acceso</h2>
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <div className={styles.field}>
+          <label>Nombre</label>
+          <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+        </div>
 
-        <label>Desde</label>
-        <input type="datetime-local" name="from" value={formData.from} onChange={handleChange} required />
+        <div className={styles.fieldGroup}>
+          <div className={styles.field}>
+            <label>Desde</label>
+            <input type="datetime-local" name="from" value={formData.from} onChange={handleChange} required />
+          </div>
 
-        <label>Hasta</label>
-        <input type="datetime-local" name="to" value={formData.to} onChange={handleChange} required />
+          <div className={styles.field}>
+            <label>Hasta</label>
+            <input type="datetime-local" name="to" value={formData.to} onChange={handleChange} required />
+          </div>
+        </div>
 
-        <label>Color</label>
-        <input type="color" name="color" value={formData.color} onChange={handleChange} />
+        <div className={styles.field}>
+          <label>Color</label>
+          <input type="color" name="color" value={formData.color} onChange={handleChange} />
+        </div>
 
-        <button type="submit">Crear acceso</button>
+        <button type="submit" className={styles.button}>Crear acceso</button>
       </form>
     </div>
   );

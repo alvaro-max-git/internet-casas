@@ -2,13 +2,12 @@
 
 /* Contenedor principal */
 .container {
-    width: 100vw;
-    height: 100vh;
-    background-color: #fff;
-    position: relative;
-    margin: 0;
-    padding: 0;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+
   
   /* Cabecera (parte superior) para el menú hamburguesa */
   .header {
@@ -87,7 +86,7 @@
     margin: 20px;
     align-items: center;
     margin-top: 50px;
-    justify-content: ; /* Centra verticalmente */
+    justify-content: center; /* Centra verticalmente */
 }
 
 .actionItem {
@@ -103,3 +102,24 @@
     margin-right: 8px;
     font-size: 18px;
 }
+/* === CONTENEDOR NAV (BackButton + ToggleMenu) === */
+/* === CONTENEDOR NAV (BackButton + ToggleMenu) === */
+.navContainer {
+  position: absolute;
+  top: 60px;
+  left: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 999; /* Para que quede por encima del contenido */
+}
+
+  /* === CONTENEDOR PRINCIPAL === */
+  .mainContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 100px; /* para dejar espacio a la navContainer arriba */
+    min-height: 100vh;  /* para que crezca con el contenido */
+  }

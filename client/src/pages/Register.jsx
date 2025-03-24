@@ -56,11 +56,11 @@ function Register() {
 
         {showLoginChoice && !showForm && (
           <div className={styles.loginChoice}>
-            <button className={styles.adminButton} onClick={() => handleLoginChoice('admin')}>
-              Iniciar sesión como Admin
-            </button>
             <button className={styles.clientButton} onClick={() => handleLoginChoice('client')}>
               Iniciar sesión como Cliente
+            </button>
+            <button className={styles.adminButton} onClick={() => handleLoginChoice('admin')}>
+              Iniciar sesión como Admin
             </button>
           </div>
         )}

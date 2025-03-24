@@ -1,13 +1,10 @@
 /* src/pages/ClientHome.module.css */
 
 .container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  text-align: center;
+  width: 100vw;
+  min-height: 100vh;
   background-color: #fff;
+  position: relative; /* Para position absoluta en navContainer si deseas */
 }
 
 /* Título “Hola, Administrador” */
@@ -19,9 +16,11 @@
 }
 
 .subtitle {
-  font-size: 16px;
-  margin-bottom: 20px;
-  color: #666;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #000;
 }
 
 .scanButton {
@@ -39,6 +38,7 @@
 }
 
 
+/* === CONTENEDOR NAV (BackButton + ToggleMenu) === */
 .navContainer {
   position: absolute;
   top: 60px;
@@ -46,8 +46,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  z-index: 999;
-  /* Para que quede por encima del contenido */
+  z-index: 999; /* Para que quede por encima del contenido */
 }
 
 /* === CONTENEDOR PRINCIPAL === */
@@ -56,6 +55,44 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-top: 300px; /* para dejar espacio a la navContainer arriba */
+  padding-top: 100px; /* para dejar espacio a la navContainer arriba */
   min-height: 100vh;  /* para que crezca con el contenido */
+}
+
+.lockIcon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 12px;
+}
+
+.accessCard {
+  width: 220px;
+  min-height: 300px;
+  border-radius: 24px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease;
+  background-color: #f7f7f7;
+}
+
+.accessCard:hover {
+  transform: translateY(-4px);
+}
+
+.configureButton,
+.deleteButton {
+  background-color: #f0f0f0;
+  font-size: 14px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 8px;
+  width: 100%;
+  transition: background-color 0.2s ease;
 }

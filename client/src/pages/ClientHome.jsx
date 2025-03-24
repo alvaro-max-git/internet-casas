@@ -1,22 +1,28 @@
 // src/pages/ClientHome.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import styles from './AdminHome.module.css';
+import { FaPlus } from 'react-icons/fa';
+
+import lockIcon from '../assets/IoH-lockiconusermenu.png';
 import BackButton from '../components/BackButton';
-import styles from './ClientHome.module.css';
 import ToggleMenu from '../components/ToggleMenu';
+import { useAccesses } from '../hooks/useAccesses';
 
 function ClientHome() {
-  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const { accesses, setAccesses } = useAccesses();
+
 
   // Lógica para botón de "Rastrear Dispositivos"
   const handleScanDevices = () => {
     navigate('/client/scan');
   };
-
+ 
   // Lógica para botón de "Abrir Cerradura"
-  const handleOpenLock = () => {
-    navigate('/client/lockopen'); // Abrir cerradura
+  const handleOpenLock = (accessId) => {
+    navigate(`/lock/${accessId}/open`);
   };
 
   const handleDelete = (accessId) => {
@@ -41,12 +47,40 @@ function ClientHome() {
 
       
     <div className={styles.mainContent}>
-      <h1 className={styles.greeting}>Hola, Cliente</h1>
+      <h1 className={styles.greeting}>Hola Cliente</h1>
       <p className={styles.subtitle}>¿Quieres abrir una cerradura?</p>
 
-      <button className={styles.scanButton} onClick={handleScanDevices}>
-        Rastrear Dispositivos
-      </button>
+      <div className={styles.accessList}>
+          {accesses.map((access) => (
+            <div
+              key={access.id}
+              className={styles.accessCard}
+              style={{ backgroundColor: access.color }}
+            >
+              <img src={lockIcon} alt="Lock" className={styles.lockIcon} />
+              <p>{access.name}</p>
+              <button
+                className={styles.configureButton}
+                onClick={() => handleOpenLock(access.id)}
+              >
+                Abrir
+              </button>
+              <button
+                className={styles.deleteButton}
+                onClick={() => handleDelete(access.id)}
+              >
+                Borrar
+              </button>
+            </div>
+          ))}
+
+          <div className={styles.accessCard} onClick={handleScanDevices}>
+            <FaPlus className={styles.lockIcon} />
+            <p>Rastrear nueva cerradura</p>
+          </div>
+        </div>
+
+       
     </div>
     </div>
   );
