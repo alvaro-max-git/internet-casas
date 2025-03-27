@@ -45,6 +45,13 @@
   min-height: 100vh;  /* para que crezca con el contenido */
 }
 
+.waitingText {
+  font-size: 24px;
+  color: #999;
+  text-align: center;
+  margin-top: 50px;
+}
+
 .navContainer {
   position: absolute;
   top: 60px;
@@ -60,4 +67,39 @@
   font-size: 35px;
   color: #294d67;
   margin-bottom: 8px;
+}
+.tokenForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.tokenInput {
+  padding: 10px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.submitTokenButton {
+  background-color: #761c8f;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.submitTokenButton:hover {
+  background-color: #5d1371;
+}
+
+.waitingText {
+  font-size: 20px;
+  color: #999;
+  margin-top: 30px;
 }
