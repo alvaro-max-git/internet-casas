@@ -34,7 +34,7 @@ function EditAccessForm() {
   const toggleMenu = (open) => {
     setMenuOpen(open);
   };
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const updated = JSON.parse(localStorage.getItem('accesses')) || [];
@@ -48,7 +48,7 @@ function EditAccessForm() {
   return (
     <div className={styles.container}>
        <div className={styles.navContainer}>
-        <BackButton to="/register" className={styles.backButtonCustom} />
+        <BackButton to="/admin/home" className={styles.backButtonCustom} />
         <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       </div>
       <h2 className={styles.title}>Editar acceso: {accessId}</h2>
