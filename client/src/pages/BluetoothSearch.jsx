@@ -30,7 +30,7 @@ function BluetoothSearch() {
 
        {/* === Contenedor de NAV (BackButton + ToggleMenu) === */}
        <div className={styles.navContainer}>
-        <BackButton to="/register" className={styles.backButtonCustom} />
+        <BackButton to="/client/home" className={styles.backButtonCustom} />
         <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       </div>
       <div className={styles.mainContent}>
