@@ -4,6 +4,7 @@ import es.upm.dit.isst.ioh_api.model.*;
 import es.upm.dit.isst.ioh_api.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URISyntaxException;
@@ -23,6 +24,12 @@ public class IohController {
 
     @Autowired
     private HostRepository hostRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     /*
      * ===================================================================
@@ -205,5 +212,88 @@ public ResponseEntity<Lock> createLock(@RequestBody Lock newLock) {
     Lock saved = lockRepository.save(newLock);
     return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 }
+
+
+ /*
+     * ===================================================================
+     * 2. Endpoints de Autenticación 
+     * ===================================================================
+     */
+
+    // Registro 
+     @PostMapping("/auth/login")
+     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
+         String email = credentials.get("email");
+         String password = credentials.get("password");
+     
+         if (email == null || password == null) {
+             return ResponseEntity.badRequest().body("Faltan email o contraseña.");
+         }
+     
+         Optional<User> userOpt = userRepository.findById(email);
+         if (userOpt.isEmpty()) {
+             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no encontrado.");
+         }
+     
+         User user = userOpt.get();
+     
+         if (!passwordEncoder.matches(password, user.getPassword())) {
+             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta.");
+         }
+     
+         Map<String, Object> response = new HashMap<>();
+         response.put("email", user.getEmail());
+         response.put("tipo", user instanceof Host ? "host" : "user");
+     
+         return ResponseEntity.ok(response);
+     }
+
+@PostMapping("/auth/register/user")
+public ResponseEntity<?> registerUser(@RequestBody Map<String, String> payload) {
+    String email = payload.get("email");
+    String password = payload.get("password");
+
+    if (email == null || password == null) {
+        return ResponseEntity.badRequest().body("Faltan email o contraseña.");
+    }
+
+    if (userRepository.existsById(email)) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya existe.");
+    }
+
+    User newUser = new User();
+    newUser.setEmail(email);
+    newUser.setPassword(passwordEncoder.encode(password)); // ✅ cifrado
+
+    User saved = userRepository.save(newUser);
+    return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+}
+
+
+
+@PostMapping("/auth/register/host")
+public ResponseEntity<?> registerHost(@RequestBody Map<String, String> payload) {
+    String email = payload.get("email");
+    String password = payload.get("password");
+    String seamApiKey = payload.get("seamApiKey");
+
+    if (email == null || password == null || seamApiKey == null) {
+        return ResponseEntity.badRequest().body("Faltan campos obligatorios.");
+    }
+
+    if (hostRepository.existsById(email)) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("El host ya existe.");
+    }
+
+    Host newHost = new Host();
+    newHost.setEmail(email);
+    newHost.setPassword(passwordEncoder.encode(password)); 
+    newHost.setSeamApiKey(seamApiKey);
+
+    Host saved = hostRepository.save(newHost);
+    return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+}
+
+
 
 }

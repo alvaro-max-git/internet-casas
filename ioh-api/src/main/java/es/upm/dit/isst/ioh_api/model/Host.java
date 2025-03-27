@@ -5,19 +5,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-//@Table(name = "app_user")
-@DiscriminatorValue("HOST") // solo aplica si usas SINGLE_TABLE
+@DiscriminatorValue("HOST")
 public class Host extends User {
-    
-    // Campos específicos de un Host
-    private String seamApiKey; // para conectar con la API de Seam
+
+    private String seamApiKey;
 
     public Host() {
         super();
     }
 
-    public Host(String email, String seamApiKey) {
-        super(email);
+    public Host(String email, String password, String seamApiKey) {
+        super(email, password);
         this.seamApiKey = seamApiKey;
     }
 

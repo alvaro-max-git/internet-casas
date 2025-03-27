@@ -68,3 +68,21 @@
   gap: 12px;
   z-index: 999; /* Para que quede por encima del contenido */
 }
+
+/* Estilo del botón de Generar Token */
+.tokenButton {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background-color: #294d67;
+  color: white;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: fit-content;
+  align-self: flex-start;
+}
+
+.tokenButton:hover {
+  background-color: #1c364c;
+}
