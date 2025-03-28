@@ -392,7 +392,7 @@ public ResponseEntity<?> registerHost(@RequestBody Map<String, String> payload) 
              return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token no válido");
          }
          
-         String token = authHeader.substring(7); // Quitar "Bearer "
+         String token = authHeader.substring(7); // Quita "Bearer "
          Optional<User> userOpt = getAuthenticatedUser(token);
          
          if (userOpt.isEmpty()) {
@@ -415,6 +415,8 @@ public ResponseEntity<?> registerHost(@RequestBody Map<String, String> payload) 
 
 //Session
 
+//Devuelve el usuario autenticado a partir de un token
+
 private Optional<User> getAuthenticatedUser(String token) {
     if (token == null) {
         return Optional.empty();
@@ -429,9 +431,6 @@ private Optional<User> getAuthenticatedUser(String token) {
     // Buscar usuario de la sesión
     String userEmail = sessionOpt.get().getUserEmail();
     return userRepository.findById(userEmail);
-}
-
-
-
+    }
 
 }
