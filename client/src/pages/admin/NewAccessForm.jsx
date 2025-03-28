@@ -4,13 +4,17 @@ import { useNavigate } from 'react-router-dom';
 import BackButton from '../../components/BackButton';
 import styles from './AccessForm.module.css';
 import ToggleMenu from '../../components/ToggleMenu';
-import { createAccess, listLocksByHost } from '../../services/api';
+import {
+  createAccess,
+  getCurrentUser,
+  listLocksOfCurrentHost
+} from '../../services/api';
 
 function NewAccessForm() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Guardaremos aquí las cerraduras descargadas del backend
+  // Lista de cerraduras del host (descargadas de /api/me/locks)
   const [hostLocks, setHostLocks] = useState([]);
 
   const [formData, setFormData] = useState({
@@ -22,22 +26,31 @@ function NewAccessForm() {
     fechaSalida: ''
   });
 
-  // Al montar el componente, llamamos a listLocksByHost para cargar las cerraduras del host
+  // Asegurarte de que el usuario actual sea un host y de paso cargar sus locks
   useEffect(() => {
-    const hostEmail = localStorage.getItem('userEmail');
-    if (!hostEmail) {
-      console.warn('No hay email de host en localStorage. No se pueden listar cerraduras.');
-      return;
-    }
+    // 1) Verificar usuario actual
+    getCurrentUser()
+      .then((user) => {
+        if (user.tipo !== 'host') {
+          console.warn('⚠ No eres un host. Redirigiendo a /client/home');
+          navigate('/client/home');
+          return;
+        }
 
-    listLocksByHost(hostEmail)
-      .then((locks) => {
-        setHostLocks(locks);
+        // 2) Como es host, descargamos sus cerraduras
+        listLocksOfCurrentHost()
+          .then((locks) => {
+            setHostLocks(locks);
+          })
+          .catch((err) => {
+            console.error('Error al obtener cerraduras del host:', err);
+          });
       })
       .catch((err) => {
-        console.error('Error al obtener cerraduras del host:', err);
+        console.error('No autenticado o error al obtener /me', err);
+        navigate('/register');
       });
-  }, []);
+  }, [navigate]);
 
   const toggleMenu = (open) => setMenuOpen(open);
 
@@ -52,27 +65,30 @@ function NewAccessForm() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     return Array.from({ length: 16 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
   };
+  const formatDateTimeForLocalDateTime = (value) => {
+    if (!value) return null;
+    const date = new Date(value);
+    const pad = (n) => n.toString().padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+  };
 
-  // Al enviar el formulario
+  // Cuando se envía el formulario: creamos un Access
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const hostEmail = localStorage.getItem('userEmail');
-    if (!hostEmail) {
-      alert('No se encontró el email del host en localStorage');
+  
+    if (!formData.token && !formData.usuario) {
+      alert("Debes proporcionar al menos un Token o un Usuario");
       return;
     }
-
-    // Construimos el payload que espera tu backend en /api/accesses
+  
     const accessPayload = {
-      host: { email: hostEmail },
-      cerradura: { id: formData.lockId }, // lockId elegido en el <select>
+      cerradura: { id: formData.lockId },
       token: formData.token || null,
       usuario: formData.usuario || null,
-      fechaEntrada: formData.fechaEntrada || null,
-      fechaSalida: formData.fechaSalida || null
+      fechaEntrada: formatDateTimeForLocalDateTime(formData.fechaEntrada),
+      fechaSalida: formatDateTimeForLocalDateTime(formData.fechaSalida),
     };
-
+  
     try {
       await createAccess(accessPayload);
       alert('✅ Acceso creado correctamente');
@@ -93,8 +109,7 @@ function NewAccessForm() {
       <h2 className={styles.title}>Agregar nuevo acceso</h2>
 
       <form onSubmit={handleSubmit} className={styles.form}>
-
-        {/* DESPLEGABLE para elegir la cerradura */}
+        {/* Selección de la cerradura */}
         <div className={styles.field}>
           <label>Cerradura</label>
           <select
@@ -112,7 +127,7 @@ function NewAccessForm() {
           </select>
         </div>
 
-        {/* Token con opción de autogenerar */}
+        {/* Token con autogenerar */}
         <div className={styles.field}>
           <label>Token</label>
           <div style={{ display: 'flex', gap: '8px' }}>
@@ -128,7 +143,7 @@ function NewAccessForm() {
               onClick={() =>
                 setFormData((prev) => ({
                   ...prev,
-                  token: generateToken()
+                  token: generateToken(),
                 }))
               }
             >
@@ -148,7 +163,7 @@ function NewAccessForm() {
           />
         </div>
 
-        {/* Color de la tarjeta */}
+        {/* Color */}
         <div className={styles.field}>
           <label>Color de tarjeta</label>
           <input
@@ -182,7 +197,9 @@ function NewAccessForm() {
           </div>
         </div>
 
-        <button type="submit" className={styles.button}>Crear acceso</button>
+        <button type="submit" className={styles.button}>
+          Crear acceso
+        </button>
       </form>
     </div>
   );

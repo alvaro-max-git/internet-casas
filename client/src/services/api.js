@@ -1,107 +1,120 @@
 // src/services/api.js
 
-// ¡Ajusta la URL según tu configuración!
-// Para desarrollo local: http://localhost:8080/api
-// Si despliegas el backend en otro dominio, actualiza esta constante.
 const API_BASE = "http://localhost:8080/api";
 
-/*
-  ============================
-  Accesos
-  ============================
-*/
-// Crear un Access nuevo
+function getAuthHeaders() {
+  const token = localStorage.getItem("sessionToken");
+  if (!token) return {};
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+}
+
+/* ============================ ACCESOS ============================ */
+
 export async function createAccess(accessData) {
-    const response = await fetch(`${API_BASE}/accesses`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(accessData),
-    });
-  
-    const responseText = await response.text(); // ← capturamos la respuesta aunque falle
-  
-    if (!response.ok) {
-      console.error("❌ Error al crear Access:", response.status, response.statusText);
-      console.error("Respuesta del servidor:", responseText);
-      throw new Error("Error al crear Access");
-    }
-  
-    return JSON.parse(responseText); // ← usamos el texto porque ya lo habíamos leído
+  const response = await fetch(`${API_BASE}/accesses`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
+    body: JSON.stringify(accessData),
+  });
+
+  const responseText = await response.text();
+
+  if (!response.ok) {
+    console.error("❌ Error al crear Access:", response.status, response.statusText);
+    console.error("Respuesta del servidor:", responseText);
+    throw new Error("Error al crear Access");
   }
 
-// Obtener Access por ID
+  return JSON.parse(responseText);
+}
+
 export async function getAccess(id) {
-  const response = await fetch(`${API_BASE}/accesses/${id}`);
+  const response = await fetch(`${API_BASE}/accesses/${id}`, {
+    headers: getAuthHeaders(),
+  });
   if (!response.ok) {
     throw new Error(`No se encontró Access con ID=${id}`);
   }
   return response.json();
 }
 
-// Actualizar un Access
 export async function updateAccess(id, accessData) {
   const response = await fetch(`${API_BASE}/accesses/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
     body: JSON.stringify(accessData),
   });
   if (!response.ok) {
     throw new Error("Error al actualizar Access");
   }
-  return response.json(); // Retorna el Access actualizado
+  return response.json();
 }
 
-// Eliminar un Access
 export async function deleteAccess(id) {
   const response = await fetch(`${API_BASE}/accesses/${id}`, {
     method: "DELETE",
+    headers: getAuthHeaders(),
   });
   if (!response.ok) {
     throw new Error("Error al eliminar Access");
   }
-  // no retornamos nada porque el backend no retorna nada
 }
 
-/*
-  ============================
-  Cerraduras
-  ============================
-*/
-// Abrir una cerradura
+/* ============================ CERRADURAS ============================ */
+
 export async function openLock(lockId) {
   const response = await fetch(`${API_BASE}/locks/${lockId}/open`, {
     method: "POST",
+    headers: getAuthHeaders(),
   });
   if (!response.ok) {
     throw new Error(`No se pudo abrir la cerradura con ID=${lockId}`);
   }
-  return response.text(); // el endpoint retorna un texto
+  return response.text();
 }
 
-// Listar cerraduras
-export async function listLocks() {
-  const response = await fetch(`${API_BASE}/locks`);
-  if (!response.ok) {
-    throw new Error("Error al obtener lista de cerraduras");
-  }
-  return response.json();
-}
-
-// Detalles de una cerradura
 export async function getLock(lockId) {
-  const response = await fetch(`${API_BASE}/locks/${lockId}`);
+  const response = await fetch(`${API_BASE}/locks/${lockId}`, {
+    headers: getAuthHeaders(),
+  });
   if (!response.ok) {
     throw new Error(`No se encontró la cerradura con ID=${lockId}`);
   }
   return response.json();
 }
-/*
-  ============================
-  Registro de hosts
-  ============================
-*/
 
-// Crear un nuevo host
+// Cerraduras del host autenticado
+export async function listLocksOfCurrentHost() {
+  const response = await fetch(`${API_BASE}/me/locks`, {
+    headers: getAuthHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error("❌ Error al obtener las cerraduras del host actual");
+  }
+  return response.json();
+}
+
+// Accesos del host o usuario autenticado
+export async function listAccessesOfCurrentUser() {
+  const response = await fetch(`${API_BASE}/me/accesses`, {
+    headers: getAuthHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error("❌ Error al obtener los accesos del usuario actual");
+  }
+  return response.json();
+}
+
+/* ============================ AUTENTICACIÓN ============================ */
+
 export async function registerHost(email, password, seamApiKey) {
   const response = await fetch(`${API_BASE}/auth/register/host`, {
     method: "POST",
@@ -116,11 +129,6 @@ export async function registerHost(email, password, seamApiKey) {
   return response.json();
 }
 
-  /*
-  ============================
-  Registro de usuarios
-  ============================
-*/
 export async function registerUser(email, password) {
   const response = await fetch(`${API_BASE}/auth/register/user`, {
     method: "POST",
@@ -134,12 +142,6 @@ export async function registerUser(email, password) {
 
   return response.json();
 }
-
-  /*
-  ============================
-  Login común entre usuarios y hosts
-  ============================
-*/
 
 export async function login(email, password) {
   const response = await fetch(`${API_BASE}/auth/login`, {
@@ -156,29 +158,25 @@ export async function login(email, password) {
   return response.json();
 }
 
+export async function logout() {
+  const response = await fetch(`${API_BASE}/auth/logout`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+  });
 
-/*
-  ============================
-  Cerraduras del host actual
-  ============================
-*/
-export async function listLocksByHost(email) {
-  const response = await fetch(`${API_BASE}/hosts/${email}/locks`);
   if (!response.ok) {
-    throw new Error(`❌ No se pudieron obtener las cerraduras del host ${email}`);
+    throw new Error("❌ Error al cerrar sesión");
   }
-  return response.json();
+  return response.text();
 }
 
-/*
-  ============================
-  Accesos del host actual
-  ============================
-*/
-export async function listAccessesByHost(email) {
-  const response = await fetch(`${API_BASE}/hosts/${email}/accesses`);
+export async function getCurrentUser() {
+  const response = await fetch(`${API_BASE}/me`, {
+    headers: getAuthHeaders(),
+  });
+
   if (!response.ok) {
-    throw new Error(`No se pudieron obtener los accesos del host: ${email}`);
+    throw new Error("No autenticado");
   }
   return response.json();
 }

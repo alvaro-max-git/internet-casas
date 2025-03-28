@@ -63,36 +63,43 @@ public class IohController {
 
     // CREATE Access
     @PostMapping("/accesses")
-    public ResponseEntity<Access> createAccess(@RequestBody Access newAccess)
-            throws URISyntaxException {
-        // Ojo con validaciones: que la cerradura y el host existan, etc.
-        if (newAccess.getHost() == null || newAccess.getHost().getEmail() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        // Buscamos el host en la BD
-        Optional<Host> hostOpt = hostRepository.findById(newAccess.getHost().getEmail());
-        if (!hostOpt.isPresent()) {
-            return ResponseEntity.badRequest().build();
-        }
-        // Buscamos la cerradura en la BD
-        if (newAccess.getCerradura() == null || newAccess.getCerradura().getId() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        Optional<Lock> lockOpt = lockRepository.findById(newAccess.getCerradura().getId());
-        if (!lockOpt.isPresent()) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Access> createAccess(@RequestHeader("Authorization") String authHeader,
+                                           @RequestBody Access newAccess) throws URISyntaxException {
 
-        newAccess.setHost(hostOpt.get());
-        newAccess.setCerradura(lockOpt.get());
-        newAccess.setFechaEntrada(newAccess.getFechaEntrada() != null
-                ? newAccess.getFechaEntrada()
-                : LocalDateTime.now());
-        newAccess.setFechaSalida(newAccess.getFechaSalida()); // Podrías poner por defecto + X días
-
-        Access saved = accessRepository.save(newAccess);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    // 1. Recuperamos el host autenticado desde el token
+    Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+    if (userOpt.isEmpty() || !(userOpt.get() instanceof Host)) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+    Host host = (Host) userOpt.get();
+
+    // 2. Validamos la cerradura
+    if (newAccess.getCerradura() == null || newAccess.getCerradura().getId() == null) {
+        return ResponseEntity.badRequest().build();
+    }
+    Optional<Lock> lockOpt = lockRepository.findById(newAccess.getCerradura().getId());
+    if (!lockOpt.isPresent()) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    // 3. Validamos que haya token o usuario
+    boolean noToken = newAccess.getToken() == null || newAccess.getToken().isBlank();
+    boolean noUser = newAccess.getUsuario() == null || newAccess.getUsuario().isBlank();
+    if (noToken && noUser) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    // 4. Creamos el acceso
+    newAccess.setHost(host);
+    newAccess.setCerradura(lockOpt.get());
+    newAccess.setFechaEntrada(newAccess.getFechaEntrada() != null
+            ? newAccess.getFechaEntrada()
+            : LocalDateTime.now());
+    newAccess.setFechaSalida(newAccess.getFechaSalida());
+
+    Access saved = accessRepository.save(newAccess);
+    return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+}
 
     // READ Access por ID
     @GetMapping("/accesses/{id}")
@@ -460,4 +467,85 @@ public class IohController {
         String userEmail = sessionOpt.get().getUserEmail();
         return userRepository.findById(userEmail);
     }
+
+
+
+
+    /*
+     * ===================================================================
+     * 2. Endpoints Nuevos con Sesión
+     * ===================================================================
+     */
+
+
+// 1. GET /api/me -> Retorna un resumen del usuario logueado
+@GetMapping("/me")
+public ResponseEntity<?> getAuthenticatedUser(@RequestHeader("Authorization") String authHeader) {
+    // 1) Recuperamos usuario a partir del token
+    Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+    if (userOpt.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+    }
+    User user = userOpt.get();
+
+    // 2) Retornamos info básica
+    Map<String, Object> data = new HashMap<>();
+    data.put("email", user.getEmail());
+    if (user instanceof Host) {
+        data.put("tipo", "host");
+    } else {
+        data.put("tipo", "user");
+    }
+
+    return ResponseEntity.ok(data);
 }
+
+// 2. GET /api/me/locks -> Retorna cerraduras del host autenticado
+@GetMapping("/me/locks")
+public ResponseEntity<?> getMyLocks(@RequestHeader("Authorization") String authHeader) {
+    Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+    if (userOpt.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+    }
+
+    User user = userOpt.get();
+    // Comprobamos que sea Host
+    if (!(user instanceof Host)) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Este endpoint es solo para hosts");
+    }
+
+    Host host = (Host) user;
+    // Sincroniza las cerraduras desde Seam
+    seamLockService.syncLocksFromSeam(host);
+
+    List<Lock> locks = lockRepository.findByPropietarioEmail(host.getEmail());
+    return ResponseEntity.ok(locks);
+}
+
+// 3. GET /api/me/accesses -> Retorna accesos del host o user autenticado
+@GetMapping("/me/accesses")
+public ResponseEntity<?> getMyAccesses(@RequestHeader("Authorization") String authHeader) {
+    Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+    if (userOpt.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+    }
+    User user = userOpt.get();
+
+    // Si es un Host -> devolvemos accesos que él creó (hostEmail)
+    if (user instanceof Host) {
+        List<Access> accesses = accessRepository.findByHostEmail(user.getEmail());
+        return ResponseEntity.ok(accesses);
+    } else {
+        // Si es un user normal -> devolvemos accesos donde 'usuario' sea su email
+        List<Access> accesses = accessRepository.findByUsuario(user.getEmail());
+        return ResponseEntity.ok(accesses);
+    }
+}
+
+
+
+
+}
+
+
+     

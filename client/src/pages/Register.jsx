@@ -71,24 +71,25 @@ function Register() {
     }
   };
 
-  const handleLoginUser = async (e) => {
-    e.preventDefault();
-    try {
-      await login(formData.email, formData.password);
-      notifyLoginSuccess('👤');
-      navigate('/client/home');
-    } catch (error) {
-      notifyLoginError();
-    }
-  };
-
   const handleLoginHost = async (e) => {
     e.preventDefault();
     try {
       const response = await login(formData.email, formData.password);
+      localStorage.setItem("sessionToken", response.token); // ✅ Guardar token
       notifyLoginSuccess('🔐');
-      localStorage.setItem('email', formData.email); // ⬅️ Guardamos el email del host
       navigate('/admin/home');
+    } catch (error) {
+      notifyLoginError();
+    }
+  };
+  
+  const handleLoginUser = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await login(formData.email, formData.password);
+      localStorage.setItem("sessionToken", response.token); // ✅ Guardar token
+      notifyLoginSuccess('👤');
+      navigate('/client/home');
     } catch (error) {
       notifyLoginError();
     }

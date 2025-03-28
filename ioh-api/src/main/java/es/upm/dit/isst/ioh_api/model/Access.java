@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 public class Access {
@@ -21,7 +22,10 @@ public class Access {
     @ManyToOne
     private Lock cerradura; // Referencia a la cerradura a la que da acceso
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime fechaEntrada;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime fechaSalida;
 
     // Para simplificar, guardamos un token y el “usuario” (aunque no sea un User real)

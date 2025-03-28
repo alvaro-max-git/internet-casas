@@ -7,58 +7,83 @@ import { FaPlus } from 'react-icons/fa';
 import lockIcon from '../assets/IoH-lockiconusermenu.png';
 import BackButton from '../components/BackButton';
 import ToggleMenu from '../components/ToggleMenu';
-import { listAccessesByHost, deleteAccess } from '../services/api';
 
+// Importa las llamadas de API que te interesen
+import {
+  getCurrentUser,
+  listAccessesOfCurrentUser,
+  deleteAccess,
+} from '../services/api';
 
 function AdminHome() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [accesses, setAccesses] = useState([]); // Renombramos a 'accesses' en vez de 'locks'
+  const [accesses, setAccesses] = useState([]);
   const navigate = useNavigate();
 
+  // Para abrir/cerrar menú hamburguesa
   const toggleMenu = (open) => setMenuOpen(open);
 
-  // Manejo del botón "Configurar": abrimos un formulario de edición
+  // Llamada al backend para obtener los accesos del host actual
+  useEffect(() => {
+    // 1) Verifica que el usuario actual sea un host
+    getCurrentUser()
+      .then((user) => {
+        if (user.tipo !== 'host') {
+          console.warn('⚠ Intento de acceso a AdminHome con un usuario que NO es host');
+          // Podrías redirigir a otro sitio, o mostrar error
+          navigate('/client/home');
+          return;
+        }
+
+        // 2) Ya es Host, pedimos sus accesos
+        listAccessesOfCurrentUser()
+          .then((data) => {
+            setAccesses(data);
+          })
+          .catch((err) => {
+            console.error('Error al cargar accesos (Host)', err);
+          });
+      })
+      .catch((err) => {
+        // No está autenticado o falló
+        console.error('No autenticado o error al obtener /me', err);
+        // Podrías redirigir a /register
+        navigate('/register');
+      });
+  }, [navigate]);
+
+  // Botón para editar un acceso existente
   const handleConfigure = (accessId) => {
     navigate(`/admin/access/${accessId}/edit`);
   };
 
-  // Manejo del botón "Borrar": hacemos DELETE en backend y removemos del state
+  // Botón para borrar un acceso (DELETE en backend + quitar del state)
   const handleDelete = async (accessId) => {
     const confirmDelete = window.confirm('¿Estás seguro de que quieres borrar este acceso?');
     if (!confirmDelete) return;
+
     try {
       await deleteAccess(accessId);
-      // Quitamos del estado
       setAccesses((prev) => prev.filter((a) => a.id !== accessId));
     } catch (error) {
       console.error('Error al borrar el acceso:', error);
     }
   };
 
-  // Manejo del botón "Agregar acceso": vamos al formulario de creación
+  // Botón para ir al formulario de creación
   const handleAddAccess = () => {
     navigate('/admin/access/new');
   };
 
-  // Cargar la lista de Accesses del Host
-  useEffect(() => {
-    const email = localStorage.getItem('userEmail');
-    if (!email) return;
-
-    listAccessesByHost(email)
-      .then((data) => setAccesses(data))
-      .catch((err) => console.error('Error al cargar accesos:', err));
-  }, []);
-
   return (
     <div className={styles.container}>
-      {/* NAV SUPERIOR */}
+      {/* Menú superior (BackButton + ToggleMenu) */}
       <div className={styles.navContainer}>
         <BackButton to="/register" className={styles.backButtonCustom} />
         <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       </div>
 
-      {/* CONTENIDO PRINCIPAL */}
+      {/* Contenido principal */}
       <div className={styles.mainContent}>
         <h1 className={styles.greeting}>Hola, Administrador</h1>
         <h2 className={styles.subtitle}>Accesos activos</h2>
@@ -71,13 +96,12 @@ function AdminHome() {
               style={{ backgroundColor: '#FFE5BD' }}
             >
               <img src={lockIcon} alt="Lock" className={styles.lockIcon} />
-              
-              {/* Mostramos algo de info del acceso */}
-              <p>Cerradura: {access.cerradura?.id || '(sin cerradura)'}</p>
+              {/* Info básica del Access */}
+              <p>Cerradura: {access.cerradura?.name || '(sin nombre)'}</p>
+              <p>ID cerradura: {access.cerradura?.id || '—'}</p>
               <p>Usuario: {access.usuario || '—'}</p>
               <p>Token: {access.token || '—'}</p>
-              {/* Puedes mostrar fechaEntrada, fechaSalida, etc. */}
-              
+
               <button
                 className={styles.configureButton}
                 onClick={() => handleConfigure(access.id)}
@@ -93,11 +117,11 @@ function AdminHome() {
             </div>
           ))}
 
-          {/* Tarjeta para agregar acceso */}
+          {/* Tarjeta para agregar un nuevo acceso */}
           <div
             className={styles.accessCard}
             onClick={handleAddAccess}
-            style={{ backgroundColor: '#DBD2DA' }}
+            style={{ backgroundColor: '#DBD2DA', cursor: 'pointer' }}
           >
             <FaPlus className={styles.lockIcon} />
             <p>Agregar acceso</p>
