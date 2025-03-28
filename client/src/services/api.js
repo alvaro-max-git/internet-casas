@@ -157,3 +157,28 @@ export async function login(email, password) {
 }
 
 
+/*
+  ============================
+  Cerraduras del host actual
+  ============================
+*/
+export async function listLocksByHost(email) {
+  const response = await fetch(`${API_BASE}/hosts/${email}/locks`);
+  if (!response.ok) {
+    throw new Error(`❌ No se pudieron obtener las cerraduras del host ${email}`);
+  }
+  return response.json();
+}
+
+/*
+  ============================
+  Accesos del host actual
+  ============================
+*/
+export async function listAccessesByHost(email) {
+  const response = await fetch(`${API_BASE}/hosts/${email}/accesses`);
+  if (!response.ok) {
+    throw new Error(`No se pudieron obtener los accesos del host: ${email}`);
+  }
+  return response.json();
+}

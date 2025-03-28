@@ -85,8 +85,9 @@ function Register() {
   const handleLoginHost = async (e) => {
     e.preventDefault();
     try {
-      await login(formData.email, formData.password);
+      const response = await login(formData.email, formData.password);
       notifyLoginSuccess('🔐');
+      localStorage.setItem('email', formData.email); // ⬅️ Guardamos el email del host
       navigate('/admin/home');
     } catch (error) {
       notifyLoginError();

@@ -133,6 +133,26 @@ public class IohController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
+    
+
+    //NOS DEVUELVE LOS ACCESOS POR HOST
+    // GET /api/hosts/{hostId}/accesses
+    @GetMapping("/hosts/{hostId}/accesses")
+    public ResponseEntity<List<Access>> listAccessesByHost(@PathVariable String hostId) {
+    // 1. Verificamos que el Host existe
+    Optional<Host> hostOpt = hostRepository.findById(hostId);
+    if (!hostOpt.isPresent()) {
+        return ResponseEntity.notFound().build();
+    }
+
+    // 2. Obtenemos todos los Access de la BD, filtrando por host.email
+    List<Access> accesses = accessRepository.findByHostEmail(hostId);
+
+    // 3. Retornamos la lista
+    return ResponseEntity.ok(accesses);
+}
+
+
     /*
      * ===================================================================
      * 2. Endpoints de Lock (Cerradura)
