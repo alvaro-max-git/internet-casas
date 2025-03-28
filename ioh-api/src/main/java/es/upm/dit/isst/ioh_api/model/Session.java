@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Email;
 @Entity
 public class Session {
  @Id private String sessionToken;
-
+//TODO Hacer con objeto usuario
  @Email private String userEmail;
 
  private LocalDateTime creationTime;
@@ -30,7 +30,7 @@ public class Session {
     return LocalDateTime.now().isBefore(expirationTime);
  }
 
-    // === Getters y Setters ===
+    // === Getters y Setters ===...
 
     public String getSessionToken() {
         return sessionToken;
