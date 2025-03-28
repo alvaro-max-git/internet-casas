@@ -20,7 +20,7 @@ public class Main {
     
     // If the environment variable is not found, use a default value
     if (SEAM_API_KEY == null) {
-        SEAM_API_KEY = "seam_testKpVb_t1Qiw82sFJRv31ihiqjnVuQh"; // Your API key from CMD
+        SEAM_API_KEY = "seam_testyG1X_892xxQeWE8hUe6HuNDszDDa6"; // Your API key from CMD
         System.out.println("Using hardcoded API key: " + SEAM_API_KEY);
     }
 

@@ -1,8 +1,11 @@
 package es.upm.dit.isst.ioh_api.repository;
 
-import es.upm.dit.isst.ioh_api.model.Access;
+import java.util.List;
+
 import org.springframework.data.repository.CrudRepository;
 
+import es.upm.dit.isst.ioh_api.model.Access;
+
 public interface AccessRepository extends CrudRepository<Access, Long> {
-    // p.ej. List<Access> findByHostEmail(String email);
+    List<Access> findByUsuario(String email);
 }

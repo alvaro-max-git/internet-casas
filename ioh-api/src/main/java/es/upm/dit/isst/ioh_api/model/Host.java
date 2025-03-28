@@ -2,12 +2,12 @@ package es.upm.dit.isst.ioh_api.model;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 @DiscriminatorValue("HOST")
 public class Host extends User {
-
+    @NotEmpty
     private String seamApiKey;
 
     public Host() {

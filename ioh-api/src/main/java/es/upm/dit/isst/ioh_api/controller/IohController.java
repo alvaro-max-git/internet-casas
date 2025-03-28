@@ -1,34 +1,54 @@
 package es.upm.dit.isst.ioh_api.controller;
 
-import es.upm.dit.isst.ioh_api.model.*;
-import es.upm.dit.isst.ioh_api.repository.*;
+import java.net.URISyntaxException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
 import es.upm.dit.isst.ioh_api.service.SeamLockService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URISyntaxException;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import es.upm.dit.isst.ioh_api.model.Access;
+import es.upm.dit.isst.ioh_api.model.Host;
+import es.upm.dit.isst.ioh_api.model.Lock;
+import es.upm.dit.isst.ioh_api.model.Session;
+import es.upm.dit.isst.ioh_api.model.User;
+import es.upm.dit.isst.ioh_api.repository.AccessRepository;
+import es.upm.dit.isst.ioh_api.repository.HostRepository;
+import es.upm.dit.isst.ioh_api.repository.LockRepository;
+import es.upm.dit.isst.ioh_api.repository.SessionRepository;
+import es.upm.dit.isst.ioh_api.repository.UserRepository;
 
 @RestController
 @RequestMapping("/api")
 public class IohController {
 
     @Autowired
+    private SessionRepository sessionRepository;
+    @Autowired
     private AccessRepository accessRepository;
-
     @Autowired
     private LockRepository lockRepository;
-
     @Autowired
     private HostRepository hostRepository;
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -259,13 +279,34 @@ public ResponseEntity<Lock> createLock(@RequestBody Lock newLock) {
          if (!passwordEncoder.matches(password, user.getPassword())) {
              return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta.");
          }
+
+         // Generar token y guardar en sesión
+         String token = UUID.randomUUID().toString();
+         sessionRepository.deleteByUserEmail(email);
+         Session session = new Session(token, email);
+         sessionRepository.save(session);
      
          Map<String, Object> response = new HashMap<>();
          response.put("email", user.getEmail());
          response.put("tipo", user instanceof Host ? "host" : "user");
+         response.put("token", token);
      
          return ResponseEntity.ok(response);
      }
+
+
+        // Logout
+
+    @PostMapping("/auth/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    
+        String token = authHeader.substring(7);
+        sessionRepository.deleteById(token);
+        return ResponseEntity.ok().body("Sesión cerrada correctamente");
+}
 
 @PostMapping("/auth/register/user")
 public ResponseEntity<?> registerUser(@RequestBody Map<String, String> payload) {
@@ -321,6 +362,57 @@ public ResponseEntity<?> registerHost(@RequestBody Map<String, String> payload) 
 
     return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 }
+    /*
+     * ===================================================================
+     * 2. Endpoints de User (Usuario)
+     * ===================================================================
+     */
+
+     @GetMapping("/user/accesses")
+     public ResponseEntity<?> getUserAccesses(@RequestHeader("Authorization") String authHeader) {
+         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token no válido");
+         }
+         
+         String token = authHeader.substring(7); // Quitar "Bearer "
+         Optional<User> userOpt = getAuthenticatedUser(token);
+         
+         if (userOpt.isEmpty()) {
+             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+         }
+         
+         User user = userOpt.get();
+         
+         // Obtener los accesos del usuario
+         List<Access> accesses = accessRepository.findByUsuario(user.getEmail());
+         
+         return ResponseEntity.ok(accesses);
+     }
+
+/*
+* ===================================================================
+* Logica 
+* ===================================================================
+*/
+
+//Session
+
+private Optional<User> getAuthenticatedUser(String token) {
+    if (token == null) {
+        return Optional.empty();
+    }
+    
+    // Buscar sesión
+    Optional<Session> sessionOpt = sessionRepository.findById(token);
+    if (sessionOpt.isEmpty() || !sessionOpt.get().isValid()) {
+        return Optional.empty();
+    }
+    
+    // Buscar usuario de la sesión
+    String userEmail = sessionOpt.get().getUserEmail();
+    return userRepository.findById(userEmail);
+}
+
 
 
 
