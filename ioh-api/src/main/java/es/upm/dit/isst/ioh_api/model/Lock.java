@@ -1,5 +1,7 @@
 package es.upm.dit.isst.ioh_api.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -16,6 +18,14 @@ public class Lock {
     // Podrías añadir más campos, por ejemplo:
     // private String marca;
     // private String modelo;
+
+    private String name;
+    private Boolean locked;
+    private Double batteryLevel;
+    private String batteryStatus;  // "low", "medium", "full"
+    private String manufacturer;
+    private String model;
+    private String timezone;
 
     public Lock() {
     }
@@ -40,4 +50,61 @@ public class Lock {
     public void setPropietario(Host propietario) {
         this.propietario = propietario;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Boolean getLocked() {
+        return locked;
+    }
+
+    public void setLocked(Boolean locked) {
+        this.locked = locked;
+    }
+
+    public Double getBatteryLevel() {
+        return batteryLevel;
+    }
+
+    public void setBatteryLevel(Double batteryLevel) {
+        this.batteryLevel = batteryLevel;
+    }
+
+    public String getBatteryStatus() {
+        return batteryStatus;
+    }
+
+    public void setBatteryStatus(String batteryStatus) {
+        this.batteryStatus = batteryStatus;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
+
 }

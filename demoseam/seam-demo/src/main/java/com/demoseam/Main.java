@@ -9,6 +9,8 @@ import com.seam.api.types.ActionAttempt;
 import com.seam.api.types.Device;
 
 
+
+
 public class Main {
 
     public static void main(String[] args) {
@@ -32,9 +34,10 @@ public class Main {
     System.out.println("LocksClient: " + locksClient);
 
     List<Device> allDevices = locksClient.list();
-    System.out.println("allDevices: " + allDevices);
+    //System.out.println("allDevices: " + allDevices);
 
     Device frontDoor = allDevices.get(0);
+    System.out.println("frontDoor: " + frontDoor);
 
     ActionAttempt actionAttempt = seam.locks()
           .unlockDoor(LocksUnlockDoorRequest.builder()
