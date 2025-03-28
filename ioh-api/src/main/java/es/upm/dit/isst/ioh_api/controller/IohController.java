@@ -146,6 +146,23 @@ public class IohController {
         return (List<Lock>) lockRepository.findAll();
     }
 
+    // GET lista de cerraduras de un host
+    @GetMapping("/hosts/{hostId}/locks")
+    public ResponseEntity<List<Lock>> listLocksByHost(@PathVariable String hostId) {
+        // Buscamos el host por ID
+        Optional<Host> hostOpt = hostRepository.findById(hostId);
+        if (!hostOpt.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Actualizamos la lista de cerraduras desde Seam
+        seamLockService.syncLocksFromSeam(hostOpt.get());
+
+        // Retornamos las cerraduras del host
+        List<Lock> locks = lockRepository.findByPropietarioEmail(hostOpt.get().getEmail());
+        return ResponseEntity.ok(locks);
+    }
+
     // GET detalle de una cerradura
     @GetMapping("/locks/{lockId}")
     public ResponseEntity<Lock> getLock(@PathVariable String lockId) {
@@ -228,6 +245,7 @@ public ResponseEntity<Host> createHost(@RequestBody Host newHost) {
 
 // Crear una nueva Lock (Cerradura)
 //ESTE ENDOPOINT DEBERÍA NO SER ACCESIBLE.
+/*
 @PostMapping("/locks")
 public ResponseEntity<Lock> createLock(@RequestBody Lock newLock) {
     if (newLock.getId() == null || newLock.getId().isEmpty()) {
@@ -251,7 +269,7 @@ public ResponseEntity<Lock> createLock(@RequestBody Lock newLock) {
     Lock saved = lockRepository.save(newLock);
     return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 }
-
+*/
 
  /*
      * ===================================================================
