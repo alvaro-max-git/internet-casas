@@ -75,12 +75,12 @@ function NewAccessForm() {
   // Cuando se envía el formulario: creamos un Access
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!formData.token && !formData.usuario) {
       alert("Debes proporcionar al menos un Token o un Usuario");
       return;
     }
-  
+
     const accessPayload = {
       cerradura: { id: formData.lockId },
       token: formData.token || null,
@@ -88,7 +88,7 @@ function NewAccessForm() {
       fechaEntrada: formatDateTimeForLocalDateTime(formData.fechaEntrada),
       fechaSalida: formatDateTimeForLocalDateTime(formData.fechaSalida),
     };
-  
+
     try {
       await createAccess(accessPayload);
       alert('✅ Acceso creado correctamente');
@@ -129,27 +129,26 @@ function NewAccessForm() {
 
         {/* Token con autogenerar */}
         <div className={styles.field}>
-          <label>Token</label>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <input
-              type="text"
-              name="token"
-              value={formData.token}
-              onChange={handleChange}
-            />
-            <button
-              type="button"
-              className={styles.tokenButton}
-              onClick={() =>
-                setFormData((prev) => ({
-                  ...prev,
-                  token: generateToken(),
-                }))
-              }
-            >
-              Generar token
-            </button>
-          </div>
+        <label>Token</label>
+          <input
+            type="text"
+            name="token"
+            value={formData.token}
+            onChange={handleChange}
+            
+          />
+          <button
+            type="button"
+            className={styles.tokenButton}
+            onClick={() =>
+              setFormData((prev) => ({
+                ...prev,
+                token: generateToken(),
+              }))
+            }
+          >
+            Generar token
+          </button>
         </div>
 
         {/* Usuario (huésped) */}

@@ -86,3 +86,20 @@
 .tokenButton:hover {
   background-color: #1c364c;
 }
+
+.inputFull {
+  width: 100%;
+}
+
+.tokenField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
