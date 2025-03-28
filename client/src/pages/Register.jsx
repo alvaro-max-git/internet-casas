@@ -6,26 +6,22 @@ import IoHIcon from '../assets/IoH-icon.png';
 import BackButton from '../components/BackButton';
 import ToggleMenu from '../components/ToggleMenu';
 
-// Llamadas de API
+import {
+  notifyLoginSuccess,
+  notifyLoginError,
+  notifyRegisterUserSuccess,
+  notifyRegisterHostSuccess,
+  notifyRegisterError,
+} from '../utils/notifications';
+
 import { registerUser, registerHost, login } from '../services/api';
 
 function Register() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  /*
-    Estados posibles en 'view':
-    1. "initial" (dos botones: Regístrate / ¿Ya tienes cuenta?)
-    2. "registerChoice" (elige Usuario/Host para registro)
-    3. "loginChoice" (elige Usuario/Host para login)
-    4. "registerUser" (form registro user)
-    5. "registerHost" (form registro host)
-    6. "loginUser" (form login user)
-    7. "loginHost" (form login host)
-  */
   const [view, setView] = useState('initial');
 
-  // Campos de formulario
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -34,36 +30,33 @@ function Register() {
 
   const toggleMenu = (open) => setMenuOpen(open);
 
-  // Handler para campos del formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Resetea el formulario
   const resetForm = () => {
     setFormData({ email: '', password: '', seamApiKey: '' });
   };
 
-  // === Flujos ===
   const goToRegisterChoice = () => {
     resetForm();
     setView('registerChoice');
   };
+
   const goToLoginChoice = () => {
     resetForm();
     setView('loginChoice');
   };
 
-  // === Registro y login: acciones concretas ===
   const handleRegisterUser = async (e) => {
     e.preventDefault();
     try {
       await registerUser(formData.email, formData.password);
-      alert('✅ Usuario registrado correctamente');
+      notifyRegisterUserSuccess();
       setView('initial');
     } catch (error) {
-      alert(error.message);
+      notifyRegisterError(error.message);
     }
   };
 
@@ -71,10 +64,10 @@ function Register() {
     e.preventDefault();
     try {
       await registerHost(formData.email, formData.password, formData.seamApiKey);
-      alert('✅ Host registrado correctamente');
+      notifyRegisterHostSuccess();
       setView('initial');
     } catch (error) {
-      alert(error.message);
+      notifyRegisterError(error.message);
     }
   };
 
@@ -82,9 +75,10 @@ function Register() {
     e.preventDefault();
     try {
       await login(formData.email, formData.password);
+      notifyLoginSuccess('👤');
       navigate('/client/home');
     } catch (error) {
-      alert(error.message);
+      notifyLoginError();
     }
   };
 
@@ -92,28 +86,26 @@ function Register() {
     e.preventDefault();
     try {
       await login(formData.email, formData.password);
+      notifyLoginSuccess('🔐');
       navigate('/admin/home');
     } catch (error) {
-      alert(error.message);
+      notifyLoginError();
     }
   };
 
   return (
     <div className={styles.container}>
-      {/* Menú superior */}
       <div className={styles.navContainer}>
         <BackButton to="/" />
         <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       </div>
 
-      {/* Contenido principal */}
       <div className={styles.mainContent}>
         <div className={styles.iconContainer}>
           <img src={IoHIcon} alt="IoH Icon" className={styles.icon} />
         </div>
         <h1 className={styles.title}>Internet of Homes</h1>
 
-        {/* Vista inicial: Regístrate / ¿Ya tienes cuenta? */}
         {view === 'initial' && (
           <>
             <button className={styles.registerButton} onClick={goToRegisterChoice}>
@@ -125,7 +117,6 @@ function Register() {
           </>
         )}
 
-        {/* Elección de registro: user o host */}
         {view === 'registerChoice' && (
           <div className={styles.loginChoice}>
             <button className={styles.clientButton} onClick={() => setView('registerUser')}>
@@ -137,7 +128,6 @@ function Register() {
           </div>
         )}
 
-        {/* Elección de login: user o host */}
         {view === 'loginChoice' && (
           <div className={styles.loginChoice}>
             <button className={styles.clientButton} onClick={() => setView('loginUser')}>
@@ -149,7 +139,6 @@ function Register() {
           </div>
         )}
 
-        {/* Formulario: Registrar User */}
         {view === 'registerUser' && (
           <form className={styles.loginForm} onSubmit={handleRegisterUser}>
             <input
@@ -176,7 +165,6 @@ function Register() {
           </form>
         )}
 
-        {/* Formulario: Registrar Host */}
         {view === 'registerHost' && (
           <form className={styles.loginForm} onSubmit={handleRegisterHost}>
             <input
@@ -212,7 +200,6 @@ function Register() {
           </form>
         )}
 
-        {/* Formulario: Login User */}
         {view === 'loginUser' && (
           <form className={styles.loginForm} onSubmit={handleLoginUser}>
             <input
@@ -239,7 +226,6 @@ function Register() {
           </form>
         )}
 
-        {/* Formulario: Login Host */}
         {view === 'loginHost' && (
           <form className={styles.loginForm} onSubmit={handleLoginHost}>
             <input

@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import es.upm.dit.isst.ioh_api.service.SeamLockService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +51,9 @@ public class IohController {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private SeamLockService seamLockService;
 
 
     /*
@@ -332,6 +337,15 @@ public ResponseEntity<?> registerHost(@RequestBody Map<String, String> payload) 
     newHost.setSeamApiKey(seamApiKey);
 
     Host saved = hostRepository.save(newHost);
+
+    try {
+        seamLockService.syncLocksFromSeam(saved);
+    } catch (Exception e) {
+        // Manejar error si la API Key es inválida...
+        // Podrías hacer un rollback manual si quieres anular
+        // el registro del Host si la ApiKey no funciona
+    }
+
     return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 }
     /*
