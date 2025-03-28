@@ -129,6 +129,19 @@ public class IohController {
     // GET detalle de una cerradura
     @GetMapping("/locks/{lockId}")
     public ResponseEntity<Lock> getLock(@PathVariable String lockId) {
+
+        //Actualizamos la lista de cerraduras desde Seam
+
+        Optional<Lock> lockOpt = lockRepository.findById(lockId);
+        if (!lockOpt.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Host host = lockOpt.get().getPropietario();
+        seamLockService.syncLocksFromSeam(host);
+
+        // Buscamos la cerradura por ID
+
         return lockRepository.findById(lockId)
                 .map(lock -> ResponseEntity.ok(lock))
                 .orElse(ResponseEntity.notFound().build());
@@ -137,7 +150,9 @@ public class IohController {
     // Abrir una cerradura (POST /api/locks/{lockId}/open)
     @PostMapping("/locks/{lockId}/open")
     public ResponseEntity<?> openLock(@PathVariable String lockId) {
+
         // Aquí es donde invocarías la integración con Seam
+
         Optional<Lock> lockOpt = lockRepository.findById(lockId);
         if (!lockOpt.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -145,10 +160,8 @@ public class IohController {
 
         // 1. Recuperas la seamApiKey del propietario
         Host host = lockOpt.get().getPropietario();
-        if (host == null || host.getSeamApiKey() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("La cerradura no tiene un propietario o no tiene seamApiKey");
-        }
+        
+        seamLockService.syncLocksFromSeam(host); // Sincroniza las cerraduras del host
 
         // 2. Llamas a tu servicio que integre la librería Seam y desbloquee la cerradura
         boolean success = mockUnlockLockInSeam(lockId, host.getSeamApiKey());
@@ -194,6 +207,7 @@ public ResponseEntity<Host> createHost(@RequestBody Host newHost) {
 }
 
 // Crear una nueva Lock (Cerradura)
+//ESTE ENDOPOINT DEBERÍA NO SER ACCESIBLE.
 @PostMapping("/locks")
 public ResponseEntity<Lock> createLock(@RequestBody Lock newLock) {
     if (newLock.getId() == null || newLock.getId().isEmpty()) {
