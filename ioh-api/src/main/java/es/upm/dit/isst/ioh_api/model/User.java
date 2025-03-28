@@ -5,13 +5,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 
 @Entity
 @Table(name="usuario")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class User {
 
-    @Id
+    @Id @Email
     private String email; // PK
 
     private String password; // Añadimos el campo de contraseña
