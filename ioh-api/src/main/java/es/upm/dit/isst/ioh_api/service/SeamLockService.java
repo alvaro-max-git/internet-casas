@@ -59,7 +59,6 @@ public class SeamLockService {
                 lockRepository.save(existingLock);
             }
         }
-
         // Además, podrías eliminar las cerraduras locales que
         // ya no aparezcan en la lista devuelta por Seam
         // (opcional, según tu lógica de negocio)
