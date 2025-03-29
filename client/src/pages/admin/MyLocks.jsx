@@ -5,6 +5,8 @@ import fotocerrradura from '../../assets/cerradura.png';
 import BackButton from '../../components/BackButton';
 import ToggleMenu from '../../components/ToggleMenu';
 
+
+
 function MyLocks() {
   const [locks, setLocks] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);

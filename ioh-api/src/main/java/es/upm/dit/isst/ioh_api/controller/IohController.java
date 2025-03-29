@@ -220,8 +220,6 @@ public class IohController {
     @PostMapping("/locks/{lockId}/open")
     public ResponseEntity<?> openLock(@PathVariable String lockId) {
 
-        // Aquí es donde invocarías la integración con Seam
-
         Optional<Lock> lockOpt = lockRepository.findById(lockId);
         if (!lockOpt.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -230,35 +228,31 @@ public class IohController {
         // 1. Recuperas la seamApiKey del propietario
         Host host = lockOpt.get().getPropietario();
 
-        seamLockService.syncLocksFromSeam(host); // Sincroniza las cerraduras del host
+        boolean success = seamLockService.openLock(host, lockId); // Sincroniza las cerraduras del host
 
-        // 2. Llamas a tu servicio que integre la librería Seam y desbloquee la
-        // cerradura
-        boolean success = mockUnlockLockInSeam(lockId, host.getSeamApiKey());
-        // En un caso real, usarías la librería:
-        // Seam seam = Seam.builder().apiKey(host.getSeamApiKey()).build();
-        // ActionAttempt actionAttempt = seam.locks().unlockDoor(
-        // LocksUnlockDoorRequest.builder()
-        // .deviceId(lockId).build());
+        //esperamos 5 segundos para que se desbloquee la puerta
 
-        if (success) {
-            return ResponseEntity.ok("Cerradura " + lockId + " abierta correctamente (vía Seam)");
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al abrir la cerradura en Seam");
+        try {
+            Thread.sleep(5000); // 5 seconds
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+
+        //devolvemos objeto ResponseEntity con ok siempre, ya que la cerradura tarda en abrirse
+        return ResponseEntity.ok("Operación de apertura de cerradura iniciada");
     }
 
     /*
      * Simulamos la llamada a Seam para la demo,
      * en la práctica usarías la librería oficial (como tu snippet).
-     */
+     
     private boolean mockUnlockLockInSeam(String lockId, String seamApiKey) {
         // Lógica simulada
         System.out.println("Simulando desbloqueo en Seam, lockId = " + lockId
                 + ", seamApiKey = " + seamApiKey);
         return true;
     }
+    */
 
     // Crear un nuevo Host
     @PostMapping("/hosts")

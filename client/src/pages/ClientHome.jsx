@@ -6,11 +6,17 @@ import { FaPlus } from 'react-icons/fa';
 import fotocerrradura from '../assets/cerradura.png';
 import BackButton from '../components/BackButton';
 import ToggleMenu from '../components/ToggleMenu';
+import { openLock, getLock } from '../services/api';
 
 function ClientHome() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [accesses, setAccesses] = useState([]);
   const navigate = useNavigate();
+  
+  const [polling, setPolling] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [lockOpened, setLockOpened] = useState(false);
+
 
   const toggleMenu = (open) => setMenuOpen(open);
 
@@ -26,9 +32,43 @@ function ClientHome() {
     navigate('/client/scan');
   };
 
-  const handleOpenLock = (accessId) => {
-    navigate(`/lock/${accessId}/open`);
-  };
+  const handleOpenLock = async (lockId) => {
+      try {
+        // Llamada al método que abre la cerradura
+        await openLock(lockId);
+  
+        // Iniciamos el polling
+        setPolling(true);
+        setLockOpened(false);
+        setTimeLeft(60);
+  
+        const intervalId = setInterval(async () => {
+          setTimeLeft((prev) => prev - 1);
+  
+          try {
+            const lockData = await getLock(lockId);
+            // lockData.LOCKED es true o false
+            if (lockData && lockData.LOCKED === false) {
+              setLockOpened(true);
+              setPolling(false);
+              clearInterval(intervalId);
+            }
+          } catch (error) {
+            console.error(error);
+          }
+  
+          // Si se acaba el tiempo, se detiene el polling
+          if (timeLeft <= 1) {
+            setPolling(false);
+            clearInterval(intervalId);
+          }
+        }, 2000);
+      } catch (error) {
+        console.error(`No se pudo abrir la cerradura con ID=${lockId}`, error);
+        alert(`No se pudo abrir la cerradura con ID=${lockId}`);
+      }
+    };
+ 
 
   const handleDelete = (accessId) => {
     const confirmDelete = window.confirm('¿Seguro que quieres borrar este acceso?');
@@ -66,7 +106,7 @@ function ClientHome() {
 
               <button
                 className={styles.configureButton}
-                onClick={() => handleOpenLock(access.id)}
+                onClick={() => handleOpenLock(access.cerradura?.id)}
               >
                 Abrir
               </button>
@@ -76,6 +116,16 @@ function ClientHome() {
               >
                 Borrar
               </button>
+        
+        {/* Indicador de proceso */}
+                {polling && !lockOpened && (
+                  <div>
+                    <p>Verificando estado de la cerradura...</p>
+                    <p>Tiempo restante: {timeLeft}s</p>
+                    <div className={styles.spinner}>Cargando...</div>
+                  </div>
+                )}
+                {lockOpened && <p>¡La cerradura está abierta!</p>}
             </div>
           ))}
 
