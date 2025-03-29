@@ -12,6 +12,7 @@ import BluetoothSearch from './pages/BluetoothSearch';
 import AdminHome from './pages/AdminHome';
 import EditAccessForm from './pages/admin/EditAccessForm';
 import NewAccessForm from './pages/admin/NewAccessForm';
+import MyLocks from './pages/admin/MyLocks';
 import AccessLoader from './pages/AccessLoader';
 
 // Legacy (por si los sigues usando)
@@ -35,6 +36,7 @@ function AppRouter() {
 
       {/* === ADMINISTRADOR === */}
       <Route path="/admin/home" element={<AdminHome />} />
+      <Route path="/admin/locks" element={<MyLocks />} />
       <Route path="/admin/access/:accessId/edit" element={<EditAccessForm />} />
       <Route path="/admin/access/new" element={<NewAccessForm />} />
 

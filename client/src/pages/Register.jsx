@@ -77,6 +77,7 @@ function Register() {
     try {
       const response = await login(formData.email, formData.password);
       localStorage.setItem("sessionToken", response.token); // ✅ Nueva sesión
+      localStorage.setItem("userType", response.tipo); //guardamos el tipo de usuario
       notifyLoginSuccess('🔐');
       navigate('/admin/home');
     } catch (error) {
@@ -90,6 +91,7 @@ function Register() {
     try {
       const response = await login(formData.email, formData.password);
       localStorage.setItem("sessionToken", response.token); // ✅ Nueva sesión
+      localStorage.setItem("userType", response.tipo); //guardamos el tipo de usuario
       notifyLoginSuccess('👤');
       navigate('/client/access-loader');
     } catch (error) {

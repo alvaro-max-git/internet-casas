@@ -1,6 +1,5 @@
-// src/components/ToggleMenu.jsx
 import React from 'react';
-import { FaBars, FaUser, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { FaBars, FaUser, FaCog, FaSignOutAlt, FaLock } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../services/api';
 import styles from './ToggleMenu.module.css';
@@ -8,8 +7,8 @@ import { notifyLogoutSuccess, notifyLogoutError } from '../utils/notifications';
 
 function ToggleMenu({ menuOpen, toggleMenu }) {
   const navigate = useNavigate();
+  const userType = localStorage.getItem('userType');
 
-  // Manejador para cerrar sesión
   const handleLogout = async () => {
     try {
       await logout();
@@ -19,25 +18,26 @@ function ToggleMenu({ menuOpen, toggleMenu }) {
       notifyLogoutError();
     }
     localStorage.removeItem('sessionToken');
+    localStorage.removeItem('userType');
     navigate('/register');
+  };
+
+  const handleGoToLocks = () => {
+    navigate('/admin/locks'); // o la ruta donde pintas tus cerraduras
   };
 
   return (
     <div>
-      {/* Icono hamburguesa (siempre visible) */}
-      <FaBars
-        className={styles.hamburgerIcon}
-        onClick={() => toggleMenu(true)}
-      />
-
-      {/* Menú flotante */}
+      <FaBars className={styles.hamburgerIcon} onClick={() => toggleMenu(true)} />
       {menuOpen && (
         <div className={styles.overlay} onClick={() => toggleMenu(false)}>
           <div className={styles.menu} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.menuItem}>
-              <FaUser className={styles.icon} />
-              <span>Mi cuenta</span>
-            </div>
+            {userType === 'host' && (
+              <div className={styles.menuItem} onClick={handleGoToLocks}>
+                <FaLock className={styles.icon} />
+                <span>Mis cerraduras</span>
+              </div>
+            )}
             <div className={styles.menuItem}>
               <FaCog className={styles.icon} />
               <span>Configuración</span>
