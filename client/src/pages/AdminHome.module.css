@@ -106,20 +106,3 @@
   color: #fff;
 }
 
-/* Botón Resetear accesos */
-.resetButton {
-  background-color: #f7b731;
-  color: white;
-  font-size: 14px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  padding: 10px 20px;
-  margin-top: 30px;
-  width: 100%;
-  transition: background-color 0.2s ease;
-}
-
-.resetButton:hover {
-  background-color: #e67e22;
-}

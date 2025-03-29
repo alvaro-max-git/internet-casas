@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Register.module.css';
-import IoHIcon from '../assets/IoH-icon2.png';
+import IoHIcon from '../assets/IoH-icon.png';
 import BackButton from '../components/BackButton';
 import ToggleMenu from '../components/ToggleMenu';
 
@@ -73,9 +73,10 @@ function Register() {
 
   const handleLoginHost = async (e) => {
     e.preventDefault();
+    localStorage.removeItem("sessionToken"); // 🧹 Limpia sesión anterior
     try {
       const response = await login(formData.email, formData.password);
-      localStorage.setItem("sessionToken", response.token); // ✅ Guardar token
+      localStorage.setItem("sessionToken", response.token); // ✅ Nueva sesión
       notifyLoginSuccess('🔐');
       navigate('/admin/home');
     } catch (error) {
@@ -85,11 +86,12 @@ function Register() {
   
   const handleLoginUser = async (e) => {
     e.preventDefault();
+    localStorage.removeItem("sessionToken"); // 🧹 Limpia sesión anterior
     try {
       const response = await login(formData.email, formData.password);
-      localStorage.setItem("sessionToken", response.token); // ✅ Guardar token
+      localStorage.setItem("sessionToken", response.token); // ✅ Nueva sesión
       notifyLoginSuccess('👤');
-      navigate('/client/home');
+      navigate('/client/access-loader');
     } catch (error) {
       notifyLoginError();
     }

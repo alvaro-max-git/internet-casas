@@ -12,6 +12,8 @@ function getAuthHeaders() {
 
 /* ============================ ACCESOS ============================ */
 
+// CREAR ACCESO
+
 export async function createAccess(accessData) {
   const response = await fetch(`${API_BASE}/accesses`, {
     method: "POST",
@@ -33,6 +35,7 @@ export async function createAccess(accessData) {
   return JSON.parse(responseText);
 }
 
+// OBTENER UN ACCESO POR SU ID
 export async function getAccess(id) {
   const response = await fetch(`${API_BASE}/accesses/${id}`, {
     headers: getAuthHeaders(),
@@ -43,6 +46,7 @@ export async function getAccess(id) {
   return response.json();
 }
 
+// ACTUALIZAR ACCESO
 export async function updateAccess(id, accessData) {
   const response = await fetch(`${API_BASE}/accesses/${id}`, {
     method: "PUT",
@@ -58,6 +62,7 @@ export async function updateAccess(id, accessData) {
   return response.json();
 }
 
+// ELIMINAR ACCESO
 export async function deleteAccess(id) {
   const response = await fetch(`${API_BASE}/accesses/${id}`, {
     method: "DELETE",
@@ -66,6 +71,15 @@ export async function deleteAccess(id) {
   if (!response.ok) {
     throw new Error("Error al eliminar Access");
   }
+}
+
+// OBTENER ACCESOS POR TOKEN O USUARIO
+export async function getAccessesByToken(token) {
+  const response = await fetch(`${API_BASE}/accesses/by-token/${token}`);
+  if (!response.ok) {
+    throw new Error("No se encontraron accesos con ese token");
+  }
+  return response.json();
 }
 
 /* ============================ CERRADURAS ============================ */

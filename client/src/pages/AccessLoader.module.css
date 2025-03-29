@@ -1,0 +1,44 @@
+
+.container {
+    width: 100vw;
+    min-height: 100vh;
+    background-color: #fff;
+    position: relative; /* Para position absoluta en navContainer si deseas */
+  }
+
+/* === CONTENEDOR NAV (BackButton + ToggleMenu) === */
+.navContainer {
+    position: absolute;
+    top: 60px;
+    left: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 999; /* Para que quede por encima del contenido */
+  }
+/* === CONTENEDOR PRINCIPAL === */
+.mainContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 100px; /* para dejar espacio a la navContainer arriba */
+    min-height: 100vh;  /* para que crezca con el contenido */
+  }
+  
+  /* Título “Hola, Administrador” */
+.greeting {
+    text-align: center;
+    font-size: 35px;
+    color: #294d67;
+    margin-bottom: 8px;
+  }
+  
+  .subtitle {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    text-align: center;
+    color: #000;
+  }
+  

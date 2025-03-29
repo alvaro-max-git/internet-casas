@@ -1,64 +1,69 @@
 // src/pages/ClientHome.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './AdminHome.module.css';
+import styles from './AdminHome.module.css'; // Reutilizamos estilos
 import { FaPlus } from 'react-icons/fa';
-
-import lockIcon from '../assets/IoH-lockiconusermenu.png';
+import fotocerrradura from '../assets/cerradura.png';
 import BackButton from '../components/BackButton';
 import ToggleMenu from '../components/ToggleMenu';
-import { useAccesses } from '../hooks/useAccesses';
 
 function ClientHome() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [accesses, setAccesses] = useState([]);
   const navigate = useNavigate();
-  const { accesses, setAccesses } = useAccesses();
 
+  const toggleMenu = (open) => setMenuOpen(open);
 
-  // Lógica para botón de "Rastrear Dispositivos"
+  // Cargar accesos del localStorage al montar
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem('clientAccesses')) || [];
+    setAccesses(stored);
+  }, []);
+
+  const colores = JSON.parse(localStorage.getItem('accessColors') || '{}');
+
   const handleScanDevices = () => {
     navigate('/client/scan');
   };
- 
-  // Lógica para botón de "Abrir Cerradura"
+
   const handleOpenLock = (accessId) => {
     navigate(`/lock/${accessId}/open`);
   };
 
   const handleDelete = (accessId) => {
-    const confirmDelete = window.confirm('¿Estás seguro de que quieres borrar este acceso?');
+    const confirmDelete = window.confirm('¿Seguro que quieres borrar este acceso?');
     if (confirmDelete) {
       const updated = accesses.filter((a) => a.id !== accessId);
       setAccesses(updated);
+      localStorage.setItem('clientAccesses', JSON.stringify(updated));
     }
-  };
-
-  const toggleMenu = (open) => {
-    setMenuOpen(open);
   };
 
   return (
     <div className={styles.container}>
-       {/* === Contenedor de NAV (BackButton + ToggleMenu) === */}
-       <div className={styles.navContainer}>
+      {/* NAV */}
+      <div className={styles.navContainer}>
         <BackButton to="/register" className={styles.backButtonCustom} />
         <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       </div>
 
-      
-    <div className={styles.mainContent}>
-      <h1 className={styles.greeting}>Hola Cliente</h1>
-      <p className={styles.subtitle}>¿Quieres abrir una cerradura?</p>
+      {/* CONTENIDO */}
+      <div className={styles.mainContent}>
+        <h1 className={styles.greeting}>Hola Cliente</h1>
+        <h2 className={styles.subtitle}>Tus cerraduras disponibles</h2>
 
-      <div className={styles.accessList}>
+        <div className={styles.accessList}>
           {accesses.map((access) => (
             <div
               key={access.id}
               className={styles.accessCard}
-              style={{ backgroundColor: access.color }}
+              style={{ backgroundColor: colores[access.id] || '#D4EFFF' }}
             >
-              <img src={lockIcon} alt="Lock" className={styles.lockIcon} />
-              <p>{access.name}</p>
+              <img src={fotocerrradura} alt="Lock" className={styles.lockIcon} />
+              <p><strong>Cerradura:</strong> {access.cerradura?.name || '(sin nombre)'}</p>
+              <p><strong>Usuario:</strong> {access.usuario || '—'}</p>
+              <p><strong>Token:</strong> {access.token || '—'}</p>
+
               <button
                 className={styles.configureButton}
                 onClick={() => handleOpenLock(access.id)}
@@ -74,14 +79,17 @@ function ClientHome() {
             </div>
           ))}
 
-          <div className={styles.accessCard} onClick={handleScanDevices}>
+          {/* Tarjeta para rastrear nueva cerradura */}
+          <div
+            className={styles.accessCard}
+            onClick={handleScanDevices}
+            style={{ backgroundColor: '#DBD2DA', cursor: 'pointer' }}
+          >
             <FaPlus className={styles.lockIcon} />
-            <p>Rastrear nueva cerradura</p>
+            <p><strong>Rastrear nueva cerradura</strong></p>
           </div>
         </div>
-
-       
-    </div>
+      </div>
     </div>
   );
 }

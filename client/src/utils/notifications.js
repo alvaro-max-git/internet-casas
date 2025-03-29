@@ -20,6 +20,26 @@ export function notifyLoginError() {
 
 /*
   ===========================
+  LOGOUT
+  ===========================
+*/
+// Sesión cerrada correctamente
+export function notifyLogoutSuccess() {
+  toast.info('👋 Sesión cerrada correctamente', {
+    icon: '🔒',
+  });
+}
+
+// Error al cerrar sesión
+export function notifyLogoutError() {
+  toast.error('❌ Error al cerrar sesión', {
+    icon: '⚠️',
+  });
+}
+
+
+/*
+  ===========================
   REGISTRO
   ===========================
 */
@@ -85,3 +105,4 @@ export function notifyAccessUpdateError() {
     icon: '⚠️',
   });
 }
+

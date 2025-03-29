@@ -12,6 +12,7 @@ import BluetoothSearch from './pages/BluetoothSearch';
 import AdminHome from './pages/AdminHome';
 import EditAccessForm from './pages/admin/EditAccessForm';
 import NewAccessForm from './pages/admin/NewAccessForm';
+import AccessLoader from './pages/AccessLoader';
 
 // Legacy (por si los sigues usando)
 import Home from './pages/Home';
@@ -28,6 +29,7 @@ function AppRouter() {
       <Route path="/register" element={<Register />} />
 
       {/* === CLIENTE === */}
+      <Route path="/client/access-loader" element={<AccessLoader />} />
       <Route path="/client/home" element={<ClientHome />} />
       <Route path="/client/scan" element={<BluetoothSearch />} />
 
