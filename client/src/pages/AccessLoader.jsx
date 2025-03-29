@@ -39,7 +39,7 @@ function AccessLoader() {
         <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       </div>
       <div className={styles.mainContent}>
-        <h1 className={styles.greeting}>Hola, Administrador</h1>
+        <h1 className={styles.greeting}>Hola Usuario</h1>
         <h2 className={styles.subtitle}>Introduzca token o email para ver sus accesos</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
         <input
@@ -49,7 +49,7 @@ function AccessLoader() {
           placeholder="Token o email"
           className={styles.input}
         />
-        <button type="submit" className={styles.button} disabled={loading}>
+        <button type="submit" className={styles.entrarButton} disabled={loading}>
           {loading ? 'Buscando...' : 'Entrar'}
         </button>
       </form>
