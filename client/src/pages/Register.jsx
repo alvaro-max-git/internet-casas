@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Register.module.css';
-import IoHIcon from '../assets/IoH-icon.png';
+import IoHIcon from '../assets/IoH-icon2.png';
 import BackButton from '../components/BackButton';
 import ToggleMenu from '../components/ToggleMenu';
 

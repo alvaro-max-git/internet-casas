@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './SplashScreen.module.css';
-import IoHIcon from '../assets/IoH-icon.png';
+import IoHIcon from '../assets/IoH-icon2.png';
 
 function SplashScreen() {
   const navigate = useNavigate();

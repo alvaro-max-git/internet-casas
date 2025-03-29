@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import styles from './AdminHome.module.css';
 import { FaPlus } from 'react-icons/fa';
 
-import lockIcon from '../assets/IoH-lockiconusermenu.png';
+//import lockIcon from '../assets/IoH-lockiconusermenu.png'; Icono de cerradura antiguo
+import fotocerrradura from '../assets/cerradura.png';
 import BackButton from '../components/BackButton';
 import ToggleMenu from '../components/ToggleMenu';
 
@@ -14,11 +15,15 @@ import {
   listAccessesOfCurrentUser,
   deleteAccess,
 } from '../services/api';
+import { notifyAccessDeleted, notifyAccessDeleteError } from '../utils/notifications';
 
 function AdminHome() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [accesses, setAccesses] = useState([]);
   const navigate = useNavigate();
+
+  //Estado para la eliminación de un acceso (botón de eliminar)
+  const [deletingAccessId, setDeletingAccessId] = useState(null);
 
   // Para abrir/cerrar menú hamburguesa
   const toggleMenu = (open) => setMenuOpen(open);
@@ -62,11 +67,17 @@ function AdminHome() {
     const confirmDelete = window.confirm('¿Estás seguro de que quieres borrar este acceso?');
     if (!confirmDelete) return;
 
+    setDeletingAccessId(accessId); // ⬅️ Activa el spinner
+
     try {
       await deleteAccess(accessId);
       setAccesses((prev) => prev.filter((a) => a.id !== accessId));
+      notifyAccessDeleted();
     } catch (error) {
       console.error('Error al borrar el acceso:', error);
+      notifyAccessDeleteError();
+    } finally {
+      setDeletingAccessId(null); // ⬅️ Lo quitamos
     }
   };
 
@@ -74,7 +85,7 @@ function AdminHome() {
   const handleAddAccess = () => {
     navigate('/admin/access/new');
   };
-
+  const colores = JSON.parse(localStorage.getItem('accessColors') || '{}');
   return (
     <div className={styles.container}>
       {/* Menú superior (BackButton + ToggleMenu) */}
@@ -93,14 +104,13 @@ function AdminHome() {
             <div
               key={access.id}
               className={styles.accessCard}
-              style={{ backgroundColor: '#FFE5BD' }}
+              style={{ backgroundColor: colores[access.id] || '#FFE5BD' }}
             >
-              <img src={lockIcon} alt="Lock" className={styles.lockIcon} />
+              <img src={fotocerrradura} alt="Lock" className={styles.lockIcon} />
               {/* Info básica del Access */}
-              <p>Cerradura: {access.cerradura?.name || '(sin nombre)'}</p>
-              <p>ID cerradura: {access.cerradura?.id || '—'}</p>
-              <p>Usuario: {access.usuario || '—'}</p>
-              <p>Token: {access.token || '—'}</p>
+              <p><strong>Cerradura:</strong> {access.cerradura?.name || '(sin nombre)'}</p>
+              <p><strong>Usuario:</strong> {access.usuario || '—'}</p>
+              <p><strong>Token:</strong> {access.token || '—'}</p>
 
               <button
                 className={styles.configureButton}
@@ -111,8 +121,9 @@ function AdminHome() {
               <button
                 className={styles.deleteButton}
                 onClick={() => handleDelete(access.id)}
+                disabled={deletingAccessId === access.id}
               >
-                Borrar
+                {deletingAccessId === access.id ? 'Borrando...' : 'Borrar'}
               </button>
             </div>
           ))}
@@ -124,7 +135,7 @@ function AdminHome() {
             style={{ backgroundColor: '#DBD2DA', cursor: 'pointer' }}
           >
             <FaPlus className={styles.lockIcon} />
-            <p>Agregar acceso</p>
+            <p> <strong>Agregar acceso</strong></p>
           </div>
         </div>
       </div>

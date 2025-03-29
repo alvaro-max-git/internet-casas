@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import BackButton from '../../components/BackButton';
 import styles from './AccessForm.module.css';
 import ToggleMenu from '../../components/ToggleMenu';
+import { notifyAccessCreated, notifyAccessCreationError} from '../../utils/notifications'; //notificaciones
 import {
   createAccess,
   getCurrentUser,
@@ -13,6 +14,7 @@ import {
 function NewAccessForm() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+
 
   // Lista de cerraduras del host (descargadas de /api/me/locks)
   const [hostLocks, setHostLocks] = useState([]);
@@ -51,7 +53,8 @@ function NewAccessForm() {
         navigate('/register');
       });
   }, [navigate]);
-
+  
+//Función para abrir y cerrar el menú hamnurguesa
   const toggleMenu = (open) => setMenuOpen(open);
 
   // Handler para los inputs
@@ -65,6 +68,8 @@ function NewAccessForm() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     return Array.from({ length: 16 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
   };
+
+  //Función para formatear la fecha y hora
   const formatDateTimeForLocalDateTime = (value) => {
     if (!value) return null;
     const date = new Date(value);
@@ -75,12 +80,12 @@ function NewAccessForm() {
   // Cuando se envía el formulario: creamos un Access
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!formData.token && !formData.usuario) {
       alert("Debes proporcionar al menos un Token o un Usuario");
       return;
     }
-
+  
     const accessPayload = {
       cerradura: { id: formData.lockId },
       token: formData.token || null,
@@ -88,14 +93,20 @@ function NewAccessForm() {
       fechaEntrada: formatDateTimeForLocalDateTime(formData.fechaEntrada),
       fechaSalida: formatDateTimeForLocalDateTime(formData.fechaSalida),
     };
-
+  
     try {
-      await createAccess(accessPayload);
-      alert('✅ Acceso creado correctamente');
+      const savedAccess = await createAccess(accessPayload);
+  
+      // ✅ Guardar color en localStorage
+      const coloresGuardados = JSON.parse(localStorage.getItem('accessColors') || '{}');
+      coloresGuardados[savedAccess.id] = formData.color;
+      localStorage.setItem('accessColors', JSON.stringify(coloresGuardados));
+  
+      notifyAccessCreated();
       navigate('/admin/home');
     } catch (error) {
       console.error(error);
-      alert('❌ Error al crear el acceso');
+      notifyAccessCreationError();
     }
   };
 
