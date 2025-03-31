@@ -105,13 +105,15 @@ export const openLockWithAccess = async (accessId) => {
         'Authorization': `Bearer ${token}`
       }
     });
+    // Si el backend devuelve FORBIDDEN, lanzamos error con el mensaje que envía
     if (response.status === 403) {
       const backendMessage = await response.text();
-      return backendMessage;
-    } else if (!response.ok) {
+      throw new Error(backendMessage);
+    }
+    if (!response.ok) {
       throw new Error('Failed to open lock');
     }
-    
+    // Suponemos que se retorna texto (mensaje de operación iniciada)
     return await response.text();
   } catch (error) {
     console.error('Error opening lock with access:', error);
