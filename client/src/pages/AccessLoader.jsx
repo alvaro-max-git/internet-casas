@@ -65,7 +65,7 @@ function AccessLoader() {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Token o email"
+            placeholder="Token"
             className={styles.input}
           />
           <button type="submit" className={styles.entrarButton} disabled={loading}>
