@@ -95,6 +95,30 @@ export async function openLock(lockId) {
   return response.text();
 }
 
+export const openLockWithAccess = async (accessId) => {
+  try {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_BASE}/${accessId}/open`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (response.status === 403) {
+      const backendMessage = await response.text();
+      return backendMessage;
+    } else if (!response.ok) {
+      throw new Error('Failed to open lock');
+    }
+    
+    return await response.text();
+  } catch (error) {
+    console.error('Error opening lock with access:', error);
+    throw error;
+  }
+};
+
 export async function getLock(lockId) {
   const response = await fetch(`${API_BASE}/locks/${lockId}`, {
     headers: getAuthHeaders(),
