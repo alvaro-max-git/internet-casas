@@ -36,8 +36,8 @@ function MyLocks() {
               <p><strong>Modelo:</strong> {lock.model}</p>
               <p><strong>Fabricante:</strong> {lock.manufacturer}</p>
               <p><strong>Estado:</strong> {lock.locked ? '🔒 Cerrada' : '🔓 Abierta'}</p>
-              <p><strong>Batería:</strong> {lock.batteryStatus} ({lock.batteryLevel}%)</p>
-              <p><strong>Zona horaria:</strong> {lock.timezone}</p>
+              <p><strong>Batería:</strong> {lock.batteryStatus} ({(lock.batteryLevel * 100).toFixed(2)}%)</p>              
+               {/* <p><strong>Zona horaria:</strong> {lock.timezone}</p> */}
             </div>
           ))}
         </div>
