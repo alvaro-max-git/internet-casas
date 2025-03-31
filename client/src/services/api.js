@@ -98,7 +98,7 @@ export async function openLock(lockId) {
 export const openLockWithAccess = async (accessId) => {
   try {
     const token = localStorage.getItem('authToken');
-    const response = await fetch(`${API_BASE}/${accessId}/open`, {
+    const response = await fetch(`${API_BASE}/accesses/${accessId}/open`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
