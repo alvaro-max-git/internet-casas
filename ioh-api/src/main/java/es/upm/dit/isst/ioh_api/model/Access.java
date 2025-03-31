@@ -97,4 +97,28 @@ public class Access {
     public void setUsuario(String usuario) {
         this.usuario = usuario;
     }
+    //Métodos auxiliares
+
+    public boolean isExpired() {
+        // Si no hay fecha de salida, el acceso no expira
+        if (fechaSalida == null) {
+            return false;
+        }
+        
+        // Compara la fecha de salida con la fecha actual
+        return LocalDateTime.now().isAfter(fechaSalida);
+    }
+
+    public boolean isValidNow() {
+        LocalDateTime now = LocalDateTime.now();
+        
+        // Verifica si la fecha actual está después de la fecha de entrada
+        boolean hasStarted = fechaEntrada == null || !now.isBefore(fechaEntrada);
+        
+        // Verifica si la fecha actual está antes de la fecha de salida
+        boolean hasNotEnded = fechaSalida == null || now.isBefore(fechaSalida);
+        
+        return hasStarted && hasNotEnded;
+    }
+
 }

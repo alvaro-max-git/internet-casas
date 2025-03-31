@@ -102,8 +102,8 @@ public class IohController {
     }
 
     // READ Access por ID
-    @GetMapping("/accesses/{id}")
-    public ResponseEntity<Access> readAccess(@PathVariable Long id) {
+    @GetMapping("/accessAccesses/{id}")
+    public ResponseEntity<> readAccess(@PathVariable Long id) {
         return accessRepository.findById(id)
                 .map(access -> ResponseEntity.ok().body(access))
                 .orElse(ResponseEntity.notFound().build());
@@ -152,17 +152,25 @@ public class IohController {
 
         // 2. Obtenemos todos los Access de la BD, filtrando por host.email
         List<Access> accesses = accessRepository.findByHostEmail(hostId);
+        // 3. Eliminamos expirados
 
-        // 3. Retornamos la lista
+        accesses.removeIf(access -> access.isExpired());
+
+
+        // 4. Retornamos la lista
         return ResponseEntity.ok(accesses);
     }
 
-    // NOS DEVUELVE LOS ACCESOS POR USUARIO
+    // NOS DEVUELVE LOS ACCESOS POR TOKEN
 
     @GetMapping("/accesses/by-token/{token}")
     public ResponseEntity<List<Access>> getAccessesByToken(@PathVariable String token) {
         List<Access> accesses = accessRepository.findByToken(token);
+        
+        accesses.removeIf(access -> access.isExpired());
+
         return ResponseEntity.ok(accesses);
+        
     }
 
     /*
@@ -238,6 +246,36 @@ public class IohController {
             e.printStackTrace();
         }
 
+        //devolvemos objeto ResponseEntity con ok siempre, ya que la cerradura tarda en abrirse
+        return ResponseEntity.ok("Operación de apertura de cerradura iniciada");
+    }
+
+
+    @PostMapping("/{accessId}/open")
+    public ResponseEntity<Object> openLock(@PathVariable Long accessId) {
+        // Find the access by ID
+        Access access = accessRepository.findById(accessId).orElse(null);
+        
+        if (access == null) {
+            return new ResponseEntity<>("Access not found", HttpStatus.NOT_FOUND);
+        }
+        
+        // Verify if the access is currently valid
+        if (!access.isValidNow()) {
+            return new ResponseEntity<>("Acceso no válido en este momento", HttpStatus.FORBIDDEN);
+        }
+        
+        // Extract the lock and host
+        Lock lock = access.getCerradura();
+        Host host = access.getHost();
+        
+        if (lock == null || host == null) {
+            return new ResponseEntity<>("Cerradura o Host no encontrados", HttpStatus.BAD_REQUEST);
+        }
+        
+        // Try to open the lock
+        boolean success = seamLockService.openLock(host, lock.getId());
+        
         //devolvemos objeto ResponseEntity con ok siempre, ya que la cerradura tarda en abrirse
         return ResponseEntity.ok("Operación de apertura de cerradura iniciada");
     }
@@ -407,68 +445,6 @@ public class IohController {
     }
     /*
      * ===================================================================
-     * 2. Endpoints de User (Usuario)
-     * ===================================================================
-     */
-
-    @GetMapping("/user/accesses")
-    public ResponseEntity<?> getUserAccesses(@RequestHeader("Authorization") String authHeader) {
-        // Obtener usuario autenticado
-        Optional<User> userOpt = getUserFromAuthHeader(authHeader);
-
-        // Verificar si está autenticado
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado o token inválido");
-        }
-
-        User user = userOpt.get();
-
-        // Obtener los accesos del usuario
-        List<Access> accesses = accessRepository.findByUsuario(user.getEmail());
-
-        return ResponseEntity.ok(accesses);
-    }
-
-    /*
-     * ===================================================================
-     * Logica
-     * ===================================================================
-     */
-
-    // Session
-
-    // Método auxiliar que extrae y valida el token del header de autorización y
-    // devuelve el usuario autenticado
-
-    private Optional<User> getUserFromAuthHeader(String authHeader) {
-        // Validar formato del header
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return Optional.empty();
-        }
-
-        // Extraer token
-        String token = authHeader.substring(7);
-
-        // Token vacio
-        if (token == null) {
-            return Optional.empty();
-        }
-
-        // Buscar sesión
-        Optional<Session> sessionOpt = sessionRepository.findById(token);
-        if (sessionOpt.isEmpty()) { // Comprueba si la sesión es válida
-            return Optional.empty();
-        } else if (!sessionOpt.get().isValid()) {
-            sessionRepository.delete(sessionOpt.get());
-            return Optional.empty();
-        }
-        // Buscar usuario de la sesión
-        String userEmail = sessionOpt.get().getUserEmail();
-        return userRepository.findById(userEmail);
-    }
-
-    /*
-     * ===================================================================
      * 2. Endpoints Nuevos con Sesión
      * ===================================================================
      */
@@ -529,6 +505,7 @@ public class IohController {
         // Si es un Host -> devolvemos accesos que él creó (hostEmail)
         if (user instanceof Host) {
             List<Access> accesses = accessRepository.findByHostEmail(user.getEmail());
+            
             return ResponseEntity.ok(accesses);
         } else {
             // Si es un user normal -> devolvemos accesos donde 'usuario' sea su email
@@ -536,5 +513,45 @@ public class IohController {
             return ResponseEntity.ok(accesses);
         }
     }
+
+    
+    /*
+     * ===================================================================
+     * Logica
+     * ===================================================================
+     */
+
+    // Session
+
+    // Método auxiliar que extrae y valida el token del header de autorización y
+    // devuelve el usuario autenticado
+
+    private Optional<User> getUserFromAuthHeader(String authHeader) {
+        // Validar formato del header
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Optional.empty();
+        }
+
+        // Extraer token
+        String token = authHeader.substring(7);
+
+        // Token vacio
+        if (token == null) {
+            return Optional.empty();
+        }
+
+        // Buscar sesión
+        Optional<Session> sessionOpt = sessionRepository.findById(token);
+        if (sessionOpt.isEmpty()) { // Comprueba si la sesión es válida
+            return Optional.empty();
+        } else if (!sessionOpt.get().isValid()) {
+            sessionRepository.delete(sessionOpt.get());
+            return Optional.empty();
+        }
+        // Buscar usuario de la sesión
+        String userEmail = sessionOpt.get().getUserEmail();
+        return userRepository.findById(userEmail);
+    }
+
 
 }
