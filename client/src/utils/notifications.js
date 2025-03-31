@@ -79,6 +79,7 @@ export function notifyAccessCreationError() {
     icon: '🚫',
   });
 }
+
 // Acceso eliminado
 export function notifyAccessDeleted() {
   toast.success('🗑️ Acceso eliminado correctamente', {
@@ -102,6 +103,19 @@ export function notifyAccessUpdated() {
 // Error al editar acceso
 export function notifyAccessUpdateError() {
   toast.error('❌ Error al editar el acceso', {
+    icon: '⚠️',
+  });
+}
+
+//Acceso agregado (como cliente)
+export function notifyAccessLinked() {
+  toast.success('🔗 Acceso agregado a tu cuenta', {
+    icon: '🔑',
+  });
+}
+// Error al vincular acceso existente al usuario
+export function notifyAccessLinkError() {
+  toast.error('❌ No se pudo vincular el acceso a tu cuenta', {
     icon: '⚠️',
   });
 }

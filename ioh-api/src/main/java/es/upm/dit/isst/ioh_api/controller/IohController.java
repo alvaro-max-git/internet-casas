@@ -102,8 +102,8 @@ public class IohController {
     }
 
     // READ Access por ID
-    @GetMapping("/accessAccesses/{id}")
-    public ResponseEntity<> readAccess(@PathVariable Long id) {
+    @GetMapping("/accesses/{id}")
+    public ResponseEntity<Access> readAccess(@PathVariable Long id) {
         return accessRepository.findById(id)
                 .map(access -> ResponseEntity.ok().body(access))
                 .orElse(ResponseEntity.notFound().build());
@@ -505,12 +505,10 @@ public class IohController {
         // Si es un Host -> devolvemos accesos que él creó (hostEmail)
         if (user instanceof Host) {
             List<Access> accesses = accessRepository.findByHostEmail(user.getEmail());
-            List<Access> findByFechaSalidaBefore(LocalDateTime date);
             return ResponseEntity.ok(accesses);
         } else {
             // Si es un user normal -> devolvemos accesos donde 'usuario' sea su email
             List<Access> accesses = accessRepository.findByUsuario(user.getEmail());
-            List<Access> findByFechaSalidaBefore(LocalDateTime date);
             return ResponseEntity.ok(accesses);
         }
     }
