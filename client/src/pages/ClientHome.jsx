@@ -45,7 +45,7 @@ function ClientHome() {
       return;
     }
 
-    navigate(`/lock/${access.cerradura.id}/open`, {
+    navigate(`/lock/${access.id}/open`, {
       state: {
         access,
         lock: access.cerradura,

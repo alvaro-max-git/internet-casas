@@ -120,6 +120,13 @@ export function notifyAccessLinkError() {
   });
 }
 
+// Error cuando el acceso está caducado o fuera de fecha
+export function notifyAccessExpired() {
+  toast.error('❌ Acceso caducado o fuera de fecha', {
+    icon: '⚠️',
+  });
+}
+
 /*
   ===========================
   CERRADURAS

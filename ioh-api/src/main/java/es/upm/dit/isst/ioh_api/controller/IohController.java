@@ -173,6 +173,36 @@ public class IohController {
         
     }
 
+    @PostMapping("/accesses/{accessId}/open")
+    public ResponseEntity<Object> openLock(@PathVariable Long accessId) {
+        // Find the access by ID
+        Access access = accessRepository.findById(accessId).orElse(null);
+        
+        if (access == null) {
+            return new ResponseEntity<>("Access not found", HttpStatus.NOT_FOUND);
+        }
+        
+        // Verify if the access is currently valid
+        if (!access.isValidNow()) {
+            return new ResponseEntity<>("Acceso no válido en este momento", HttpStatus.FORBIDDEN);
+        }
+        
+        // Extract the lock and host
+        Lock lock = access.getCerradura();
+        Host host = access.getHost();
+        
+        if (lock == null || host == null) {
+            return new ResponseEntity<>("Cerradura o Host no encontrados", HttpStatus.BAD_REQUEST);
+        }
+        
+        // Try to open the lock
+        boolean success = seamLockService.openLock(host, lock.getId());
+        
+        //devolvemos objeto ResponseEntity con ok siempre, ya que la cerradura tarda en abrirse
+        return ResponseEntity.ok("Operación de apertura de cerradura iniciada");
+    }
+
+
     /*
      * ===================================================================
      * 2. Endpoints de Lock (Cerradura)
@@ -251,35 +281,7 @@ public class IohController {
     }
 
 
-    @PostMapping("/{accessId}/open")
-    public ResponseEntity<Object> openLock(@PathVariable Long accessId) {
-        // Find the access by ID
-        Access access = accessRepository.findById(accessId).orElse(null);
-        
-        if (access == null) {
-            return new ResponseEntity<>("Access not found", HttpStatus.NOT_FOUND);
-        }
-        
-        // Verify if the access is currently valid
-        if (!access.isValidNow()) {
-            return new ResponseEntity<>("Acceso no válido en este momento", HttpStatus.FORBIDDEN);
-        }
-        
-        // Extract the lock and host
-        Lock lock = access.getCerradura();
-        Host host = access.getHost();
-        
-        if (lock == null || host == null) {
-            return new ResponseEntity<>("Cerradura o Host no encontrados", HttpStatus.BAD_REQUEST);
-        }
-        
-        // Try to open the lock
-        boolean success = seamLockService.openLock(host, lock.getId());
-        
-        //devolvemos objeto ResponseEntity con ok siempre, ya que la cerradura tarda en abrirse
-        return ResponseEntity.ok("Operación de apertura de cerradura iniciada");
-    }
-
+    
     /*
      * Simulamos la llamada a Seam para la demo,
      * en la práctica usarías la librería oficial (como tu snippet).
@@ -505,10 +507,12 @@ public class IohController {
         // Si es un Host -> devolvemos accesos que él creó (hostEmail)
         if (user instanceof Host) {
             List<Access> accesses = accessRepository.findByHostEmail(user.getEmail());
+            accesses.removeIf(access -> access.isExpired());
             return ResponseEntity.ok(accesses);
         } else {
             // Si es un user normal -> devolvemos accesos donde 'usuario' sea su email
             List<Access> accesses = accessRepository.findByUsuario(user.getEmail());
+            accesses.removeIf(access -> access.isExpired());
             return ResponseEntity.ok(accesses);
         }
     }
