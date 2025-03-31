@@ -102,8 +102,8 @@ public class IohController {
     }
 
     // READ Access por ID
-    @GetMapping("/accesses/{id}")
-    public ResponseEntity<Access> readAccess(@PathVariable Long id) {
+    @GetMapping("/accessAccesses/{id}")
+    public ResponseEntity<> readAccess(@PathVariable Long id) {
         return accessRepository.findById(id)
                 .map(access -> ResponseEntity.ok().body(access))
                 .orElse(ResponseEntity.notFound().build());
@@ -152,17 +152,25 @@ public class IohController {
 
         // 2. Obtenemos todos los Access de la BD, filtrando por host.email
         List<Access> accesses = accessRepository.findByHostEmail(hostId);
+        // 3. Eliminamos expirados
 
-        // 3. Retornamos la lista
+        accesses.removeIf(access -> access.isExpired());
+
+
+        // 4. Retornamos la lista
         return ResponseEntity.ok(accesses);
     }
 
-    // NOS DEVUELVE LOS ACCESOS POR USUARIO
+    // NOS DEVUELVE LOS ACCESOS POR TOKEN
 
     @GetMapping("/accesses/by-token/{token}")
     public ResponseEntity<List<Access>> getAccessesByToken(@PathVariable String token) {
         List<Access> accesses = accessRepository.findByToken(token);
+        
+        accesses.removeIf(access -> access.isExpired());
+
         return ResponseEntity.ok(accesses);
+        
     }
 
     /*
@@ -467,6 +475,7 @@ public class IohController {
         // Si es un Host -> devolvemos accesos que él creó (hostEmail)
         if (user instanceof Host) {
             List<Access> accesses = accessRepository.findByHostEmail(user.getEmail());
+            
             return ResponseEntity.ok(accesses);
         } else {
             // Si es un user normal -> devolvemos accesos donde 'usuario' sea su email
