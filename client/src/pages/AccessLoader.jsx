@@ -2,30 +2,45 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './AccessLoader.module.css';
-import { getAccessesByToken} from '../services/api';
+import {
+  getAccessesByToken,
+  getCurrentUser,
+  updateAccess
+} from '../services/api';
 import BackButton from '../components/BackButton';
 import ToggleMenu from '../components/ToggleMenu';
-
+import {
+  notifyAccessLinked,
+  notifyAccessLinkError
+} from '../utils/notifications';
 function AccessLoader() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-    // Para abrir/cerrar menú hamburguesa
-    const toggleMenu = (open) => setMenuOpen(open);
+  const navigate = useNavigate();
+
+  const toggleMenu = (open) => setMenuOpen(open);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
-
     setLoading(true);
+
     try {
       const accesses = await getAccessesByToken(input);
-      localStorage.setItem('clientAccesses', JSON.stringify(accesses));
+      const access = accesses[0];
+
+      const user = await getCurrentUser();
+
+      await updateAccess(access.id, {
+        usuario: user.email,  // Solo queremos modificar este campo
+      });
+      notifyAccessLinked();
+      // No guardamos nada en localStorage: simplemente navegamos
       navigate('/client/home');
     } catch (error) {
-      console.error('Error al obtener accesos:', error);
-      alert('❌ No se encontraron accesos válidos');
+      console.error('❌ Error al asociar acceso con el usuario:', error);
+      notifyAccessLinkError();
     } finally {
       setLoading(false);
     }
@@ -33,26 +48,30 @@ function AccessLoader() {
 
   return (
     <div className={styles.container}>
-        {/* Menú superior (BackButton + ToggleMenu) */}
+      {/* NAV */}
       <div className={styles.navContainer}>
-        <BackButton to="/register" className={styles.backButtonCustom} />
+        <BackButton to="/client/home" className={styles.backButtonCustom} />
         <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       </div>
+
       <div className={styles.mainContent}>
         <h1 className={styles.greeting}>Hola Usuario</h1>
-        <h2 className={styles.subtitle}>Introduzca token o email para ver sus accesos</h2>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Token o email"
-          className={styles.input}
-        />
-        <button type="submit" className={styles.entrarButton} disabled={loading}>
-          {loading ? 'Buscando...' : 'Entrar'}
-        </button>
-      </form>
+        <h2 className={styles.subtitle}>
+          Introduzca token para agregar acceso
+        </h2>
+
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Token o email"
+            className={styles.input}
+          />
+          <button type="submit" className={styles.entrarButton} disabled={loading}>
+            {loading ? 'Buscando...' : 'Entrar'}
+          </button>
+        </form>
       </div>
     </div>
   );

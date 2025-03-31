@@ -6,6 +6,7 @@ import { FaPlus } from 'react-icons/fa';
 import fotocerrradura from '../assets/cerradura.png';
 import BackButton from '../components/BackButton';
 import ToggleMenu from '../components/ToggleMenu';
+import { listAccessesOfCurrentUser } from '../services/api';
 
 function ClientHome() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -14,15 +15,28 @@ function ClientHome() {
 
   const toggleMenu = (open) => setMenuOpen(open);
 
+  // Cargar accesos reales desde el backend al montar
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('clientAccesses')) || [];
-    setAccesses(stored);
+    const fetchAccesses = async () => {
+      try {
+        const response = await listAccessesOfCurrentUser();
+        setAccesses(response);
+        localStorage.setItem('clientAccesses', JSON.stringify(response));
+      } catch (err) {
+        console.error('❌ Error al obtener accesos del usuario:', err);
+      }
+    };
+    fetchAccesses();
   }, []);
 
   const colores = JSON.parse(localStorage.getItem('accessColors') || '{}');
 
   const handleScanDevices = () => {
     navigate('/client/scan');
+  };
+
+  const handleAccessByToken = () => {
+    navigate('/client/access-loader');
   };
 
   const handleOpenLock = (access) => {
@@ -80,13 +94,24 @@ function ClientHome() {
             </div>
           ))}
 
-          <div
+          {/* Tarjeta para rastrear nueva cerradura */}
+         {/* <div
             className={styles.accessCard}
             onClick={handleScanDevices}
             style={{ backgroundColor: '#DBD2DA', cursor: 'pointer' }}
           >
             <FaPlus className={styles.lockIcon} />
             <p><strong>Rastrear nueva cerradura</strong></p>
+          </div>
+
+          {/* Tarjeta para añadir acceso por token */}
+          <div
+            className={styles.accessCard}
+            onClick={handleAccessByToken}
+            style={{ backgroundColor: '#E2F0CB', cursor: 'pointer' }}
+          >
+            <FaPlus className={styles.lockIcon} />
+            <p><strong>Añadir acceso con token</strong></p>
           </div>
         </div>
       </div>

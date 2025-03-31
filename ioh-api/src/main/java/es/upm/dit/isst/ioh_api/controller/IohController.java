@@ -102,8 +102,8 @@ public class IohController {
     }
 
     // READ Access por ID
-    @GetMapping("/accessAccesses/{id}")
-    public ResponseEntity<> readAccess(@PathVariable Long id) {
+    @GetMapping("/accesses/{id}")
+    public ResponseEntity<Access> readAccess(@PathVariable Long id) {
         return accessRepository.findById(id)
                 .map(access -> ResponseEntity.ok().body(access))
                 .orElse(ResponseEntity.notFound().build());

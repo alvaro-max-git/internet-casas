@@ -6,6 +6,8 @@ import IoHIcon from '../assets/IoH-icon2.png';
 import BackButton from '../components/BackButton';
 import ToggleMenu from '../components/ToggleMenu';
 
+
+
 import {
   notifyLoginSuccess,
   notifyLoginError,
@@ -14,7 +16,7 @@ import {
   notifyRegisterError,
 } from '../utils/notifications';
 
-import { registerUser, registerHost, login } from '../services/api';
+import { registerUser, registerHost, login, listAccessesOfCurrentUser } from '../services/api';
 
 function Register() {
   const navigate = useNavigate();
@@ -87,13 +89,18 @@ function Register() {
   
   const handleLoginUser = async (e) => {
     e.preventDefault();
-    localStorage.removeItem("sessionToken"); // 🧹 Limpia sesión anterior
+    localStorage.removeItem("sessionToken");
     try {
       const response = await login(formData.email, formData.password);
-      localStorage.setItem("sessionToken", response.token); // ✅ Nueva sesión
-      localStorage.setItem("userType", response.tipo); //guardamos el tipo de usuario
+      localStorage.setItem("sessionToken", response.token);
+      localStorage.setItem("userType", response.tipo);
       notifyLoginSuccess('👤');
-      navigate('/client/access-loader');
+  
+      // ✅ Obtener accesos y guardar en localStorage
+      const accesses = await listAccessesOfCurrentUser();
+      localStorage.setItem("clientAccesses", JSON.stringify(accesses));
+  
+      navigate('/client/home'); // ✅ Navegamos directo a ClientHome
     } catch (error) {
       notifyLoginError();
     }
