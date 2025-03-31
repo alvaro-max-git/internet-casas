@@ -108,7 +108,7 @@ export const openLockWithAccess = async (accessId) => {
     // Si el backend devuelve FORBIDDEN, lanzamos error con el mensaje que envía
     if (response.status === 403) {
       const backendMessage = await response.text();
-      throw new Error(backendMessage);
+      throw new Error("Acceso no válido o expirado");
     }
     if (!response.ok) {
       throw new Error('Failed to open lock');

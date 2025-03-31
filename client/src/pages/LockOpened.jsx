@@ -63,10 +63,16 @@ function LockOpened() {
       console.log('🔓 Cerradura actualizada:', updated);
       setIsLocked(updated.locked);
       console.log('Estado actualizado:', updated.locked);
-      updated.locked === false ? notifyLockOpened() : notifyLockOpenError();
+      updated.locked === false
+        ? notifyLockOpened()
+        : notifyLockOpenError('La cerradura sigue cerrada');
     } catch (err) {
       console.error('❌ Error al abrir cerradura:', err);
-      notifyLockOpenError();
+      if (err.message.trim().toLowerCase() === "acceso no válido o expirado") {
+        notifyAccessExpired();
+      } else {
+        notifyLockOpenError(err.message);
+      }
     } finally {
       setLoading(false);
     }
