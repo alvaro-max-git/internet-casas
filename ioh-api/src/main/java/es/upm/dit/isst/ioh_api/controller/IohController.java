@@ -407,68 +407,6 @@ public class IohController {
     }
     /*
      * ===================================================================
-     * 2. Endpoints de User (Usuario)
-     * ===================================================================
-     */
-
-    @GetMapping("/user/accesses")
-    public ResponseEntity<?> getUserAccesses(@RequestHeader("Authorization") String authHeader) {
-        // Obtener usuario autenticado
-        Optional<User> userOpt = getUserFromAuthHeader(authHeader);
-
-        // Verificar si está autenticado
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado o token inválido");
-        }
-
-        User user = userOpt.get();
-
-        // Obtener los accesos del usuario
-        List<Access> accesses = accessRepository.findByUsuario(user.getEmail());
-
-        return ResponseEntity.ok(accesses);
-    }
-
-    /*
-     * ===================================================================
-     * Logica
-     * ===================================================================
-     */
-
-    // Session
-
-    // Método auxiliar que extrae y valida el token del header de autorización y
-    // devuelve el usuario autenticado
-
-    private Optional<User> getUserFromAuthHeader(String authHeader) {
-        // Validar formato del header
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return Optional.empty();
-        }
-
-        // Extraer token
-        String token = authHeader.substring(7);
-
-        // Token vacio
-        if (token == null) {
-            return Optional.empty();
-        }
-
-        // Buscar sesión
-        Optional<Session> sessionOpt = sessionRepository.findById(token);
-        if (sessionOpt.isEmpty()) { // Comprueba si la sesión es válida
-            return Optional.empty();
-        } else if (!sessionOpt.get().isValid()) {
-            sessionRepository.delete(sessionOpt.get());
-            return Optional.empty();
-        }
-        // Buscar usuario de la sesión
-        String userEmail = sessionOpt.get().getUserEmail();
-        return userRepository.findById(userEmail);
-    }
-
-    /*
-     * ===================================================================
      * 2. Endpoints Nuevos con Sesión
      * ===================================================================
      */
@@ -536,5 +474,45 @@ public class IohController {
             return ResponseEntity.ok(accesses);
         }
     }
+
+    
+    /*
+     * ===================================================================
+     * Logica
+     * ===================================================================
+     */
+
+    // Session
+
+    // Método auxiliar que extrae y valida el token del header de autorización y
+    // devuelve el usuario autenticado
+
+    private Optional<User> getUserFromAuthHeader(String authHeader) {
+        // Validar formato del header
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Optional.empty();
+        }
+
+        // Extraer token
+        String token = authHeader.substring(7);
+
+        // Token vacio
+        if (token == null) {
+            return Optional.empty();
+        }
+
+        // Buscar sesión
+        Optional<Session> sessionOpt = sessionRepository.findById(token);
+        if (sessionOpt.isEmpty()) { // Comprueba si la sesión es válida
+            return Optional.empty();
+        } else if (!sessionOpt.get().isValid()) {
+            sessionRepository.delete(sessionOpt.get());
+            return Optional.empty();
+        }
+        // Buscar usuario de la sesión
+        String userEmail = sessionOpt.get().getUserEmail();
+        return userRepository.findById(userEmail);
+    }
+
 
 }
