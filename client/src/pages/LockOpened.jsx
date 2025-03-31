@@ -5,7 +5,7 @@ import styles from './LockOpened.module.css';
 import BackButton from '../components/BackButton';
 import ToggleMenu from '../components/ToggleMenu';
 import { openLockWithAccess, getLock } from '../services/api';
-import { notifyLockOpened, notifyLockOpenError } from '../utils/notifications';
+import { notifyLockOpened, notifyLockOpenError, notifyAccessExpired } from '../utils/notifications';
 import cerradura_abierta from '../assets/cerradura_abierta.png';
 import cerradura_cerrada from '../assets/cerradura_cerrada.png';
 
