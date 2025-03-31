@@ -1,75 +1,51 @@
-
 // src/pages/LockOpened.jsx
 import React, { useState } from 'react';
 import styles from './LockOpened.module.css';
 import BackButton from '../components/BackButton';
 import ToggleMenu from '../components/ToggleMenu';
-
-// Icono de cerradura abierta
-import greenLockIcon from '../assets/green-lock.png';
-
-
-// React Icons para el submenú
-import {
-  FaMapMarkerAlt,
-  FaQuestionCircle,
-  FaExclamationTriangle
-} from 'react-icons/fa';
+import { useLocation } from 'react-router-dom';
+import cerradura_abierta from '../assets/cerradura_abierta.png';
 
 function LockOpened() {
+  const { state } = useLocation();
+  const { lock } = state || {};
+
   const [menuOpen, setMenuOpen] = useState(false);
-
-  
-
-  const toggleMenu = (open) => {
-    setMenuOpen(open);
-  };
-
+  const toggleMenu = (open) => setMenuOpen(open);
 
   return (
     <div className={styles.container}>
-       {/* === Contenedor de NAV (BackButton + ToggleMenu) === */}
-       <div className={styles.navContainer}>
-        <BackButton to="/client/home" className={styles.backButtonCustom} />
+      {/* NAV */}
+      <div className={styles.navContainer}>
+        <BackButton to="/client/home" />
         <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       </div>
 
-
-      {/* Icono grande de cerradura abierta */}
+      {/* Imagen */}
       <div className={styles.lockIconContainer}>
         <img
-          src={greenLockIcon}
+          src={cerradura_abierta}
           alt="Lock Opened"
           className={styles.greenLockIcon}
         />
       </div>
 
-      {/* Texto "Cerradura abierta" */}
-      <h2 className={styles.openText}>Cerradura abierta</h2>
+      {/* Nombre de la cerradura */}
+      <h2 className={styles.openText}>
+        Cerradura: <span className={styles.lockName}>{lock?.name || 'Desconocida'}</span>
+      </h2>
 
-      {/* Submenú inferior con iconos y texto */}
-      <div className={styles.actions}>
-        <div className={styles.actionItem}>
-          <FaMapMarkerAlt className={styles.actionIcon} />
-          <span>Ver en el mapa</span>
-        </div>
-
-        
-
-        <div className={styles.actionItem}>
-          <FaQuestionCircle className={styles.actionIcon} />
-          <span>Ayuda</span>
-        </div>
-
-        <div className={styles.actionItem}>
-          <FaExclamationTriangle className={styles.actionIcon} />
-          <span>¿Problemas?</span>
-        </div>
-      </div>
+      {/* Estado */}
+      <p className={styles.statusText}>
+        Estado actual:{" "}
+        {lock?.locked === null
+          ? "Cargando..."
+          : lock?.locked
+          ? "🔒 Cerrada"
+          : "🔓 Abierta"}
+      </p>
     </div>
   );
 }
 
 export default LockOpened;
-
-

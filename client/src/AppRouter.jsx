@@ -17,7 +17,6 @@ import AccessLoader from './pages/AccessLoader';
 
 // Legacy (por si los sigues usando)
 import Home from './pages/Home';
-import LockMenu from './pages/LockMenu';
 import LockOpened from './pages/LockOpened';
 
 function AppRouter() {
@@ -42,7 +41,6 @@ function AppRouter() {
 
       {/* === LEGACY (LockMenu, etc.) === */}
       <Route path="/home" element={<Home />} />
-      <Route path="/lock/:lockId" element={<LockMenu />} />
       <Route path="/lock/:lockId/open" element={<LockOpened />} />
 
       {/* Fallback por si no encuentra ruta */}

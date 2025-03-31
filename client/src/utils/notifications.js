@@ -106,3 +106,21 @@ export function notifyAccessUpdateError() {
   });
 }
 
+/*
+  ===========================
+  CERRADURAS
+  ===========================
+*/
+// Cerradura abierta correctamente
+export function notifyLockOpened() {
+  toast.success('🔓 Cerradura abierta correctamente', {
+    icon: '✅',
+  });
+}
+
+// Error al abrir la cerradura
+export function notifyLockOpenError() {
+  toast.error('❌ Error al abrir la cerradura', {
+    icon: '🚫',
+  });
+}

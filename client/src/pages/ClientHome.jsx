@@ -7,6 +7,7 @@ import fotocerrradura from '../assets/cerradura.png';
 import BackButton from '../components/BackButton';
 import ToggleMenu from '../components/ToggleMenu';
 import { openLock, getLock } from '../services/api';
+import { notifyLockOpened, notifyLockOpenError } from '../utils/notifications';
 
 function ClientHome() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -32,43 +33,53 @@ function ClientHome() {
     navigate('/client/scan');
   };
 
-  const handleOpenLock = async (lockId) => {
-      try {
-        // Llamada al método que abre la cerradura
-        await openLock(lockId);
+  const handleOpenLock = async (access) => {
+    const lockId = access.cerradura?.id;
+    if (!lockId) {
+      console.error("❌ No se pudo obtener el ID de la cerradura");
+      return;
+    }
   
-        // Iniciamos el polling
-        setPolling(true);
-        setLockOpened(false);
-        setTimeLeft(60);
+    try {
+      await openLock(lockId);
+      notifyLockOpened();
   
-        const intervalId = setInterval(async () => {
-          setTimeLeft((prev) => prev - 1);
+      setPolling(true);
+      setLockOpened(false);
+      setTimeLeft(60);
   
-          try {
-            const lockData = await getLock(lockId);
-            // lockData.LOCKED es true o false
-            if (lockData && lockData.LOCKED === false) {
-              setLockOpened(true);
-              setPolling(false);
-              clearInterval(intervalId);
-            }
-          } catch (error) {
-            console.error(error);
-          }
-  
-          // Si se acaba el tiempo, se detiene el polling
-          if (timeLeft <= 1) {
-            setPolling(false);
+      const intervalId = setInterval(async () => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
             clearInterval(intervalId);
+            setPolling(false);
+            return 0;
           }
-        }, 2000);
-      } catch (error) {
-        console.error(`No se pudo abrir la cerradura con ID=${lockId}`, error);
-        alert(`No se pudo abrir la cerradura con ID=${lockId}`);
-      }
-    };
- 
+          return prev - 1;
+        });
+  
+        try {
+          const lockData = await getLock(lockId);
+          if (lockData && lockData.locked === false) {
+            clearInterval(intervalId);
+            setPolling(false);
+            setLockOpened(true);
+            navigate(`/lock/${lockId}/open`, {
+              state: {
+                access,
+                lock: lockData
+              },
+            });
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }, 2000);
+    } catch (error) {
+      console.error(`No se pudo abrir la cerradura con ID=${lockId}`, error);
+      notifyLockOpenError();
+    }
+  };
 
   const handleDelete = (accessId) => {
     const confirmDelete = window.confirm('¿Seguro que quieres borrar este acceso?');
@@ -106,7 +117,7 @@ function ClientHome() {
 
               <button
                 className={styles.configureButton}
-                onClick={() => handleOpenLock(access.cerradura?.id)}
+                onClick={() => handleOpenLock(access)}
               >
                 Abrir
               </button>
