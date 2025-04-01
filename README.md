@@ -44,7 +44,6 @@ Este repositorio contiene la versión **MVP funcional**, con las siguientes func
 - Alta y sincronización de cerraduras virtuales (Seam)
 - Creación de accesos temporales
 - Simulación de apertura de cerraduras
-- Historial de accesos por usuario/token
 - Gestión de sesiones con tokens temporales
 
 
