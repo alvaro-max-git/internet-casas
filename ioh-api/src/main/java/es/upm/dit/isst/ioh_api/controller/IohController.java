@@ -57,7 +57,7 @@ public class IohController {
 
     /*
      * ===================================================================
-     * 1. Endpoints de Access
+     * Endpoints de Access
      * ===================================================================
      */
 
@@ -142,6 +142,7 @@ public class IohController {
 
     // NOS DEVUELVE LOS ACCESOS POR HOST
     // GET /api/hosts/{hostId}/accesses
+
     @GetMapping("/hosts/{hostId}/accesses")
     public ResponseEntity<List<Access>> listAccessesByHost(@PathVariable String hostId) {
         // 1. Verificamos que el Host existe
@@ -162,7 +163,6 @@ public class IohController {
     }
 
     // NOS DEVUELVE LOS ACCESOS POR TOKEN
-
     @GetMapping("/accesses/by-token/{token}")
     public ResponseEntity<List<Access>> getAccessesByToken(@PathVariable String token) {
         List<Access> accesses = accessRepository.findByToken(token);
@@ -173,6 +173,8 @@ public class IohController {
         
     }
 
+    // Abre la cerradura asociada a un acceso
+    // Es el endpoint que hay que usar para abrir la cerradura, no el de la cerradura.
     @PostMapping("/accesses/{accessId}/open")
     public ResponseEntity<Object> openLock(@PathVariable Long accessId) {
         // Find the access by ID
@@ -182,12 +184,12 @@ public class IohController {
             return new ResponseEntity<>("Access not found", HttpStatus.NOT_FOUND);
         }
         
-        // Verify if the access is currently valid
+        // Verifica que el acceso sea válido
         if (!access.isValidNow()) {
             return new ResponseEntity<>("Acceso no válido en este momento", HttpStatus.FORBIDDEN);
         }
         
-        // Extract the lock and host
+        // Sacamos la Lock y el Host
         Lock lock = access.getCerradura();
         Host host = access.getHost();
         
@@ -205,7 +207,7 @@ public class IohController {
 
     /*
      * ===================================================================
-     * 2. Endpoints de Lock (Cerradura)
+     * Endpoints de Lock (Cerradura)
      * ===================================================================
      */
 
@@ -255,6 +257,7 @@ public class IohController {
     }
 
     // Abrir una cerradura (POST /api/locks/{lockId}/open)
+    // IMPORTANTE: Este endpoint no debería ser accesible desde el exterior, solo para pruebas.
     @PostMapping("/locks/{lockId}/open")
     public ResponseEntity<?> openLock(@PathVariable String lockId) {
 
@@ -266,6 +269,7 @@ public class IohController {
         // 1. Recuperas la seamApiKey del propietario
         Host host = lockOpt.get().getPropietario();
 
+        //No usamos el booleano, puesto que el servicio de apertura de Seam devuelve "false", tarda un rato.
         boolean success = seamLockService.openLock(host, lockId); // Sincroniza las cerraduras del host
 
         //esperamos 5 segundos para que se desbloquee la puerta
@@ -280,19 +284,6 @@ public class IohController {
         return ResponseEntity.ok("Operación de apertura de cerradura iniciada");
     }
 
-
-    
-    /*
-     * Simulamos la llamada a Seam para la demo,
-     * en la práctica usarías la librería oficial (como tu snippet).
-     
-    private boolean mockUnlockLockInSeam(String lockId, String seamApiKey) {
-        // Lógica simulada
-        System.out.println("Simulando desbloqueo en Seam, lockId = " + lockId
-                + ", seamApiKey = " + seamApiKey);
-        return true;
-    }
-    */
 
     // Crear un nuevo Host
     @PostMapping("/hosts")
@@ -310,7 +301,7 @@ public class IohController {
     }
 
     // Crear una nueva Lock (Cerradura)
-    // ESTE ENDOPOINT DEBERÍA NO SER ACCESIBLE.
+    // ESTE ENDOPOINT DEBERÍA NO SER ACCESIBLE, las cerraduras las gestiona Seam.
     /*
      * @PostMapping("/locks")
      * public ResponseEntity<Lock> createLock(@RequestBody Lock newLock) {
@@ -339,9 +330,11 @@ public class IohController {
      * }
      */
 
+
+
     /*
      * ===================================================================
-     * 2. Endpoints de Autenticación
+     * Endpoints de Autenticación
      * ===================================================================
      */
 
@@ -445,9 +438,10 @@ public class IohController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
+
     /*
      * ===================================================================
-     * 2. Endpoints Nuevos con Sesión
+     * Endpoints de Sesión
      * ===================================================================
      */
 
