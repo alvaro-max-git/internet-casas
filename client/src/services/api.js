@@ -1,6 +1,8 @@
 // src/services/api.js
 
-const API_BASE = "http://localhost:8080/api";
+//const API_BASE = "http://localhost:8080/api";
+
+const API_BASE = "https://internet-casas.onrender.com/api";
 
 function getAuthHeaders() {
   const token = localStorage.getItem("sessionToken");
