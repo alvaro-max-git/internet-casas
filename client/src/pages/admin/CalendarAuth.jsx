@@ -9,7 +9,8 @@ import {
   notifyGoogleLoginSuccess,
   notifyGoogleLoginError,
   notifyGoogleEventSyncSuccess,
-  notifyGoogleEventSyncError
+  notifyGoogleEventSyncError,
+  notifyGoogleLogoutSuccess
 } from '../../utils/notifications';
 import { saveGoogleTokenToBackend } from '../../services/api';
 
@@ -32,9 +33,7 @@ function CalendarAuth() {
 
       try {
         const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
+          headers: { Authorization: `Bearer ${accessToken}` }
         });
 
         const profile = await res.json();
@@ -53,49 +52,45 @@ function CalendarAuth() {
 
   useEffect(() => {
     const token = localStorage.getItem("googleAccessToken");
-    if (token) {
-      fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-        .then(res => {
-          if (!res.ok) throw new Error("Token expirado o inválido");
-          return res.json();
-        })
-        .then(profile => {
-          setGoogleName(profile.name);
-          setUserEmail(profile.email);
-          setGoogleLoggedIn(true);
-        })
-        .catch(err => {
-          console.warn("⚠️ No se pudo restaurar la sesión de Google:", err);
-          localStorage.removeItem("googleAccessToken");
-        });
+
+    if (!token) {
+      setGoogleLoggedIn(false);
+      return;
     }
+
+    fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Token expirado o inválido");
+        return res.json();
+      })
+      .then(profile => {
+        setGoogleName(profile.name);
+        setUserEmail(profile.email);
+        setGoogleLoggedIn(true);
+      })
+      .catch(err => {
+        console.warn("⚠️ No se pudo restaurar la sesión de Google:", err);
+        localStorage.removeItem("googleAccessToken");
+        setGoogleLoggedIn(false);
+      });
   }, []);
 
   const handleLoadEvents = async () => {
     try {
       const sessionToken = localStorage.getItem("sessionToken");
-      if (!sessionToken) {
-        notifyGoogleEventSyncError();
-        return;
-      }
+      if (!sessionToken) return notifyGoogleEventSyncError();
 
       const tokenRes = await fetch("http://localhost:8080/api/me/google-token", {
-        headers: {
-          Authorization: `Bearer ${sessionToken}`
-        }
+        headers: { Authorization: `Bearer ${sessionToken}` }
       });
 
       if (!tokenRes.ok) throw new Error("Error obteniendo token de Google");
       const { googleAccessToken } = await tokenRes.json();
 
       const accessesRes = await fetch("http://localhost:8080/api/me/accesses", {
-        headers: {
-          Authorization: `Bearer ${sessionToken}`
-        }
+        headers: { Authorization: `Bearer ${sessionToken}` }
       });
 
       if (!accessesRes.ok) throw new Error("Error obteniendo accesos");
@@ -105,14 +100,8 @@ function CalendarAuth() {
         const event = {
           summary: `Acceso a ${access.cerradura?.name || 'cerradura desconocida'}`,
           description: `Asignado a: ${access.usuario || '—'}`,
-          start: {
-            dateTime: access.fechaEntrada,
-            timeZone: 'Europe/Madrid'
-          },
-          end: {
-            dateTime: access.fechaSalida,
-            timeZone: 'Europe/Madrid'
-          }
+          start: { dateTime: access.fechaEntrada, timeZone: 'Europe/Madrid' },
+          end: { dateTime: access.fechaSalida, timeZone: 'Europe/Madrid' }
         };
 
         await fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events", {
@@ -126,34 +115,34 @@ function CalendarAuth() {
       }
 
       notifyGoogleEventSyncSuccess();
+      window.location.reload();
     } catch (err) {
       console.error("❌ Error al sincronizar eventos:", err);
       notifyGoogleEventSyncError();
     }
   };
 
-
   const handleGoogleLogout = async () => {
     try {
       const sessionToken = localStorage.getItem("sessionToken");
       if (!sessionToken) return;
-
+  
       await fetch("http://localhost:8080/api/me/google-token", {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${sessionToken}`
-        }
+        headers: { Authorization: `Bearer ${sessionToken}` }
       });
-
+  
       localStorage.removeItem("googleAccessToken");
       setGoogleName(null);
       setUserEmail(null);
       setGoogleLoggedIn(false);
+  
+      // ✅ Notificación
+      notifyGoogleLogoutSuccess();
     } catch (error) {
       console.error("❌ Error al cerrar sesión de Google:", error);
     }
   };
-
 
   return (
     <div className={styles.container}>
@@ -165,33 +154,41 @@ function CalendarAuth() {
       <div className={styles.mainContent}>
         <h1 className={styles.greeting}>Sincroniza tus accesos con Google Calendar</h1>
 
-        {googleLoggedIn && (
-  <>
-    <div className={styles.googleCalendarContainer}>
-      <p className={styles.subtitle}>
-        Sesión iniciada como <strong>{googleName}</strong>
-      </p>
+        {!googleLoggedIn && (
+          <div className={styles.googleLoginBox}>
+            <p className={styles.subtitle}>Conecta con Google Calendar</p>
+            <button className={styles.googleLoginButton} onClick={login}>
+              Iniciar sesión con Google
+            </button>
+          </div>
+        )}
 
-      <button className={styles.syncButton} onClick={handleLoadEvents}>
-        <FaCalendarAlt style={{ marginRight: '8px' }} />
-        Cargar accesos en Google Calendar
-      </button>
-      <button className={styles.logoutButton} onClick={handleGoogleLogout}>
+        {googleLoggedIn && (
+          <>
+            <div className={styles.googleCalendarContainer}>
+              <p className={styles.subtitle}>
+                Sesión iniciada como <strong>{googleName}</strong>
+              </p>
+
+              <button className={styles.syncButton} onClick={handleLoadEvents}>
+                <FaCalendarAlt style={{ marginRight: '8px' }} />
+                Cargar accesos en Google Calendar
+              </button>
+
+              <button className={styles.logoutButton} onClick={handleGoogleLogout}>
                 Cerrar sesión de Google
               </button>
-      
-    </div>
+            </div>
 
-    {/* 🔥 Fuera del mainContent */}
-    <div className={styles.calendarFrameWrapper}>
-      <iframe
-        title="Calendario de Google"
-        src={`https://calendar.google.com/calendar/embed?src=${encodeURIComponent(userEmail)}&ctz=Europe/Madrid`}
-        className={styles.calendarIframe}
-      ></iframe>
-    </div>
-  </>
-)}
+            <div className={styles.calendarFrameWrapper}>
+              <iframe
+                title="Calendario de Google"
+                src={`https://calendar.google.com/calendar/embed?src=${encodeURIComponent(userEmail)}&ctz=Europe/Madrid`}
+                className={styles.calendarIframe}
+              ></iframe>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

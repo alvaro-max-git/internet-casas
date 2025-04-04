@@ -166,7 +166,7 @@ export function notifyGoogleLoginError() {
   });
 }
 
-// Error al cargar eventos de Google Calendar
+// cargar eventos de Google Calendar
 export function notifyGoogleEventSyncSuccess() {
   toast.success('📅 Accesos cargados al Google Calendar', {
     icon: '📤',
@@ -177,5 +177,11 @@ export function notifyGoogleEventSyncSuccess() {
 export function notifyGoogleEventSyncError() {
   toast.error('❌ No se pudieron cargar los accesos al calendario', {
     icon: '⚠️',
+  });
+}
+
+export function notifyGoogleLogoutSuccess() {
+  toast.success('✅ Sesión de Google cerrada correctamente', {
+    icon: '🚪',
   });
 }
