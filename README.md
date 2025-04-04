@@ -12,6 +12,7 @@ El sistema elimina la necesidad de llaves físicas para permitir el acceso a una
 - Consulte el historial de accesos y estadísticas de uso.
 - Sincronice automáticamente las cerraduras disponibles mediante la API de [Seam](https://www.seam.co/) con la mayoría de las *smart locks* del mercado.
 - Cargue los accesos configurados a Google Calendar, previamente habiendo iniciado sesión con Google.
+
 Y que un **huésped (usuario)**:
 - Consulte sus accesos activos o futuros.
 - Acceda a la vivienda con un acceso válido utilizando **Bluetooth** para detectar la cercanía de la cerradura.
