@@ -132,6 +132,29 @@ function CalendarAuth() {
     }
   };
 
+
+  const handleGoogleLogout = async () => {
+    try {
+      const sessionToken = localStorage.getItem("sessionToken");
+      if (!sessionToken) return;
+
+      await fetch("http://localhost:8080/api/me/google-token", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${sessionToken}`
+        }
+      });
+
+      localStorage.removeItem("googleAccessToken");
+      setGoogleName(null);
+      setUserEmail(null);
+      setGoogleLoggedIn(false);
+    } catch (error) {
+      console.error("❌ Error al cerrar sesión de Google:", error);
+    }
+  };
+
+
   return (
     <div className={styles.container}>
       <div className={styles.navContainer}>
@@ -140,38 +163,35 @@ function CalendarAuth() {
       </div>
 
       <div className={styles.mainContent}>
-        <h1 className={styles.greeting}>Google Calendar</h1>
-        <h2 className={styles.subtitle}>Conecta y sincroniza tus accesos</h2>
-
-        {!googleLoggedIn && (
-          <div className={styles.googleLoginBox}>
-            <p className={styles.subtitle}>Conecta con Google Calendar</p>
-            <button className={styles.googleLoginButton} onClick={login}>
-              Iniciar sesión con Google
-            </button>
-          </div>
-        )}
+        <h1 className={styles.greeting}>Sincroniza tus accesos con Google Calendar</h1>
 
         {googleLoggedIn && (
-          <div className={styles.googleCalendarContainer}>
-            <p className={styles.subtitle}>
-              Sesión iniciada como <strong>{googleName}</strong>
-            </p>
+  <>
+    <div className={styles.googleCalendarContainer}>
+      <p className={styles.subtitle}>
+        Sesión iniciada como <strong>{googleName}</strong>
+      </p>
 
-            <iframe
-              title="Calendario de Google"
-              src={`https://calendar.google.com/calendar/embed?src=${encodeURIComponent(userEmail)}&ctz=Europe/Madrid`}
-              style={{ border: 0, width: '100%', height: '600px', marginBottom: '1rem' }}
-              frameBorder="0"
-              scrolling="no"
-            ></iframe>
+      <button className={styles.syncButton} onClick={handleLoadEvents}>
+        <FaCalendarAlt style={{ marginRight: '8px' }} />
+        Cargar accesos en Google Calendar
+      </button>
+      <button className={styles.logoutButton} onClick={handleGoogleLogout}>
+                Cerrar sesión de Google
+              </button>
+      
+    </div>
 
-            <button className={styles.syncButton} onClick={handleLoadEvents}>
-              <FaCalendarAlt style={{ marginRight: '8px' }} />
-              Sincronizar accesos al calendario
-            </button>
-          </div>
-        )}
+    {/* 🔥 Fuera del mainContent */}
+    <div className={styles.calendarFrameWrapper}>
+      <iframe
+        title="Calendario de Google"
+        src={`https://calendar.google.com/calendar/embed?src=${encodeURIComponent(userEmail)}&ctz=Europe/Madrid`}
+        className={styles.calendarIframe}
+      ></iframe>
+    </div>
+  </>
+)}
       </div>
     </div>
   );

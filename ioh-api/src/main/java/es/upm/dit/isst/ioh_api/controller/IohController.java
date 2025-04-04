@@ -599,4 +599,23 @@ public class IohController {
         return ResponseEntity.ok(response);
     }
 
+    // DELETE /api/me/google-token
+    @DeleteMapping("/me/google-token")
+    public ResponseEntity<?> deleteGoogleToken(@RequestHeader("Authorization") String authHeader) {
+        Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+        }
+
+        User user = userOpt.get();
+        if (!(user instanceof Host host)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Solo los hosts pueden tener Google Token");
+        }
+
+        host.setGoogleAccessToken(null);
+        userRepository.save(host);
+
+        return ResponseEntity.ok("Token de Google eliminado");
+    }
+
 }

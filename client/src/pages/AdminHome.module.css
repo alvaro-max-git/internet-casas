@@ -106,3 +106,90 @@
   color: #fff;
 }
 
+/* === CONTENEDOR GOOGLE LOGIN === */
+.googleLoginBox {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.googleCalendarContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.googleLoginButton {
+  background-color: #4285F4;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+  transition: background-color 0.2s ease;
+}
+
+.googleLoginButton:hover {
+  background-color: #357ae8;
+}
+
+
+.calendarFrameWrapper {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  margin: 3rem 0;
+}
+
+.calendarIframe {
+  width: 100%;
+  max-width: 1000px; /* Antes estaba en 1400 */
+  height: 700px;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.syncButton,
+.logoutButton {
+  width: 260px; /* ⬅️ Mismo ancho fijo */
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 0.5rem auto; /* centrados y espaciados */
+}
+
+/* ✅ Colores individuales (manteniendo los tuyos) */
+.syncButton {
+  background-color: #34A853; /* Verde Google */
+  color: white;
+  box-shadow: 0 4px 12px rgba(52, 168, 83, 0.3);
+}
+
+.syncButton:hover {
+  background-color: #2c8b47;
+  transform: translateY(-2px) scale(1.02);
+}
+
+.logoutButton {
+  background-color: #d9534f;
+  color: white;
+  box-shadow: 0 4px 12px rgba(217, 83, 79, 0.3);
+}
+
+.logoutButton:hover {
+  background-color: #c9302c;
+  transform: translateY(-2px) scale(1.02);
+}
