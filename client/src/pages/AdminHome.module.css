@@ -193,3 +193,71 @@
   background-color: #c9302c;
   transform: translateY(-2px) scale(1.02);
 }
+
+
+/* ===  LOGS DE ACCESO === */
+
+.logsWrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 2rem;
+}
+
+.logsTable {
+  width: 100%;
+  max-width: 900px;
+  border-collapse: collapse;
+  margin: 0 auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.logsTable th,
+.logsTable td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  font-size: 15px;
+}
+
+.logsTable th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  color: #333;
+}
+
+.logsTable tr:hover {
+  background-color: #f9f9f9;
+}
+
+.lockedEvent {
+  color: #c9302c;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.unlockedEvent {
+  color: #34A853;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.exportBtn {
+  margin-right: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: none;
+  background-color: #2f80ed;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.exportBtn:hover {
+  background-color: #1366d6;
+}

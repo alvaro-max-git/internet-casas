@@ -13,6 +13,7 @@ import AdminHome from './pages/AdminHome';
 import EditAccessForm from './pages/admin/EditAccessForm';
 import NewAccessForm from './pages/admin/NewAccessForm';
 import CalendarAuth from './pages/admin/CalendarAuth';
+import AdminLogs from './pages/admin/AdminLogs';
 import MyLocks from './pages/admin/MyLocks';
 import AccessLoader from './pages/AccessLoader';
 
@@ -40,6 +41,7 @@ function AppRouter() {
       <Route path="/admin/access/:accessId/edit" element={<EditAccessForm />} />
       <Route path="/admin/access/new" element={<NewAccessForm />} />
       <Route path="admin/calendar-auth" element={<CalendarAuth />} />
+      <Route path="/admin/logs" element={<AdminLogs />} />
 
       {/* === LEGACY (LockMenu, etc.) === */}
       <Route path="/home" element={<Home />} />

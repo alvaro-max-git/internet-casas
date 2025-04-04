@@ -242,3 +242,20 @@ export async function saveGoogleTokenToBackend(token) {
 
   return response.text(); // o .json() si devuelves un objeto
 }
+
+/* ============================ REGISTRO DE ACCESOS ============================ */
+export async function getLockEvents() {
+  const sessionToken = localStorage.getItem("sessionToken");
+  const res = await fetch("http://localhost:8080/api/me/lock-events", {
+    headers: {
+      Authorization: `Bearer ${sessionToken}`,
+    },
+  });
+
+  if (!res.ok) {
+    const text = await res.text(); // por si viene como texto plano
+    throw new Error(text || "Error al obtener eventos desde tu backend");
+  }
+
+  return await res.json();
+}

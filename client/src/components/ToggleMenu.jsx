@@ -1,6 +1,6 @@
 import React from 'react';
-import { FaBars, FaCog, FaSignOutAlt, FaLock, FaCalendarAlt } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { FaBars, FaCog, FaSignOutAlt, FaLock, FaCalendarAlt, FaHistory } from 'react-icons/fa'; // 🆕 FaHistory
+import  { useNavigate } from 'react-router-dom';
 import { logout } from '../services/api';
 import styles from './ToggleMenu.module.css';
 import { notifyLogoutSuccess, notifyLogoutError } from '../utils/notifications';
@@ -30,6 +30,9 @@ function ToggleMenu({ menuOpen, toggleMenu }) {
     navigate('/admin/calendar-auth');
   };
 
+  const handleGoToLogs = () => {
+    navigate('/admin/logs');
+  };
   return (
     <div>
       <FaBars className={styles.hamburgerIcon} onClick={() => toggleMenu(true)} />
@@ -46,6 +49,11 @@ function ToggleMenu({ menuOpen, toggleMenu }) {
                 <div className={styles.menuItem} onClick={handleGoToCalendar}>
                   <FaCalendarAlt className={styles.icon} />
                   <span>Google Calendar</span>
+                </div>
+
+                <div className={styles.menuItem} onClick={handleGoToLogs}>
+                  <FaHistory className={styles.icon} />
+                  <span>Historial de accesos</span>
                 </div>
               </>
             )}

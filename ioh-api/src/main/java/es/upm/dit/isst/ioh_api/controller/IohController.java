@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.seam.api.Seam;
+
 import es.upm.dit.isst.ioh_api.model.Access;
 import es.upm.dit.isst.ioh_api.model.Host;
 import es.upm.dit.isst.ioh_api.model.Lock;
@@ -34,6 +36,11 @@ import es.upm.dit.isst.ioh_api.repository.HostRepository;
 import es.upm.dit.isst.ioh_api.repository.LockRepository;
 import es.upm.dit.isst.ioh_api.repository.SessionRepository;
 import es.upm.dit.isst.ioh_api.repository.UserRepository;
+
+import com.seam.api.resources.events.requests.EventsListRequest;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/api")
@@ -616,6 +623,73 @@ public class IohController {
         userRepository.save(host);
 
         return ResponseEntity.ok("Token de Google eliminado");
+    }
+
+    /*
+     * ===================================================================
+     * ENDPOINT DE REGISTROS DE APERTURA DE CERRADURAS
+     * ===================================================================
+     */
+
+    // GET /api/me/lock-events
+    // GET /api/me/lock-events
+    @GetMapping("/me/lock-events")
+    public ResponseEntity<?> getLockEvents(@RequestHeader("Authorization") String authHeader) {
+        Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+        }
+
+        User user = userOpt.get();
+        if (!(user instanceof Host host)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Solo los hosts pueden acceder a eventos de cerraduras");
+        }
+
+        try {
+            System.out.println("🔍 Obteniendo eventos para host: " + host.getEmail());
+            System.out.println("🔑 API Key: " + host.getSeamApiKey());
+
+            Seam seam = Seam.builder().apiKey(host.getSeamApiKey()).build();
+
+            OffsetDateTime since = OffsetDateTime.now(ZoneOffset.UTC).minusDays(7);
+
+            List<com.seam.api.types.Event> events = seam.events().list(
+                    EventsListRequest.builder().since(Optional.of(since.toString())).build());
+
+            System.out.println("✅ Total eventos recibidos: " + events.size());
+
+            // Formato deseado: "2025-04-04 18:12"
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+            List<Map<String, Object>> filtered = events.stream()
+                    .filter(e -> e.getEventType().equals("lock.locked") || e.getEventType().equals("lock.unlocked"))
+                    .map(e -> {
+                        Map<String, Object> simplified = new HashMap<>();
+                        simplified.put("event_type", e.getEventType());
+                        simplified.put("device_id", e.getDeviceId().orElse("desconocido"));
+
+                        // 👇 Formateamos la fecha (si existe)
+                        OffsetDateTime createdAt = e.getCreatedAt();
+                        if (createdAt != null) {
+                            simplified.put("created_at", createdAt.format(formatter));
+                        } else {
+                            simplified.put("created_at", "desconocido");
+                        }
+
+                        return simplified;
+                    })
+                    .toList();
+
+            System.out.println("📌 Eventos filtrados: " + filtered.size());
+
+            return ResponseEntity.ok(filtered);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error al obtener eventos de Seam:");
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener eventos");
+        }
     }
 
 }
