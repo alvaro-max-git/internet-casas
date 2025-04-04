@@ -12,6 +12,7 @@ import BluetoothSearch from './pages/BluetoothSearch';
 import AdminHome from './pages/AdminHome';
 import EditAccessForm from './pages/admin/EditAccessForm';
 import NewAccessForm from './pages/admin/NewAccessForm';
+import CalendarAuth from './pages/admin/CalendarAuth';
 import MyLocks from './pages/admin/MyLocks';
 import AccessLoader from './pages/AccessLoader';
 
@@ -38,6 +39,7 @@ function AppRouter() {
       <Route path="/admin/locks" element={<MyLocks />} />
       <Route path="/admin/access/:accessId/edit" element={<EditAccessForm />} />
       <Route path="/admin/access/new" element={<NewAccessForm />} />
+      <Route path="admin/calendar-auth" element={<CalendarAuth />} />
 
       {/* === LEGACY (LockMenu, etc.) === */}
       <Route path="/home" element={<Home />} />

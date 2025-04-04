@@ -145,3 +145,37 @@ export function notifyLockOpenError() {
     icon: '🚫',
   });
 }
+
+/*
+  ===========================
+  GOOGLE CALENDAR
+  ===========================
+*/
+
+// Login exitoso con Google
+export function notifyGoogleLoginSuccess() {
+  toast.success('✅ Sesión con Google iniciada correctamente', {
+    icon: '🟢',
+  });
+}
+
+// Error al iniciar sesión con Google
+export function notifyGoogleLoginError() {
+  toast.error('❌ Error al iniciar sesión con Google', {
+    icon: '⚠️',
+  });
+}
+
+// Error al cargar eventos de Google Calendar
+export function notifyGoogleEventSyncSuccess() {
+  toast.success('📅 Accesos cargados al Google Calendar', {
+    icon: '📤',
+  });
+}
+
+// Error al sincronizar eventos de Google Calendar
+export function notifyGoogleEventSyncError() {
+  toast.error('❌ No se pudieron cargar los accesos al calendario', {
+    icon: '⚠️',
+  });
+}

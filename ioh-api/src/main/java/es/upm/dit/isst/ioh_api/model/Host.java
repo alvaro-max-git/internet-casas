@@ -10,6 +10,9 @@ public class Host extends User {
     @NotEmpty
     private String seamApiKey;
 
+    private String googleAccessToken; // 🆕 Añadido para almacenar el token de Google
+
+
     public Host() {
         super();
     }
@@ -25,5 +28,13 @@ public class Host extends User {
 
     public void setSeamApiKey(String seamApiKey) {
         this.seamApiKey = seamApiKey;
+    }
+
+    public String getGoogleAccessToken() {
+        return googleAccessToken;
+    }
+
+    public void setGoogleAccessToken(String googleAccessToken) {
+        this.googleAccessToken = googleAccessToken;
     }
 }

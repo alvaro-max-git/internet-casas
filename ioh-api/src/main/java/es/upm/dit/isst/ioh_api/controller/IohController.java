@@ -157,7 +157,6 @@ public class IohController {
 
         accesses.removeIf(access -> access.isExpired());
 
-
         // 4. Retornamos la lista
         return ResponseEntity.ok(accesses);
     }
@@ -166,44 +165,45 @@ public class IohController {
     @GetMapping("/accesses/by-token/{token}")
     public ResponseEntity<List<Access>> getAccessesByToken(@PathVariable String token) {
         List<Access> accesses = accessRepository.findByToken(token);
-        
+
         accesses.removeIf(access -> access.isExpired());
 
         return ResponseEntity.ok(accesses);
-        
+
     }
 
     // Abre la cerradura asociada a un acceso
-    // Es el endpoint que hay que usar para abrir la cerradura, no el de la cerradura.
+    // Es el endpoint que hay que usar para abrir la cerradura, no el de la
+    // cerradura.
     @PostMapping("/accesses/{accessId}/open")
     public ResponseEntity<Object> openLock(@PathVariable Long accessId) {
         // Find the access by ID
         Access access = accessRepository.findById(accessId).orElse(null);
-        
+
         if (access == null) {
             return new ResponseEntity<>("Access not found", HttpStatus.NOT_FOUND);
         }
-        
+
         // Verifica que el acceso sea válido
         if (!access.isValidNow()) {
             return new ResponseEntity<>("Acceso no válido en este momento", HttpStatus.FORBIDDEN);
         }
-        
+
         // Sacamos la Lock y el Host
         Lock lock = access.getCerradura();
         Host host = access.getHost();
-        
+
         if (lock == null || host == null) {
             return new ResponseEntity<>("Cerradura o Host no encontrados", HttpStatus.BAD_REQUEST);
         }
-        
+
         // Try to open the lock
         boolean success = seamLockService.openLock(host, lock.getId());
-        
-        //devolvemos objeto ResponseEntity con ok siempre, ya que la cerradura tarda en abrirse
+
+        // devolvemos objeto ResponseEntity con ok siempre, ya que la cerradura tarda en
+        // abrirse
         return ResponseEntity.ok("Operación de apertura de cerradura iniciada");
     }
-
 
     /*
      * ===================================================================
@@ -257,7 +257,8 @@ public class IohController {
     }
 
     // Abrir una cerradura (POST /api/locks/{lockId}/open)
-    // IMPORTANTE: Este endpoint no debería ser accesible desde el exterior, solo para pruebas.
+    // IMPORTANTE: Este endpoint no debería ser accesible desde el exterior, solo
+    // para pruebas.
     @PostMapping("/locks/{lockId}/open")
     public ResponseEntity<?> openLock(@PathVariable String lockId) {
 
@@ -269,10 +270,11 @@ public class IohController {
         // 1. Recuperas la seamApiKey del propietario
         Host host = lockOpt.get().getPropietario();
 
-        //No usamos el booleano, puesto que el servicio de apertura de Seam devuelve "false", tarda un rato.
+        // No usamos el booleano, puesto que el servicio de apertura de Seam devuelve
+        // "false", tarda un rato.
         boolean success = seamLockService.openLock(host, lockId); // Sincroniza las cerraduras del host
 
-        //esperamos 5 segundos para que se desbloquee la puerta
+        // esperamos 5 segundos para que se desbloquee la puerta
 
         try {
             Thread.sleep(5000); // 5 seconds
@@ -280,10 +282,10 @@ public class IohController {
             e.printStackTrace();
         }
 
-        //devolvemos objeto ResponseEntity con ok siempre, ya que la cerradura tarda en abrirse
+        // devolvemos objeto ResponseEntity con ok siempre, ya que la cerradura tarda en
+        // abrirse
         return ResponseEntity.ok("Operación de apertura de cerradura iniciada");
     }
-
 
     // Crear un nuevo Host
     @PostMapping("/hosts")
@@ -329,8 +331,6 @@ public class IohController {
      * return ResponseEntity.status(HttpStatus.CREATED).body(saved);
      * }
      */
-
-
 
     /*
      * ===================================================================
@@ -511,7 +511,6 @@ public class IohController {
         }
     }
 
-    
     /*
      * ===================================================================
      * Logica
@@ -550,5 +549,54 @@ public class IohController {
         return userRepository.findById(userEmail);
     }
 
+    /*
+     * ===================================================================
+     * Endpoints de Calendar
+     * ===================================================================
+     */
+    // Guardar el token de Google
+    @PutMapping("/me/google-token")
+    public ResponseEntity<?> saveGoogleToken(@RequestHeader("Authorization") String authHeader,
+            @RequestBody Map<String, String> body) {
+        Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+        }
+
+        User user = userOpt.get();
+
+        if (!(user instanceof Host)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Solo los hosts pueden guardar el token de Google");
+        }
+
+        String token = body.get("googleAccessToken");
+        if (token == null || token.isEmpty()) {
+            return ResponseEntity.badRequest().body("Token de Google vacío");
+        }
+
+        Host host = (Host) user;
+        host.setGoogleAccessToken(token);
+        userRepository.save(host); // O hostRepository si lo tienes separado
+
+        return ResponseEntity.ok("Token de Google guardado correctamente");
+    }
+
+    // GET /api/me/google-token
+    @GetMapping("/me/google-token")
+    public ResponseEntity<?> getGoogleToken(@RequestHeader("Authorization") String authHeader) {
+        Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+        }
+
+        User user = userOpt.get();
+        if (!(user instanceof Host host)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Solo los hosts pueden tener Google Token");
+        }
+
+        Map<String, String> response = new HashMap<>();
+        response.put("googleAccessToken", host.getGoogleAccessToken());
+        return ResponseEntity.ok(response);
+    }
 
 }

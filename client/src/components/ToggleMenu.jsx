@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaBars, FaUser, FaCog, FaSignOutAlt, FaLock } from 'react-icons/fa';
+import { FaBars, FaCog, FaSignOutAlt, FaLock, FaCalendarAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../services/api';
 import styles from './ToggleMenu.module.css';
@@ -23,7 +23,11 @@ function ToggleMenu({ menuOpen, toggleMenu }) {
   };
 
   const handleGoToLocks = () => {
-    navigate('/admin/locks'); // o la ruta donde pintas tus cerraduras
+    navigate('/admin/locks');
+  };
+
+  const handleGoToCalendar = () => {
+    navigate('/admin/calendar-auth');
   };
 
   return (
@@ -33,10 +37,17 @@ function ToggleMenu({ menuOpen, toggleMenu }) {
         <div className={styles.overlay} onClick={() => toggleMenu(false)}>
           <div className={styles.menu} onClick={(e) => e.stopPropagation()}>
             {userType === 'host' && (
-              <div className={styles.menuItem} onClick={handleGoToLocks}>
-                <FaLock className={styles.icon} />
-                <span>Mis cerraduras</span>
-              </div>
+              <>
+                <div className={styles.menuItem} onClick={handleGoToLocks}>
+                  <FaLock className={styles.icon} />
+                  <span>Mis cerraduras</span>
+                </div>
+
+                <div className={styles.menuItem} onClick={handleGoToCalendar}>
+                  <FaCalendarAlt className={styles.icon} />
+                  <span>Google Calendar</span>
+                </div>
+              </>
             )}
             <div className={styles.menuItem}>
               <FaCog className={styles.icon} />

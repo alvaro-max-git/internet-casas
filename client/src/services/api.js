@@ -222,3 +222,23 @@ export async function getCurrentUser() {
   }
   return response.json();
 }
+
+/* ============================ GOOGLE CALENDAR ============================ */
+export async function saveGoogleTokenToBackend(token) {
+  const sessionToken = localStorage.getItem("sessionToken");
+
+  const response = await fetch("http://localhost:8080/api/me/google-token", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${sessionToken}`,
+    },
+    body: JSON.stringify({ googleAccessToken: token }),
+  });
+
+  if (!response.ok) {
+    throw new Error("No se pudo guardar el token de Google");
+  }
+
+  return response.text(); // o .json() si devuelves un objeto
+}
