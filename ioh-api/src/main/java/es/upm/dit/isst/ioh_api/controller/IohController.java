@@ -397,21 +397,32 @@ public class IohController {
     public ResponseEntity<?> registerUser(@RequestBody Map<String, String> payload) {
         String email = payload.get("email");
         String password = payload.get("password");
-
+    
         if (email == null || password == null) {
             return ResponseEntity.badRequest().body("Faltan email o contraseña.");
         }
-
+    
         if (userRepository.existsById(email)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya existe.");
         }
-
+    
         User newUser = new User();
         newUser.setEmail(email);
-        newUser.setPassword(passwordEncoder.encode(password)); // ✅ cifrado
-
+        newUser.setPassword(passwordEncoder.encode(password));
         User saved = userRepository.save(newUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    
+        // ✅ Crear sesión automática
+        String token = UUID.randomUUID().toString();
+        sessionRepository.deleteByUserEmail(email);
+        Session session = new Session(token, email);
+        sessionRepository.save(session);
+    
+        Map<String, Object> response = new HashMap<>();
+        response.put("email", saved.getEmail());
+        response.put("tipo", "user");
+        response.put("token", token);
+    
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/auth/register/host")
@@ -419,31 +430,40 @@ public class IohController {
         String email = payload.get("email");
         String password = payload.get("password");
         String seamApiKey = payload.get("seamApiKey");
-
+    
         if (email == null || password == null || seamApiKey == null) {
             return ResponseEntity.badRequest().body("Faltan campos obligatorios.");
         }
-
+    
         if (hostRepository.existsById(email)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("El host ya existe.");
         }
-
+    
         Host newHost = new Host();
         newHost.setEmail(email);
         newHost.setPassword(passwordEncoder.encode(password));
         newHost.setSeamApiKey(seamApiKey);
-
+    
         Host saved = hostRepository.save(newHost);
-
+    
         try {
             seamLockService.syncLocksFromSeam(saved);
         } catch (Exception e) {
-            // Manejar error si la API Key es inválida...
-            // Podrías hacer un rollback manual si quieres anular
-            // el registro del Host si la ApiKey no funciona
+            // Manejo opcional
         }
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    
+        // ✅ Crear sesión automática
+        String token = UUID.randomUUID().toString();
+        sessionRepository.deleteByUserEmail(email);
+        Session session = new Session(token, email);
+        sessionRepository.save(session);
+    
+        Map<String, Object> response = new HashMap<>();
+        response.put("email", saved.getEmail());
+        response.put("tipo", "host");
+        response.put("token", token);
+    
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /*

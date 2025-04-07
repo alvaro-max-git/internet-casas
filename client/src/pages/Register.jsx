@@ -54,9 +54,15 @@ function Register() {
   const handleRegisterUser = async (e) => {
     e.preventDefault();
     try {
-      await registerUser(formData.email, formData.password);
+      const response = await registerUser(formData.email, formData.password);
+      localStorage.setItem("sessionToken", response.token);
+      localStorage.setItem("userType", response.tipo);
       notifyRegisterUserSuccess();
-      setView('initial');
+  
+      const accesses = await listAccessesOfCurrentUser();
+      localStorage.setItem("clientAccesses", JSON.stringify(accesses));
+  
+      navigate('/client/home');
     } catch (error) {
       notifyRegisterError(error.message);
     }
@@ -65,9 +71,11 @@ function Register() {
   const handleRegisterHost = async (e) => {
     e.preventDefault();
     try {
-      await registerHost(formData.email, formData.password, formData.seamApiKey);
+      const response = await registerHost(formData.email, formData.password, formData.seamApiKey);
+      localStorage.setItem("sessionToken", response.token);
+      localStorage.setItem("userType", response.tipo);
       notifyRegisterHostSuccess();
-      setView('initial');
+      navigate('/admin/home');
     } catch (error) {
       notifyRegisterError(error.message);
     }
