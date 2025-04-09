@@ -34,6 +34,7 @@ function AppRouter() {
       <Route path="/client/access-loader" element={<AccessLoader />} />
       <Route path="/client/home" element={<ClientHome />} />
       <Route path="/client/scan" element={<BluetoothSearch />} />
+      <Route path="/client/access/:accessId/open" element={<LockOpened />} />
 
       {/* === ADMINISTRADOR === */}
       <Route path="/admin/home" element={<AdminHome />} />
@@ -42,10 +43,11 @@ function AppRouter() {
       <Route path="/admin/access/new" element={<NewAccessForm />} />
       <Route path="admin/calendar-auth" element={<CalendarAuth />} />
       <Route path="/admin/logs" element={<AdminLogs />} />
+     
 
       {/* === LEGACY (LockMenu, etc.) === */}
-      <Route path="/home" element={<Home />} />
-      <Route path="/lock/:lockId/open" element={<LockOpened />} />
+    
+      
 
       {/* Fallback por si no encuentra ruta */}
       <Route path="*" element={<SplashScreen />} />
