@@ -104,7 +104,8 @@ export const openLockWithAccess = async (accessId) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        //'Authorization': `Bearer ${token}` cambiado por:
+        ...getAuthHeaders(),
       }
     });
     // Si el backend devuelve FORBIDDEN, lanzamos error con el mensaje que envía
@@ -231,7 +232,8 @@ export async function saveGoogleTokenToBackend(token) {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${sessionToken}`,
+      //Authorization: `Bearer ${sessionToken}`,
+      ...getAuthHeaders(), // Cambiado por esto para usar el token de sesión
     },
     body: JSON.stringify({ googleAccessToken: token }),
   });
@@ -248,7 +250,7 @@ export async function getLockEvents() {
   const sessionToken = localStorage.getItem("sessionToken");
   const res = await fetch("http://localhost:8080/api/me/lock-events", {
     headers: {
-      Authorization: `Bearer ${sessionToken}`,
+      headers: getAuthHeaders(),
     },
   });
 

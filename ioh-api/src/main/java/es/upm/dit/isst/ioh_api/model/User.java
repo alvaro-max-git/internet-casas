@@ -1,6 +1,8 @@
 package es.upm.dit.isst.ioh_api.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
@@ -13,20 +15,26 @@ import jakarta.validation.constraints.Email;
 public class User {
 
     @Id @Email
-    private String email; // PK
+    private String email;
 
-    private String password; // Añadimos el campo de contraseña
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
 
     public User() {
     }
 
-    public User(String email) {
+    public User(String email, Role role) {
         this.email = email;
+        this.role = role;
     }
 
-    public User(String email, String password) {
+    public User(String email, String password, Role role) {
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     // === Getters y Setters ===
@@ -45,5 +53,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

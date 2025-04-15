@@ -9,10 +9,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 import es.upm.dit.isst.ioh_api.service.SeamLockService;
+import es.upm.dit.isst.ioh_api.model.Role;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,13 +32,12 @@ import com.seam.api.Seam;
 import es.upm.dit.isst.ioh_api.model.Access;
 import es.upm.dit.isst.ioh_api.model.Host;
 import es.upm.dit.isst.ioh_api.model.Lock;
-import es.upm.dit.isst.ioh_api.model.Session;
 import es.upm.dit.isst.ioh_api.model.User;
 import es.upm.dit.isst.ioh_api.repository.AccessRepository;
 import es.upm.dit.isst.ioh_api.repository.HostRepository;
 import es.upm.dit.isst.ioh_api.repository.LockRepository;
-import es.upm.dit.isst.ioh_api.repository.SessionRepository;
 import es.upm.dit.isst.ioh_api.repository.UserRepository;
+import es.upm.dit.isst.ioh_api.security.JwtUtil;
 
 import com.seam.api.resources.events.requests.EventsListRequest;
 import java.time.OffsetDateTime;
@@ -46,8 +48,7 @@ import java.time.format.DateTimeFormatter;
 @RequestMapping("/api")
 public class IohController {
 
-    @Autowired
-    private SessionRepository sessionRepository;
+
     @Autowired
     private AccessRepository accessRepository;
     @Autowired
@@ -58,9 +59,13 @@ public class IohController {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Autowired
     private SeamLockService seamLockService;
+
+    
 
     /*
      * ===================================================================
@@ -74,7 +79,11 @@ public class IohController {
             @RequestBody Access newAccess) throws URISyntaxException {
 
         // 1. Recuperamos el host autenticado desde el token
-        Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Optional<User> userOpt = userRepository.findById(email);
+
         if (userOpt.isEmpty() || !(userOpt.get() instanceof Host)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -366,16 +375,20 @@ public class IohController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta.");
         }
 
-        // Generar token y guardar en sesión
-        String token = UUID.randomUUID().toString();
-        sessionRepository.deleteByUserEmail(email);
-        Session session = new Session(token, email);
-        sessionRepository.save(session);
+        /* TOKEN-SESION antiguo
+            String token = UUID.randomUUID().toString();
+            sessionRepository.deleteByUserEmail(email);
+            Session session = new Session(token, email);
+            sessionRepository.save(session);
+        */
+
+        // Generar JWT
+        String jwt = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
 
         Map<String, Object> response = new HashMap<>();
         response.put("email", user.getEmail());
         response.put("tipo", user instanceof Host ? "host" : "user");
-        response.put("token", token);
+        response.put("token", jwt);
 
         return ResponseEntity.ok(response);
     }
@@ -384,13 +397,18 @@ public class IohController {
 
     @PostMapping("/auth/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+
+        return ResponseEntity.ok().body("Sesión cerrada correctamente");
+
+        /*
+         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
         String token = authHeader.substring(7);
         sessionRepository.deleteById(token);
         return ResponseEntity.ok().body("Sesión cerrada correctamente");
+         */
+       
     }
 
     @PostMapping("/auth/register/user")
@@ -409,18 +427,16 @@ public class IohController {
         User newUser = new User();
         newUser.setEmail(email);
         newUser.setPassword(passwordEncoder.encode(password));
+        newUser.setRole(Role.ROLE_USER);
         User saved = userRepository.save(newUser);
     
-        // ✅ Crear sesión automática
-        String token = UUID.randomUUID().toString();
-        sessionRepository.deleteByUserEmail(email);
-        Session session = new Session(token, email);
-        sessionRepository.save(session);
+        String jwt = jwtUtil.generateToken(saved.getEmail(), saved.getRole().name());
+
     
         Map<String, Object> response = new HashMap<>();
         response.put("email", saved.getEmail());
         response.put("tipo", "user");
-        response.put("token", token);
+        response.put("token", jwt);
     
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -443,6 +459,7 @@ public class IohController {
         newHost.setEmail(email);
         newHost.setPassword(passwordEncoder.encode(password));
         newHost.setSeamApiKey(seamApiKey);
+        newHost.setRole(Role.ROLE_HOST);
     
         Host saved = hostRepository.save(newHost);
     
@@ -452,16 +469,13 @@ public class IohController {
             // Manejo opcional
         }
     
-        // ✅ Crear sesión automática
-        String token = UUID.randomUUID().toString();
-        sessionRepository.deleteByUserEmail(email);
-        Session session = new Session(token, email);
-        sessionRepository.save(session);
+        // Generar JWT tras registro
+        String jwt = jwtUtil.generateToken(saved.getEmail(), saved.getRole().name());
     
         Map<String, Object> response = new HashMap<>();
         response.put("email", saved.getEmail());
         response.put("tipo", "host");
-        response.put("token", token);
+        response.put("token", jwt);
     
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -475,8 +489,12 @@ public class IohController {
     // 1. GET /api/me -> Retorna un resumen del usuario logueado
     @GetMapping("/me")
     public ResponseEntity<?> getAuthenticatedUser(@RequestHeader("Authorization") String authHeader) {
-        // 1) Recuperamos usuario a partir del token
-        Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+        //Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Optional<User> userOpt = userRepository.findById(email);
+
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
         }
@@ -497,7 +515,12 @@ public class IohController {
     // 2. GET /api/me/locks -> Retorna cerraduras del host autenticado
     @GetMapping("/me/locks")
     public ResponseEntity<?> getMyLocks(@RequestHeader("Authorization") String authHeader) {
-        Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+        //Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Optional<User> userOpt = userRepository.findById(email);
+
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
         }
@@ -519,7 +542,11 @@ public class IohController {
     // 3. GET /api/me/accesses -> Retorna accesos del host o user autenticado
     @GetMapping("/me/accesses")
     public ResponseEntity<?> getMyAccesses(@RequestHeader("Authorization") String authHeader) {
-        Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+       
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Optional<User> userOpt = userRepository.findById(email);
+        
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
         }
@@ -549,6 +576,8 @@ public class IohController {
     // Método auxiliar que extrae y valida el token del header de autorización y
     // devuelve el usuario autenticado
 
+    /*
+    
     private Optional<User> getUserFromAuthHeader(String authHeader) {
         // Validar formato del header
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -575,6 +604,8 @@ public class IohController {
         String userEmail = sessionOpt.get().getUserEmail();
         return userRepository.findById(userEmail);
     }
+    
+    */
 
     /*
      * ===================================================================
@@ -585,7 +616,11 @@ public class IohController {
     @PutMapping("/me/google-token")
     public ResponseEntity<?> saveGoogleToken(@RequestHeader("Authorization") String authHeader,
             @RequestBody Map<String, String> body) {
-        Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+        
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Optional<User> userOpt = userRepository.findById(email);
+
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
         }
@@ -611,7 +646,10 @@ public class IohController {
     // GET /api/me/google-token
     @GetMapping("/me/google-token")
     public ResponseEntity<?> getGoogleToken(@RequestHeader("Authorization") String authHeader) {
-        Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Optional<User> userOpt = userRepository.findById(email);
+
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
         }
@@ -629,7 +667,12 @@ public class IohController {
     // DELETE /api/me/google-token
     @DeleteMapping("/me/google-token")
     public ResponseEntity<?> deleteGoogleToken(@RequestHeader("Authorization") String authHeader) {
-        Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+        
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Optional<User> userOpt = userRepository.findById(email);
+        
+        
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
         }
@@ -655,7 +698,11 @@ public class IohController {
     // GET /api/me/lock-events
     @GetMapping("/me/lock-events")
     public ResponseEntity<?> getLockEvents(@RequestHeader("Authorization") String authHeader) {
-        Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+        
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Optional<User> userOpt = userRepository.findById(email);
+        
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
         }

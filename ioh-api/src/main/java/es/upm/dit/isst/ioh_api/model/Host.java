@@ -17,8 +17,8 @@ public class Host extends User {
         super();
     }
 
-    public Host(String email, String password, String seamApiKey) {
-        super(email, password);
+    public Host(String email, String password, Role role, String seamApiKey) {
+        super(email, password, role);
         this.seamApiKey = seamApiKey;
     }
 
