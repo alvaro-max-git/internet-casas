@@ -3,6 +3,7 @@ package es.upm.dit.isst.ioh_api.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -50,12 +51,21 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
           // Ejemplos:
           .requestMatchers("/api/auth/**").permitAll()  // El registro y login es libre
-          .requestMatchers("/api/me/**").authenticated()
-          .requestMatchers("/api/hosts/**").hasRole("HOST")
-          .requestMatchers("/api/accesses/by-token/**").permitAll() // Permitir acceso a la API de Accesses por token
-          .requestMatchers("/api/accesses/**").hasAnyRole("HOST", "USER")
-          .requestMatchers("/api/locks/**").hasAnyRole("HOST", "ADMIN", "USER")
-          .requestMatchers("/h2-console/**").permitAll() // Permitir acceso a H2 Console (si es necesario)
+          .requestMatchers("/api/accesses/by-token/**").permitAll() // Permitir acceso libre si se tiene token
+          .requestMatchers("/h2-console/**").permitAll() // Permitir H2 Console (SOLO EN DESARROLLO)
+
+          .requestMatchers(HttpMethod.POST, "/api/accesses").hasRole("HOST")
+          .requestMatchers(HttpMethod.PUT, "/api/accesses/{id}").hasRole("HOST")
+          .requestMatchers(HttpMethod.DELETE, "/api/accesses/{id}").hasRole("HOST")
+          .requestMatchers(HttpMethod.GET, "/api/accesses/{id}").hasAnyRole("HOST", "USER") // Review if needed
+          .requestMatchers(HttpMethod.POST, "/api/accesses/{accessId}/open").authenticated()
+
+          .requestMatchers("/api/me/locks").hasRole("HOST")
+          .requestMatchers("/api/me/google-token/**").hasRole("HOST")
+          .requestMatchers("/api/me/lock-events").hasRole("HOST")
+          .requestMatchers("/api/me/**").authenticated() // Filtro general
+
+          .requestMatchers(HttpMethod.GET, "/api/locks/{lockId}").hasAnyRole("HOST", "USER")
           .anyRequest().denyAll() // O .authenticated(), según tu preferencia
         )
         // Desactivamos CSRF si estás haciendo llamadas AJAX desde React
@@ -63,8 +73,7 @@ public class SecurityConfig {
         // No necesitas formLogin si tu login es por JSON:
         .formLogin(form -> form.disable())
         // O si prefieres permitir Basic Auth:
-        //.httpBasic(Customizer.withDefaults()); //Esto no es necesario si
-        //mandamos el login por JSON
+        //.httpBasic(Customizer.withDefaults()); //Esto no es necesario si mandamos el login por JSON
         .headers(headers -> headers.frameOptions(FrameOptionsConfig::disable))
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
       

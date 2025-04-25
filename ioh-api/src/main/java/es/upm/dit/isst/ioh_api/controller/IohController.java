@@ -48,7 +48,6 @@ import java.time.format.DateTimeFormatter;
 @RequestMapping("/api")
 public class IohController {
 
-
     @Autowired
     private AccessRepository accessRepository;
     @Autowired
@@ -65,294 +64,79 @@ public class IohController {
     @Autowired
     private SeamLockService seamLockService;
 
-    
-
     /*
      * ===================================================================
-     * Endpoints de Access
+     * Endpoints de Autenticación /api/auth
      * ===================================================================
      */
 
-    // CREATE Access
-    @PostMapping("/accesses")
-    public ResponseEntity<Access> createAccess(@RequestHeader("Authorization") String authHeader,
-            @RequestBody Access newAccess) throws URISyntaxException {
+    @PostMapping("/auth/register/user")
+    public ResponseEntity<?> registerUser(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        String password = payload.get("password");
 
-        // 1. Recuperamos el host autenticado desde el token
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
-        Optional<User> userOpt = userRepository.findById(email);
-
-        if (userOpt.isEmpty() || !(userOpt.get() instanceof Host)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        Host host = (Host) userOpt.get();
-
-        // 2. Validamos la cerradura
-        if (newAccess.getCerradura() == null || newAccess.getCerradura().getId() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        Optional<Lock> lockOpt = lockRepository.findById(newAccess.getCerradura().getId());
-        if (!lockOpt.isPresent()) {
-            return ResponseEntity.badRequest().build();
+        if (email == null || password == null) {
+            return ResponseEntity.badRequest().body("Faltan email o contraseña.");
         }
 
-        // 3. Validamos que haya token o usuario
-        boolean noToken = newAccess.getToken() == null || newAccess.getToken().isBlank();
-        boolean noUser = newAccess.getUsuario() == null || newAccess.getUsuario().isBlank();
-        if (noToken && noUser) {
-            return ResponseEntity.badRequest().build();
+        if (userRepository.existsById(email)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya existe.");
         }
 
-        // 4. Creamos el acceso
-        newAccess.setHost(host);
-        newAccess.setCerradura(lockOpt.get());
-        newAccess.setFechaEntrada(newAccess.getFechaEntrada() != null
-                ? newAccess.getFechaEntrada()
-                : LocalDateTime.now());
-        newAccess.setFechaSalida(newAccess.getFechaSalida());
+        User newUser = new User();
+        newUser.setEmail(email);
+        newUser.setPassword(passwordEncoder.encode(password));
+        newUser.setRole(Role.ROLE_USER);
+        User saved = userRepository.save(newUser);
 
-        Access saved = accessRepository.save(newAccess);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        String jwt = jwtUtil.generateToken(saved.getEmail(), saved.getRole().name());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("email", saved.getEmail());
+        response.put("tipo", "user");
+        response.put("token", jwt);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // READ Access por ID
-    @GetMapping("/accesses/{id}")
-    public ResponseEntity<Access> readAccess(@PathVariable Long id) {
-        return accessRepository.findById(id)
-                .map(access -> ResponseEntity.ok().body(access))
-                .orElse(ResponseEntity.notFound().build());
-    }
+    @PostMapping("/auth/register/host")
+    public ResponseEntity<?> registerHost(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        String password = payload.get("password");
+        String seamApiKey = payload.get("seamApiKey");
 
-    // UPDATE Access
-    @PutMapping("/accesses/{id}")
-    public ResponseEntity<Access> updateAccess(@PathVariable Long id,
-            @RequestBody Access updatedAccess) {
-        return accessRepository.findById(id).map(access -> {
-            // Actualizamos campos
-            if (updatedAccess.getFechaEntrada() != null)
-                access.setFechaEntrada(updatedAccess.getFechaEntrada());
-            if (updatedAccess.getFechaSalida() != null)
-                access.setFechaSalida(updatedAccess.getFechaSalida());
-            if (updatedAccess.getToken() != null)
-                access.setToken(updatedAccess.getToken());
-            if (updatedAccess.getUsuario() != null)
-                access.setUsuario(updatedAccess.getUsuario());
-
-            // (Opcional) Cambiar la cerradura o el host
-            // ...
-            accessRepository.save(access);
-            return ResponseEntity.ok(access);
-        }).orElse(ResponseEntity.notFound().build());
-    }
-
-    // DELETE Access
-    @DeleteMapping("/accesses/{id}")
-    public ResponseEntity<Void> deleteAccess(@PathVariable Long id) {
-        return accessRepository.findById(id).map(access -> {
-            accessRepository.delete(access);
-            return ResponseEntity.ok().<Void>build();
-        }).orElse(ResponseEntity.notFound().build());
-    }
-
-    // NOS DEVUELVE LOS ACCESOS POR HOST
-    // GET /api/hosts/{hostId}/accesses
-
-    @GetMapping("/hosts/{hostId}/accesses")
-    public ResponseEntity<List<Access>> listAccessesByHost(@PathVariable String hostId) {
-        // 1. Verificamos que el Host existe
-        Optional<Host> hostOpt = hostRepository.findById(hostId);
-        if (!hostOpt.isPresent()) {
-            return ResponseEntity.notFound().build();
+        if (email == null || password == null || seamApiKey == null) {
+            return ResponseEntity.badRequest().body("Faltan campos obligatorios.");
         }
 
-        // 2. Obtenemos todos los Access de la BD, filtrando por host.email
-        List<Access> accesses = accessRepository.findByHostEmail(hostId);
-        // 3. Eliminamos expirados
-
-        accesses.removeIf(access -> access.isExpired());
-
-        // 4. Retornamos la lista
-        return ResponseEntity.ok(accesses);
-    }
-
-    // NOS DEVUELVE LOS ACCESOS POR TOKEN
-    @GetMapping("/accesses/by-token/{token}")
-    public ResponseEntity<List<Access>> getAccessesByToken(@PathVariable String token) {
-        List<Access> accesses = accessRepository.findByToken(token);
-
-        accesses.removeIf(access -> access.isExpired());
-
-        return ResponseEntity.ok(accesses);
-
-    }
-
-    // Abre la cerradura asociada a un acceso
-    // Es el endpoint que hay que usar para abrir la cerradura, no el de la
-    // cerradura.
-    @PostMapping("/accesses/{accessId}/open")
-    public ResponseEntity<Object> openLock(@PathVariable Long accessId) {
-        // Find the access by ID
-        Access access = accessRepository.findById(accessId).orElse(null);
-
-        if (access == null) {
-            return new ResponseEntity<>("Access not found", HttpStatus.NOT_FOUND);
+        if (hostRepository.existsById(email)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("El host ya existe.");
         }
 
-        // Verifica que el acceso sea válido
-        if (!access.isValidNow()) {
-            return new ResponseEntity<>("Acceso no válido en este momento", HttpStatus.FORBIDDEN);
-        }
+        Host newHost = new Host();
+        newHost.setEmail(email);
+        newHost.setPassword(passwordEncoder.encode(password));
+        newHost.setSeamApiKey(seamApiKey);
+        newHost.setRole(Role.ROLE_HOST);
 
-        // Sacamos la Lock y el Host
-        Lock lock = access.getCerradura();
-        Host host = access.getHost();
-
-        if (lock == null || host == null) {
-            return new ResponseEntity<>("Cerradura o Host no encontrados", HttpStatus.BAD_REQUEST);
-        }
-
-        // Try to open the lock
-        boolean success = seamLockService.openLock(host, lock.getId());
-
-        // devolvemos objeto ResponseEntity con ok siempre, ya que la cerradura tarda en
-        // abrirse
-        return ResponseEntity.ok("Operación de apertura de cerradura iniciada");
-    }
-
-    /*
-     * ===================================================================
-     * Endpoints de Lock (Cerradura)
-     * ===================================================================
-     */
-
-    // GET lista de cerraduras
-    @GetMapping("/locks")
-    public List<Lock> listLocks() {
-        // Retornamos todas las cerraduras
-        return (List<Lock>) lockRepository.findAll();
-    }
-
-    // GET lista de cerraduras de un host
-    @GetMapping("/hosts/{hostId}/locks")
-    public ResponseEntity<List<Lock>> listLocksByHost(@PathVariable String hostId) {
-        // Buscamos el host por ID
-        Optional<Host> hostOpt = hostRepository.findById(hostId);
-        if (!hostOpt.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        // Actualizamos la lista de cerraduras desde Seam
-        seamLockService.syncLocksFromSeam(hostOpt.get());
-
-        // Retornamos las cerraduras del host
-        List<Lock> locks = lockRepository.findByPropietarioEmail(hostOpt.get().getEmail());
-        return ResponseEntity.ok(locks);
-    }
-
-    // GET detalle de una cerradura
-    @GetMapping("/locks/{lockId}")
-    public ResponseEntity<Lock> getLock(@PathVariable String lockId) {
-
-        // Actualizamos la lista de cerraduras desde Seam
-
-        Optional<Lock> lockOpt = lockRepository.findById(lockId);
-        if (!lockOpt.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Host host = lockOpt.get().getPropietario();
-        seamLockService.syncLocksFromSeam(host);
-
-        // Buscamos la cerradura por ID
-
-        return lockRepository.findById(lockId)
-                .map(lock -> ResponseEntity.ok(lock))
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // Abrir una cerradura (POST /api/locks/{lockId}/open)
-    // IMPORTANTE: Este endpoint no debería ser accesible desde el exterior, solo
-    // para pruebas.
-    @PostMapping("/locks/{lockId}/open")
-    public ResponseEntity<?> openLock(@PathVariable String lockId) {
-
-        Optional<Lock> lockOpt = lockRepository.findById(lockId);
-        if (!lockOpt.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        // 1. Recuperas la seamApiKey del propietario
-        Host host = lockOpt.get().getPropietario();
-
-        // No usamos el booleano, puesto que el servicio de apertura de Seam devuelve
-        // "false", tarda un rato.
-        boolean success = seamLockService.openLock(host, lockId); // Sincroniza las cerraduras del host
-
-        // esperamos 5 segundos para que se desbloquee la puerta
+        Host saved = hostRepository.save(newHost);
 
         try {
-            Thread.sleep(5000); // 5 seconds
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            seamLockService.syncLocksFromSeam(saved);
+        } catch (Exception e) {
+            // Manejo opcional
         }
 
-        // devolvemos objeto ResponseEntity con ok siempre, ya que la cerradura tarda en
-        // abrirse
-        return ResponseEntity.ok("Operación de apertura de cerradura iniciada");
+        // Generar JWT tras registro
+        String jwt = jwtUtil.generateToken(saved.getEmail(), saved.getRole().name());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("email", saved.getEmail());
+        response.put("tipo", "host");
+        response.put("token", jwt);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
-    // Crear un nuevo Host
-    @PostMapping("/hosts")
-    public ResponseEntity<Host> createHost(@RequestBody Host newHost) {
-        if (newHost.getEmail() == null || newHost.getEmail().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        // Ver si ya existe
-        if (hostRepository.findById(newHost.getEmail()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-        // Guardar en BD
-        Host saved = hostRepository.save(newHost);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-    }
-
-    // Crear una nueva Lock (Cerradura)
-    // ESTE ENDOPOINT DEBERÍA NO SER ACCESIBLE, las cerraduras las gestiona Seam.
-    /*
-     * @PostMapping("/locks")
-     * public ResponseEntity<Lock> createLock(@RequestBody Lock newLock) {
-     * if (newLock.getId() == null || newLock.getId().isEmpty()) {
-     * return ResponseEntity.badRequest().build();
-     * }
-     * // Ver si ya existe
-     * if (lockRepository.findById(newLock.getId()).isPresent()) {
-     * return ResponseEntity.status(HttpStatus.CONFLICT).build();
-     * }
-     * // Verificar propietario
-     * if (newLock.getPropietario() == null || newLock.getPropietario().getEmail()
-     * == null) {
-     * return ResponseEntity.badRequest().build();
-     * }
-     * Optional<Host> hostOpt =
-     * hostRepository.findById(newLock.getPropietario().getEmail());
-     * if (!hostOpt.isPresent()) {
-     * return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-     * .body(null);
-     * }
-     * 
-     * newLock.setPropietario(hostOpt.get());
-     * Lock saved = lockRepository.save(newLock);
-     * return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-     * }
-     */
-
-    /*
-     * ===================================================================
-     * Endpoints de Autenticación
-     * ===================================================================
-     */
 
     // Registro
     @PostMapping("/auth/login")
@@ -375,13 +159,6 @@ public class IohController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta.");
         }
 
-        /* TOKEN-SESION antiguo
-            String token = UUID.randomUUID().toString();
-            sessionRepository.deleteByUserEmail(email);
-            Session session = new Session(token, email);
-            sessionRepository.save(session);
-        */
-
         // Generar JWT
         String jwt = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
 
@@ -393,103 +170,24 @@ public class IohController {
         return ResponseEntity.ok(response);
     }
 
-    // Logout
+    // Logout. Es un placeholder (JWT logout viene del cliente)
 
     @PostMapping("/auth/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
-
         return ResponseEntity.ok().body("Sesión cerrada correctamente");
 
-        /*
-         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        String token = authHeader.substring(7);
-        sessionRepository.deleteById(token);
-        return ResponseEntity.ok().body("Sesión cerrada correctamente");
-         */
-       
-    }
-
-    @PostMapping("/auth/register/user")
-    public ResponseEntity<?> registerUser(@RequestBody Map<String, String> payload) {
-        String email = payload.get("email");
-        String password = payload.get("password");
-    
-        if (email == null || password == null) {
-            return ResponseEntity.badRequest().body("Faltan email o contraseña.");
-        }
-    
-        if (userRepository.existsById(email)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya existe.");
-        }
-    
-        User newUser = new User();
-        newUser.setEmail(email);
-        newUser.setPassword(passwordEncoder.encode(password));
-        newUser.setRole(Role.ROLE_USER);
-        User saved = userRepository.save(newUser);
-    
-        String jwt = jwtUtil.generateToken(saved.getEmail(), saved.getRole().name());
-
-    
-        Map<String, Object> response = new HashMap<>();
-        response.put("email", saved.getEmail());
-        response.put("tipo", "user");
-        response.put("token", jwt);
-    
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @PostMapping("/auth/register/host")
-    public ResponseEntity<?> registerHost(@RequestBody Map<String, String> payload) {
-        String email = payload.get("email");
-        String password = payload.get("password");
-        String seamApiKey = payload.get("seamApiKey");
-    
-        if (email == null || password == null || seamApiKey == null) {
-            return ResponseEntity.badRequest().body("Faltan campos obligatorios.");
-        }
-    
-        if (hostRepository.existsById(email)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("El host ya existe.");
-        }
-    
-        Host newHost = new Host();
-        newHost.setEmail(email);
-        newHost.setPassword(passwordEncoder.encode(password));
-        newHost.setSeamApiKey(seamApiKey);
-        newHost.setRole(Role.ROLE_HOST);
-    
-        Host saved = hostRepository.save(newHost);
-    
-        try {
-            seamLockService.syncLocksFromSeam(saved);
-        } catch (Exception e) {
-            // Manejo opcional
-        }
-    
-        // Generar JWT tras registro
-        String jwt = jwtUtil.generateToken(saved.getEmail(), saved.getRole().name());
-    
-        Map<String, Object> response = new HashMap<>();
-        response.put("email", saved.getEmail());
-        response.put("tipo", "host");
-        response.put("token", jwt);
-    
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /*
      * ===================================================================
-     * Endpoints de Sesión
+     * Endpoints de Sesión / User Profile
      * ===================================================================
      */
 
     // 1. GET /api/me -> Retorna un resumen del usuario logueado
     @GetMapping("/me")
     public ResponseEntity<?> getAuthenticatedUser(@RequestHeader("Authorization") String authHeader) {
-        //Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+        // Optional<User> userOpt = getUserFromAuthHeader(authHeader);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
@@ -515,7 +213,7 @@ public class IohController {
     // 2. GET /api/me/locks -> Retorna cerraduras del host autenticado
     @GetMapping("/me/locks")
     public ResponseEntity<?> getMyLocks(@RequestHeader("Authorization") String authHeader) {
-        //Optional<User> userOpt = getUserFromAuthHeader(authHeader);
+        // Optional<User> userOpt = getUserFromAuthHeader(authHeader);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
@@ -542,11 +240,11 @@ public class IohController {
     // 3. GET /api/me/accesses -> Retorna accesos del host o user autenticado
     @GetMapping("/me/accesses")
     public ResponseEntity<?> getMyAccesses(@RequestHeader("Authorization") String authHeader) {
-       
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
         Optional<User> userOpt = userRepository.findById(email);
-        
+
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
         }
@@ -566,57 +264,13 @@ public class IohController {
     }
 
     /*
-     * ===================================================================
-     * Logica
-     * ===================================================================
-     */
-
-    // Session
-
-    // Método auxiliar que extrae y valida el token del header de autorización y
-    // devuelve el usuario autenticado
-
-    /*
-    
-    private Optional<User> getUserFromAuthHeader(String authHeader) {
-        // Validar formato del header
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return Optional.empty();
-        }
-
-        // Extraer token
-        String token = authHeader.substring(7);
-
-        // Token vacio
-        if (token == null) {
-            return Optional.empty();
-        }
-
-        // Buscar sesión
-        Optional<Session> sessionOpt = sessionRepository.findById(token);
-        if (sessionOpt.isEmpty()) { // Comprueba si la sesión es válida
-            return Optional.empty();
-        } else if (!sessionOpt.get().isValid()) {
-            sessionRepository.delete(sessionOpt.get());
-            return Optional.empty();
-        }
-        // Buscar usuario de la sesión
-        String userEmail = sessionOpt.get().getUserEmail();
-        return userRepository.findById(userEmail);
-    }
-    
-    */
-
-    /*
-     * ===================================================================
-     * Endpoints de Calendar
-     * ===================================================================
+     * GOOGLE CALENDAR
      */
     // Guardar el token de Google
     @PutMapping("/me/google-token")
     public ResponseEntity<?> saveGoogleToken(@RequestHeader("Authorization") String authHeader,
             @RequestBody Map<String, String> body) {
-        
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
         Optional<User> userOpt = userRepository.findById(email);
@@ -667,12 +321,11 @@ public class IohController {
     // DELETE /api/me/google-token
     @DeleteMapping("/me/google-token")
     public ResponseEntity<?> deleteGoogleToken(@RequestHeader("Authorization") String authHeader) {
-        
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
         Optional<User> userOpt = userRepository.findById(email);
-        
-        
+
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
         }
@@ -689,20 +342,17 @@ public class IohController {
     }
 
     /*
-     * ===================================================================
-     * ENDPOINT DE REGISTROS DE APERTURA DE CERRADURAS
-     * ===================================================================
+     * REGISTROS DE APERTURA DE CERRADURAS
      */
 
     // GET /api/me/lock-events
-    // GET /api/me/lock-events
     @GetMapping("/me/lock-events")
     public ResponseEntity<?> getLockEvents(@RequestHeader("Authorization") String authHeader) {
-        
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
         Optional<User> userOpt = userRepository.findById(email);
-        
+
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
         }
@@ -758,5 +408,271 @@ public class IohController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener eventos");
         }
     }
+
+    /*
+     * ===================================================================
+     * ENDPOINTS DE ACCESOS (Access Management)
+     * ===================================================================
+     */
+
+    // CREATE Access
+    @PostMapping("/accesses")
+    public ResponseEntity<Access> createAccess(@RequestHeader("Authorization") String authHeader,
+            @RequestBody Access newAccess) throws URISyntaxException {
+
+        // 1. Recuperamos el host autenticado desde el token
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Optional<User> userOpt = userRepository.findById(email);
+
+        if (userOpt.isEmpty() || !(userOpt.get() instanceof Host)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Host host = (Host) userOpt.get();
+
+        // 2. Validamos la cerradura
+        if (newAccess.getCerradura() == null || newAccess.getCerradura().getId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        Optional<Lock> lockOpt = lockRepository.findById(newAccess.getCerradura().getId());
+        if (!lockOpt.isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // 3. Validamos que haya token o usuario
+        boolean noToken = newAccess.getToken() == null || newAccess.getToken().isBlank();
+        boolean noUser = newAccess.getUsuario() == null || newAccess.getUsuario().isBlank();
+        if (noToken && noUser) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // 4. Creamos el acceso
+        newAccess.setHost(host);
+        newAccess.setCerradura(lockOpt.get());
+        newAccess.setFechaEntrada(newAccess.getFechaEntrada() != null
+                ? newAccess.getFechaEntrada()
+                : LocalDateTime.now());
+        newAccess.setFechaSalida(newAccess.getFechaSalida());
+
+        Access saved = accessRepository.save(newAccess);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    }
+
+    // READ Access por ID
+    // GET /api/accesses/{id}
+    @GetMapping("/accesses/{id}")
+    public ResponseEntity<Access> readAccess(@PathVariable Long id) {
+        return accessRepository.findById(id)
+                .map(access -> ResponseEntity.ok().body(access))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // UPDATE Access
+    // PUT /api/accesses/{id}
+    @PutMapping("/accesses/{id}")
+    public ResponseEntity<Access> updateAccess(@PathVariable Long id,
+            @RequestBody Access updatedAccess) {
+        return accessRepository.findById(id).map(access -> {
+            // Actualizamos campos
+            if (updatedAccess.getFechaEntrada() != null)
+                access.setFechaEntrada(updatedAccess.getFechaEntrada());
+            if (updatedAccess.getFechaSalida() != null)
+                access.setFechaSalida(updatedAccess.getFechaSalida());
+            if (updatedAccess.getToken() != null)
+                access.setToken(updatedAccess.getToken());
+            if (updatedAccess.getUsuario() != null)
+                access.setUsuario(updatedAccess.getUsuario());
+
+            // (Opcional) Cambiar la cerradura o el host
+            // ...
+            accessRepository.save(access);
+            return ResponseEntity.ok(access);
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    // DELETE Access
+    // DELETE /api/accesses/{id}
+    @DeleteMapping("/accesses/{id}")
+    public ResponseEntity<Void> deleteAccess(@PathVariable Long id) {
+        return accessRepository.findById(id).map(access -> {
+            accessRepository.delete(access);
+            return ResponseEntity.ok().<Void>build();
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+
+    // NOS DEVUELVE LOS ACCESOS POR TOKEN
+    @GetMapping("/accesses/by-token/{token}")
+    public ResponseEntity<List<Access>> getAccessesByToken(@PathVariable String token) {
+        List<Access> accesses = accessRepository.findByToken(token);
+
+        accesses.removeIf(access -> access.isExpired());
+
+        return ResponseEntity.ok(accesses);
+
+    }
+
+    // Abre la cerradura asociada a un acceso
+    // Es el endpoint que hay que usar para abrir la cerradura, no el de la
+    // cerradura.
+    @PostMapping("/accesses/{accessId}/open")
+    public ResponseEntity<Object> openLock(@PathVariable Long accessId) {
+        // Find the access by ID
+        Access access = accessRepository.findById(accessId).orElse(null);
+
+        if (access == null) {
+            return new ResponseEntity<>("Access not found", HttpStatus.NOT_FOUND);
+        }
+
+        // Verifica que el acceso sea válido
+        if (!access.isValidNow()) {
+            return new ResponseEntity<>("Acceso no válido en este momento", HttpStatus.FORBIDDEN);
+        }
+
+        // Sacamos la Lock y el Host
+        Lock lock = access.getCerradura();
+        Host host = access.getHost();
+
+        if (lock == null || host == null) {
+            return new ResponseEntity<>("Cerradura o Host no encontrados", HttpStatus.BAD_REQUEST);
+        }
+
+        // Try to open the lock (esto no logro que de ok porque tarda)
+        boolean success = seamLockService.openLock(host, lock.getId());
+
+        // devolvemos objeto ResponseEntity con ok siempre, ya que la cerradura tarda en
+        // abrirse y ya se comprueba desde el front.
+        return ResponseEntity.ok("Operación de apertura de cerradura iniciada");
+    }
+
+    /*
+     * ===================================================================
+     * Endpoints de Lock
+     * ===================================================================
+     */
+
+
+    // GET detalle de una cerradura
+    @GetMapping("/locks/{lockId}")
+    public ResponseEntity<Lock> getLock(@PathVariable String lockId) {
+
+        // Actualizamos la lista de cerraduras desde Seam
+
+        Optional<Lock> lockOpt = lockRepository.findById(lockId);
+        if (!lockOpt.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Host host = lockOpt.get().getPropietario();
+        seamLockService.syncLocksFromSeam(host);
+
+        // Buscamos la cerradura por ID
+
+        return lockRepository.findById(lockId)
+                .map(lock -> ResponseEntity.ok(lock))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+
+
+
+
+/*
+ * ===================================================================
+ * CEMENTERIO de ENDPOINTS (por si acaso se conserva el código)
+ * ===================================================================
+ */
+
+    /*
+    // Abrir una cerradura (POST /api/locks/{lockId}/open)
+    // No se debe usar este endpoint directamente, sino el de Access.
+    @PostMapping("/locks/{lockId}/open")
+    public ResponseEntity<?> openLock(@PathVariable String lockId) {
+
+        Optional<Lock> lockOpt = lockRepository.findById(lockId);
+        if (!lockOpt.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // 1. Recuperas la seamApiKey del propietario
+        Host host = lockOpt.get().getPropietario();
+
+        // No usamos el booleano, puesto que el servicio de apertura de Seam devuelve
+        // "false", tarda un rato.
+        boolean success = seamLockService.openLock(host, lockId); // Sincroniza las cerraduras del host
+
+        // esperamos 5 segundos para que se desbloquee la puerta
+
+        try {
+            Thread.sleep(5000); // 5 seconds
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // devolvemos objeto ResponseEntity con ok siempre, ya que la cerradura tarda en
+        // abrirse
+        return ResponseEntity.ok("Operación de apertura de cerradura iniciada");
+    }
+    */
+
+    // Crear un nuevo Host.
+    /*
+    @PostMapping("/hosts")
+    public ResponseEntity<Host> createHost(@RequestBody Host newHost) {
+        if (newHost.getEmail() == null || newHost.getEmail().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        // Ver si ya existe
+        if (hostRepository.findById(newHost.getEmail()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+        // Guardar en BD
+        Host saved = hostRepository.save(newHost);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    }
+    */
+
+    /*
+    // NOS DEVUELVE LOS ACCESOS POR HOST. Redundante si usamos el de /me/accesses
+    // GET /api/hosts/{hostId}/accesses
+    @GetMapping("/hosts/{hostId}/accesses")
+    public ResponseEntity<List<Access>> listAccessesByHost(@PathVariable String hostId) {
+        // 1. Verificamos que el Host existe
+        Optional<Host> hostOpt = hostRepository.findById(hostId);
+        if (!hostOpt.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // 2. Obtenemos todos los Access de la BD, filtrando por host.email
+        List<Access> accesses = accessRepository.findByHostEmail(hostId);
+        // 3. Eliminamos expirados
+
+        accesses.removeIf(access -> access.isExpired());
+
+        // 4. Retornamos la lista
+        return ResponseEntity.ok(accesses);
+    }
+    */
+
+
+    /*
+     // GET lista de cerraduras de un host
+    @GetMapping("/hosts/{hostId}/locks")
+    public ResponseEntity<List<Lock>> listLocksByHost(@PathVariable String hostId) {
+        // Buscamos el host por ID
+        Optional<Host> hostOpt = hostRepository.findById(hostId);
+        if (!hostOpt.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Actualizamos la lista de cerraduras desde Seam
+        seamLockService.syncLocksFromSeam(hostOpt.get());
+
+        // Retornamos las cerraduras del host
+        List<Lock> locks = lockRepository.findByPropietarioEmail(hostOpt.get().getEmail());
+        return ResponseEntity.ok(locks);
+    }
+     */
 
 }
