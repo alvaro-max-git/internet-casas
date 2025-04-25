@@ -1,6 +1,6 @@
 // src/services/api.js
 
-const API_BASE = "http://localhost:8080/api";
+const API_BASE = "https://localhost:8443/api";
 
 //const API_BASE = "https://internet-casas.onrender.com/api";
 
