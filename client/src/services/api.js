@@ -228,7 +228,7 @@ export async function getCurrentUser() {
 export async function saveGoogleTokenToBackend(token) {
   const sessionToken = localStorage.getItem("sessionToken");
 
-  const response = await fetch("http://localhost:8080/api/me/google-token", {
+  const response = await fetch(`${API_BASE}/me/google-token`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -248,7 +248,7 @@ export async function saveGoogleTokenToBackend(token) {
 /* ============================ REGISTRO DE ACCESOS ============================ */
 export async function getLockEvents() {
   const sessionToken = localStorage.getItem("sessionToken");
-  const res = await fetch("http://localhost:8080/api/me/lock-events", {
+  const res = await fetch(`${API_BASE}/me/lock-events`, {
     headers: {
       headers: getAuthHeaders(),
     },
