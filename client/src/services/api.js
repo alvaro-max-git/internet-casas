@@ -247,11 +247,10 @@ export async function saveGoogleTokenToBackend(token) {
 
 /* ============================ REGISTRO DE ACCESOS ============================ */
 export async function getLockEvents() {
-  const sessionToken = localStorage.getItem("sessionToken");
+  //const sessionToken = localStorage.getItem("sessionToken");
+  
   const res = await fetch(`${API_BASE}/me/lock-events`, {
-    headers: {
       headers: getAuthHeaders(),
-    },
   });
 
   if (!res.ok) {
