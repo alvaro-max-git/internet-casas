@@ -135,7 +135,7 @@ export const openLockWithAccess = async (accessId) => {
     // Si el backend devuelve FORBIDDEN, lanzamos error con el mensaje que envía
     if (response.status === 403) {
       const backendMessage = await response.text();
-      throw new Error("Acceso no válido o expirado");
+      throw new Error(backendMessage);
     }
     if (!response.ok) {
       throw new Error('Failed to open lock');
@@ -178,6 +178,34 @@ export async function listAccessesOfCurrentUser() {
     throw new Error("❌ Error al obtener los accesos del usuario actual");
   }
   return response.json();
+}
+
+// BLOQUEAR CERRADURA
+export async function blockLock(lockId) {
+  const response = await fetch(`${API_BASE}/locks/${lockId}/block`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Error al bloquear cerradura:", errorText);
+    throw new Error(`Error al bloquear cerradura: ${errorText}`);
+  }
+  return response.text(); // Devuelve el mensaje del backend ("Cerradura bloqueada...")
+}
+
+// DESBLOQUEAR CERRADURA
+export async function unblockLock(lockId) {
+  const response = await fetch(`${API_BASE}/locks/${lockId}/unblock`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Error al desbloquear cerradura:", errorText);
+    throw new Error(`Error al desbloquear cerradura: ${errorText}`);
+  }
+  return response.text(); // Devuelve el mensaje del backend ("Cerradura desbloqueada...")
 }
 
 /* ============================ AUTENTICACIÓN ============================ */

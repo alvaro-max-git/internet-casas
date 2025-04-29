@@ -100,7 +100,8 @@
 }
 
 .configureButton,
-.deleteButton {
+.deleteButton,
+.unblockButton {
   background-color: #f0f0f0;
   font-size: 14px;
   padding: 8px 12px;
@@ -118,7 +119,12 @@
 }
 
 .deleteButton:hover {
-  background-color: #d9534f;
+  background-color: #d60000;
+  color: #fff;
+}
+
+.unblockButton:hover {
+  background-color: #5cb85c;
   color: #fff;
 }
 
