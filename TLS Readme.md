@@ -16,7 +16,7 @@ Crear un archivo para variables de entorno llamado `.env` en la carpeta del back
 La ruta:
 `internet-casas/ioh-api/.env`
 
-Su contenido (cambiar la constraseña y la ruta por la que corresponda):
+Su contenido (cambiar la constraeña y la ruta por la que corresponda):
 ```
 SSL_KEY_PASSWORD=cambiame
 SSL_KEY_STORE_PASSWORD=cambiame
