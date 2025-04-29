@@ -258,6 +258,5 @@ export async function getLockEvents() {
     const text = await res.text(); // por si viene como texto plano
     throw new Error(text || "Error al obtener eventos desde tu backend");
   }
-
   return await res.json();
 }
