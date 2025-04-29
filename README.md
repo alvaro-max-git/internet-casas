@@ -34,7 +34,7 @@ Este proyecto se ha desarrollado con una arquitectura cliente-servidor en tres c
 ### Otros
 - **Docker** para contenerización y despliegue en Render.
 - **Figma** para prototipado de interfaz y experiencia de usuario  
-- **JUnit**  para pruebas automatizadas
+- **JUnit** y **Selenium** para pruebas automatizadas
 
 
 ## Estado del proyecto (MVP)
