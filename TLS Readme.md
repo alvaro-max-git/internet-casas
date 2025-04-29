@@ -4,7 +4,7 @@
 
 En la consola, en la carpeta donde queramos almacenarlo:
 ```shell
-keytool -genkey -v -keystore ~/isst-test/mykeys.jks -keyalg RSA -keysize 2048 -validity 1000 -alias key
+keytool -genkey -v -keystore mykeys.jks -keyalg RSA -keysize 2048 -validity 1000 -alias key
 ```
 
 Seguir las instrucciones y poner una contraseña, por ejemplo "cambiame". Se creará un fichero llamado mykeys.jks.
