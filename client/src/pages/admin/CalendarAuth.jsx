@@ -82,14 +82,14 @@ function CalendarAuth() {
       const sessionToken = localStorage.getItem("sessionToken");
       if (!sessionToken) return notifyGoogleEventSyncError();
 
-      const tokenRes = await fetch("http://localhost:8080/api/me/google-token", {
+      const tokenRes = await fetch("https://localhost:8443/api/me/google-token", {
         headers: { Authorization: `Bearer ${sessionToken}` }
       });
 
       if (!tokenRes.ok) throw new Error("Error obteniendo token de Google");
       const { googleAccessToken } = await tokenRes.json();
 
-      const accessesRes = await fetch("http://localhost:8080/api/me/accesses", {
+      const accessesRes = await fetch("https://localhost:8443/api/me/accesses", {
         headers: { Authorization: `Bearer ${sessionToken}` }
       });
 
