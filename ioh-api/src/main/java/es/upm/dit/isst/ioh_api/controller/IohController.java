@@ -253,12 +253,12 @@ public class IohController {
         // Si es un Host -> devolvemos accesos que él creó (hostEmail)
         if (user instanceof Host) {
             List<Access> accesses = accessRepository.findByHostEmail(user.getEmail());
-            accesses.removeIf(access -> access.isExpired());
+            // accesses.removeIf(access -> access.isExpired()); // <-- REMOVE THIS LINE
             return ResponseEntity.ok(accesses);
         } else {
             // Si es un user normal -> devolvemos accesos donde 'usuario' sea su email
             List<Access> accesses = accessRepository.findByUsuario(user.getEmail());
-            accesses.removeIf(access -> access.isExpired());
+            // accesses.removeIf(access -> access.isExpired()); // <-- REMOVE THIS LINE
             return ResponseEntity.ok(accesses);
         }
     }
