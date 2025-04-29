@@ -2,10 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './AdminHome.module.css';
+import styles_folder from './Folder.module.css';
 import { FaPlus } from 'react-icons/fa';
 import BackButton from '../components/BackButton';
 import ToggleMenu from '../components/ToggleMenu';
-import { listAccessesOfCurrentUser } from '../services/api';
+import { listAccessesOfCurrentUser, updateAccessFolder } from '../services/api';
 import AccessCard from '../components/AccessCard';
 
 function ClientHome() {
@@ -17,100 +18,69 @@ function ClientHome() {
   const toggleMenu = (open) => setMenuOpen(open);
 
   useEffect(() => {
-    const fetchAccesses = async () => {
-      try {
-        const response = await listAccessesOfCurrentUser();
-        setAccesses(response);
-        localStorage.setItem('clientAccesses', JSON.stringify(response));
-      } catch (err) {
-        console.error('❌ Error al obtener accesos del usuario:', err);
-      }
-    };
+    const saved = JSON.parse(localStorage.getItem('clientFolders') || '[]');
+    setFolders(saved);
     fetchAccesses();
   }, []);
 
-  const colores = JSON.parse(localStorage.getItem('accessColors') || '{}');
+  useEffect(() => {
+    localStorage.setItem('clientFolders', JSON.stringify(folders));
+  }, [folders]);
 
-  const handleAccessByToken = () => {
-    navigate('/client/access-loader');
+  const fetchAccesses = async () => {
+    try {
+      const resp = await listAccessesOfCurrentUser();
+      setAccesses(resp);
+    } catch (err) {
+      console.error('❌ Error al obtener accesos:', err);
+    }
   };
 
+  const colores = JSON.parse(localStorage.getItem('accessColors') || '{}');
+
+  const handleAccessByToken = () => navigate('/client/access-loader');
+
   const handleCreateFolder = () => {
-    const nombre = prompt('Nombre de la carpeta:');
-    if (nombre) {
-      const nuevaCarpeta = {
-        id: `carpeta-${Date.now()}`,
-        nombre,
-        accesos: [],
-      };
-      const nuevasCarpetas = [...folders, nuevaCarpeta];
-      setFolders(nuevasCarpetas);
-      localStorage.setItem('clientFolders', JSON.stringify(nuevasCarpetas));
+    const nombre = prompt('Nombre de la nueva carpeta:');
+    if (!nombre) return;
+    if (folders.includes(nombre)) {
+      alert('Esa carpeta ya existe');
+      return;
     }
+    setFolders(prev => [...prev, nombre]);
+  };
+
+  const handleDeleteFolder = (folderName) => {
+    if (!window.confirm(`¿Eliminar carpeta "${folderName}"? Esta acción no se puede deshacer.`)) return;
+    setFolders(prev => prev.filter((f) => f !== folderName));
   };
 
   const handleOpenLock = (access) => {
-    if (!access.cerradura?.id) {
-      alert('Esta cerradura no tiene un ID válido');
-      return;
-    }
-
-    navigate(`/client/access/${access.id}/open`, {
-      state: {
-        access,
-        lock: access.cerradura,
-      },
-    });
+    if (!access.cerradura?.id) return alert('Cerradura inválida');
+    navigate(`/client/access/${access.id}/open`, { state: { access, lock: access.cerradura } });
   };
 
-  const handleDelete = (accessId) => {
-    const confirmDelete = window.confirm('¿Seguro que quieres borrar este acceso?');
-    if (confirmDelete) {
-      const updated = accesses.filter((a) => a.id !== accessId);
-      setAccesses(updated);
-      localStorage.setItem('clientAccesses', JSON.stringify(updated));
+  const handleMoveToFolder = async (accessId, carpetaName) => {
+    try {
+      await updateAccessFolder(accessId, carpetaName);
+      fetchAccesses();
+    } catch (error) {
+      console.error('❌ Error al mover acceso:', error);
     }
   };
 
-  const onDragStart = (access, source) => {
-    const data = { access, source };
-    localStorage.setItem('draggedAccess', JSON.stringify(data));
+  const handleDragStart = (access) => {
+    localStorage.setItem('draggedAccess', JSON.stringify({ access }));
   };
 
-  const onDrop = (folderId) => {
+  const handleDropOnFolder = (folderName) => {
     const data = JSON.parse(localStorage.getItem('draggedAccess'));
     if (!data) return;
-
-    const updatedFolders = folders.map((folder) => {
-      if (folder.id === folderId) {
-        return {
-          ...folder,
-          accesos: [...folder.accesos, data.access],
-        };
-      }
-      return folder;
-    });
-
-    const updatedAccesses = accesses.filter((a) => a.id !== data.access.id);
-
-    setAccesses(updatedAccesses);
-    setFolders(updatedFolders);
-
-    localStorage.setItem('clientFolders', JSON.stringify(updatedFolders));
-    localStorage.setItem('clientAccesses', JSON.stringify(updatedAccesses));
+    handleMoveToFolder(data.access.id, folderName);
     localStorage.removeItem('draggedAccess');
   };
 
-  useEffect(() => {
-    const savedFolders = localStorage.getItem('clientFolders');
-    if (savedFolders) {
-      setFolders(JSON.parse(savedFolders));
-    }
-  }, []);
-
-  const handleOpenFolder = (folder) => {
-    navigate(`/client/folder/${folder.id}`, { state: { carpeta: folder } });
-  };
+  const freeAccesses = accesses.filter(a => !a.carpeta);
 
   return (
     <div className={styles.container}>
@@ -118,41 +88,54 @@ function ClientHome() {
         <BackButton to="/register" />
         <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       </div>
-
       <div className={styles.mainContent}>
         <h1 className={styles.greeting}>Hola Cliente</h1>
-        <h2 className={styles.subtitle}>Tus cerraduras disponibles</h2>
+        <h2 className={styles.subtitle}>Tus accesos</h2>
 
         <div className={styles.accessList}>
-          {accesses.map((access) => (
+          {/* Accesos sin carpeta */}
+          {freeAccesses.map(access => (
             <AccessCard
               key={access.id}
               access={access}
               color={colores[access.id]}
-              onOpen={handleOpenLock}
-              onDelete={handleDelete}
+              onOpen={() => handleOpenLock(access)}
               draggable
-              onDragStart={() => onDragStart(access, 'fuera')}
+              onDragStart={() => handleDragStart(access)}
             />
           ))}
 
-          {folders.map((folder) => (
-            <div
-              key={folder.id}
-              className={styles.accessCard}
-              onClick={() => handleOpenFolder(folder)}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={() => onDrop(folder.id)}
-              style={{ backgroundColor: '#F7D6E0', cursor: 'pointer' }}
-            >
-              <FaPlus className={styles.lockIcon} />
-              <p><strong>📁 {folder.nombre}</strong></p>
-              <p>{folder.accesos.length} acceso(s)</p>
-              <p>Haz click para ver</p>
-            </div>
-          ))}
+          {/* Carpetas (siempre visibles) */}
+          {folders.map(folderName => {
+            const count = accesses.filter(a => a.carpeta === folderName).length;
+            return (
+              <div
+                key={folderName}
+                className={styles.accessCard}
+                onClick={() => navigate(
+                  `/client/folder/${folderName}`,
+                  { state: { carpetaNombre: folderName, accesos: accesses.filter(a => a.carpeta === folderName) } }
+                )}
+                onDragOver={e => e.preventDefault()}
+                onDrop={() => handleDropOnFolder(folderName)}
+                style={{ backgroundColor: '#F7D6E0', cursor: 'pointer' }}
+              >
+                <FaPlus className={styles.lockIcon} />
+                <p><strong>📁 {folderName}</strong></p>
+                <p>{count} acceso(s)</p>
+                {count === 0 && (
+                  <button
+                    className={styles_folder.deleteButton}
+                    onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folderName); }}
+                  >
+                    Eliminar carpeta
+                  </button>
+                )}
+              </div>
+            );
+          })}
 
-          {/* Botón para añadir acceso por token */}
+          {/* Añadir acceso por token */}
           <div
             className={styles.accessCard}
             onClick={handleAccessByToken}
@@ -162,14 +145,14 @@ function ClientHome() {
             <p><strong>Añadir acceso con token</strong></p>
           </div>
 
-          {/* Botón para crear carpeta */}
+          {/* Crear carpeta vacía */}
           <div
             className={styles.accessCard}
             onClick={handleCreateFolder}
             style={{ backgroundColor: '#FDE2E4', cursor: 'pointer' }}
           >
             <FaPlus className={styles.lockIcon} />
-            <p><strong>Crear carpeta de accesos</strong></p>
+            <p><strong>Crear carpeta</strong></p>
           </div>
         </div>
       </div>

@@ -1,125 +1,73 @@
 // src/pages/Folder.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './AdminHome.module.css';
-import styles_folder from './Folder.module.css'; // Asegúrate de tener este CSS
 import AccessCard from '../components/AccessCard';
 import BackButton from '../components/BackButton';
+import { updateAccessFolder } from '../services/api';
 
 function Folder() {
-  const location = useLocation();
+  const { state } = useLocation();
   const navigate = useNavigate();
-  const carpeta = location.state?.carpeta;
-
+  const carpetaNombre = state?.carpetaNombre;
+  const [folderAccesses, setFolderAccesses] = useState(state?.accesos || []);
   const colores = JSON.parse(localStorage.getItem('accessColors') || '{}');
 
-  if (!carpeta) {
-    return <div>No se encontró la carpeta.</div>;
-  }
+  if (!carpetaNombre) return <div>No se encontró la carpeta.</div>;
 
-  const handleOpen = (access) => {
-    if (!access.cerradura?.id) {
-      alert('Esta cerradura no tiene un ID válido');
-      return;
-    }
-
-    navigate(`/client/access/${access.id}/open`, {
-      state: { access, lock: access.cerradura },
-    });
+  const handleOpen = access => {
+    if (!access.cerradura?.id) return alert('Cerradura inválida');
+    navigate(`/client/access/${access.id}/open`, { state: { access, lock: access.cerradura } });
   };
 
-  const handleDelete = (accessId) => {
-    const confirmDelete = window.confirm('¿Seguro que quieres borrar este acceso?');
-    if (confirmDelete) {
-      const updated = carpeta.accesos.filter((a) => a.id !== accessId);
-      const updatedFolder = { ...carpeta, accesos: updated };
-
-      const allFolders = JSON.parse(localStorage.getItem('clientFolders')) || [];
-      const newFolders = allFolders.map((f) =>
-        f.id === carpeta.id ? updatedFolder : f
-      );
-
-      localStorage.setItem('clientFolders', JSON.stringify(newFolders));
+  const handleRemove = async accessId => {
+    if (!window.confirm('¿Sacar este acceso de la carpeta?')) return;
+    try {
+      await updateAccessFolder(accessId, null);
       navigate('/client/home');
+    } catch (err) {
+      console.error('Error al sacar acceso de carpeta:', err);
     }
   };
 
   const onDragStart = (e, access) => {
-    const data = {
-      access,
-      source: 'carpeta',
-      carpetaId: carpeta.id,
-    };
-    localStorage.setItem('draggedAccess', JSON.stringify(data));
+    localStorage.setItem('draggedAccess', JSON.stringify({ access }));
   };
 
-  const onDropOutside = () => {
+  const onDropOutside = async () => {
     const data = JSON.parse(localStorage.getItem('draggedAccess'));
-    if (!data || data.source !== 'carpeta') return;
-
-    const allFolders = JSON.parse(localStorage.getItem('clientFolders')) || [];
-    const updatedFolders = allFolders.map((folder) => {
-      if (folder.id === data.carpetaId) {
-        const updatedAccesos = folder.accesos.filter((a) => a.id !== data.access.id);
-        return { ...folder, accesos: updatedAccesos };
-      }
-      return folder;
-    });
-
-    const allAccesses = JSON.parse(localStorage.getItem('clientAccesses')) || [];
-    const updatedAccesses = [data.access, ...allAccesses];
-
-    localStorage.setItem('clientFolders', JSON.stringify(updatedFolders));
-    localStorage.setItem('clientAccesses', JSON.stringify(updatedAccesses));
-    localStorage.removeItem('draggedAccess');
-
-    navigate('/client/home');
-  };
-
-  // Eliminar la carpeta cuando esté vacía
-  const handleDeleteFolder = () => {
-    const confirmDelete = window.confirm('¿Seguro que quieres eliminar esta carpeta?');
-    if (confirmDelete) {
-      const allFolders = JSON.parse(localStorage.getItem('clientFolders')) || [];
-      const newFolders = allFolders.filter((f) => f.id !== carpeta.id);
-
-      localStorage.setItem('clientFolders', JSON.stringify(newFolders));
-      navigate('/client/home'); // Volver a la vista principal
+    if (!data) return;
+    try {
+      await updateAccessFolder(data.access.id, null);
+      localStorage.removeItem('draggedAccess');
+      navigate('/client/home');
+    } catch (err) {
+      console.error('Error al mover fuera de carpeta:', err);
     }
   };
 
   return (
     <div className={styles.container}>
-      <div className={styles.navContainer}>
+      <div className={styles.navContainer}>  
         <BackButton to="/client/home" />
       </div>
-
-      <h1 className={styles.greeting}>📁 {carpeta.nombre}</h1>
+      <h1 className={styles.greeting}>📁 {carpetaNombre}</h1>
       <h2 className={styles.subtitle}>Accesos en esta carpeta</h2>
-
-      {carpeta.accesos.length === 0 && (
-        <button
-          className={styles_folder.deleteButton}
-          onClick={handleDeleteFolder}
-        >
-          Eliminar carpeta
-        </button>
-      )}
 
       <div
         className={styles.accessList}
-        onDragOver={(e) => e.preventDefault()}
+        onDragOver={e => e.preventDefault()}
         onDrop={onDropOutside}
       >
-        {carpeta.accesos.map((access) => (
+        {folderAccesses.map(access => (
           <AccessCard
             key={access.id}
             access={access}
             color={colores[access.id]}
-            onOpen={handleOpen}
-            onDelete={() => handleDelete(access.id)}
+            onOpen={() => handleOpen(access)}
+            onDelete={() => handleRemove(access.id)}
             draggable
-            onDragStart={(e) => onDragStart(e, access)}
+            onDragStart={e => onDragStart(e, access)}
           />
         ))}
       </div>

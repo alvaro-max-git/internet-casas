@@ -56,6 +56,7 @@ public class SecurityConfig {
 
           .requestMatchers(HttpMethod.POST, "/api/accesses").hasRole("HOST")
           .requestMatchers(HttpMethod.PUT, "/api/accesses/{id}").hasAnyRole("HOST", "USER")
+          .requestMatchers(HttpMethod.PUT, "/api/accesses/{id}/carpeta").hasRole("USER")
           .requestMatchers(HttpMethod.DELETE, "/api/accesses/{id}").hasRole("HOST")
           .requestMatchers(HttpMethod.GET, "/api/accesses/{id}").hasAnyRole("HOST", "USER") // Review if needed
           .requestMatchers(HttpMethod.POST, "/api/accesses/{accessId}/open").authenticated()

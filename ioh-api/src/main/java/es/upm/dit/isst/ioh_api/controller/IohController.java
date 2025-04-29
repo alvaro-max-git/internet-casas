@@ -468,19 +468,30 @@ public class IohController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+        /*
+     * ===================================================================
+     * Endpoints de Carpeta del Access
+     * ===================================================================
+     */
+
+
     // UPDATE Carpeta del Access
     // PUT /api/accesses/{id}/carpeta
     @PutMapping("/accesses/{id}/carpeta")
     public ResponseEntity<Access> updateAccessCarpeta(@PathVariable Long id,
             @RequestBody Map<String, String> payload) {
-        return accessRepository.findById(id).map(access -> {
-            String carpeta = payload.get("carpeta");
-            if (carpeta != null && !carpeta.isEmpty()) {
-                access.setCarpeta(carpeta);
+        return accessRepository.findById(id)
+          .map(access -> {
+            // Puede venir null o "" para indicar que queremos "desasignar" carpeta
+            if (payload.containsKey("carpeta")) {
+                String carpeta = payload.get("carpeta");
+                // Si es nulo o vacío, lo limpiamos; si no, lo seteamos
+                access.setCarpeta((carpeta == null || carpeta.isEmpty()) ? null : carpeta);
                 accessRepository.save(access);
             }
             return ResponseEntity.ok(access);
-        }).orElse(ResponseEntity.notFound().build());
+          })
+          .orElse(ResponseEntity.notFound().build());
     }
 
     // UPDATE Access
