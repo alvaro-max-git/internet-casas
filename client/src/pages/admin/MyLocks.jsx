@@ -81,7 +81,7 @@ function MyLocks() {
               <button
                 onClick={() => handleToggleBlock(lock.id, lock.blocked)}
                 disabled={loading} // Deshabilita mientras carga
-                className={lock.blocked ? styles.unblockButton : styles.blockButton} // Estilos opcionales
+                className={lock.blocked ? styles.unblockButton : styles.deleteButton} // Estilos opcionales
               >
                 {lock.blocked ? 'Desbloquear' : 'Bloquear'}
               </button>
