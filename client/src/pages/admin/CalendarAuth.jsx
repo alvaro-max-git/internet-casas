@@ -127,7 +127,7 @@ function CalendarAuth() {
       const sessionToken = localStorage.getItem("sessionToken");
       if (!sessionToken) return;
   
-      await fetch("http://localhost:8080/api/me/google-token", {
+      await fetch("https://localhost:8443/api/me/google-token", {
         method: "DELETE",
         headers: { Authorization: `Bearer ${sessionToken}` }
       });
