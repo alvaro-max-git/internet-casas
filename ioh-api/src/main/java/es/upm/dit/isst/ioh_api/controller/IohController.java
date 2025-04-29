@@ -468,6 +468,21 @@ public class IohController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // UPDATE Carpeta del Access
+    // PUT /api/accesses/{id}/carpeta
+    @PutMapping("/accesses/{id}/carpeta")
+    public ResponseEntity<Access> updateAccessCarpeta(@PathVariable Long id,
+            @RequestBody Map<String, String> payload) {
+        return accessRepository.findById(id).map(access -> {
+            String carpeta = payload.get("carpeta");
+            if (carpeta != null && !carpeta.isEmpty()) {
+                access.setCarpeta(carpeta);
+                accessRepository.save(access);
+            }
+            return ResponseEntity.ok(access);
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
     // UPDATE Access
     // PUT /api/accesses/{id}
     @PutMapping("/accesses/{id}")

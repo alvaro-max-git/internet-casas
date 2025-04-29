@@ -84,6 +84,30 @@ export async function getAccessesByToken(token) {
   return response.json();
 }
 
+// OBTENER ACCESO CON SU CARPETA (ya lo tienes como getAccess, no es necesario duplicar)
+export async function getAccessWithFolder(id) {
+  // Alias para claridad si prefieres, o simplemente usa getAccess
+  return getAccess(id);
+}
+
+// ACTUALIZAR SOLO LA CARPETA DE UN ACCESO
+export async function updateAccessFolder(id, carpeta) {
+  const response = await fetch(`${API_BASE}/accesses/${id}/carpeta`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
+    body: JSON.stringify({ carpeta }),
+  });
+
+  if (!response.ok) {
+    console.error(`❌ Error al actualizar carpeta de acceso ${id}:`, response.statusText);
+    throw new Error("Error al actualizar carpeta");
+  }
+
+  return response.json();
+}
 /* ============================ CERRADURAS ============================ */
 
 export async function openLock(lockId) {

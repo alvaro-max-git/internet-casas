@@ -32,23 +32,35 @@ public class Access {
     private String token;   
     private String usuario; // p.ej. "guest1@ejemplo.com" si no queremos Modelar un user completo
 
+    private String carpeta;
+
     public Access() {
     }
 
     public Access(Host host, Lock cerradura, LocalDateTime fechaEntrada,
-                  LocalDateTime fechaSalida, String token, String usuario) {
+                  LocalDateTime fechaSalida, String token, String usuario, String carpeta) {
         this.host = host;
         this.cerradura = cerradura;
         this.fechaEntrada = fechaEntrada;
         this.fechaSalida = fechaSalida;
         this.token = token;
         this.usuario = usuario;
+        this.carpeta = carpeta;
+
     }
 
     public Long getId() {
         return id;
     }
     // Resto de getters y setters
+
+    public String getCarpeta() {
+        return carpeta;
+    }
+
+    public void setCarpeta(String carpeta) {
+        this.carpeta = carpeta;
+    }
 
     public Host getHost() {
         return host;

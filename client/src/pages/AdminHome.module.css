@@ -24,6 +24,22 @@
   margin-left: 0; /* Ajusta si quieres moverlo */
 }
 
+.deleteFolder {
+  background-color: #f0f0f0;
+  font-size: 14px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 8px;
+  width: 200px; /* Define un ancho fijo para el botón */
+  display: block;
+  margin-left: auto; /* Centra el botón horizontalmente */
+  margin-right: auto; /* Centra el botón horizontalmente */
+  transition: background-color 0.2s ease;
+}
+
+
 /* === CONTENEDOR PRINCIPAL === */
 .mainContent {
   display: flex;
