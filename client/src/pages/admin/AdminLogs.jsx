@@ -27,7 +27,7 @@ function AdminLogs() {
             try {
                 console.log("🔐 Usando token:", sessionToken);
 
-                const hostRes = await fetch("http://localhost:8443/api/me/locks", {
+                const hostRes = await fetch("https://localhost:8443/api/me/locks", {
                     headers: {
                         Authorization: `Bearer ${sessionToken}`,
                     },
