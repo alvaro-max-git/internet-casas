@@ -15,12 +15,10 @@ public class Lock {
     @ManyToOne
     private Host propietario; // El host dueño de la cerradura
 
-    // Podrías añadir más campos, por ejemplo:
-    // private String marca;
-    // private String modelo;
-
     private String name;
     private Boolean locked;
+    private Boolean blocked = false;
+    
     private Double batteryLevel;
     private String batteryStatus;  // "low", "medium", "full"
     private String manufacturer;
@@ -105,6 +103,14 @@ public class Lock {
 
     public void setTimezone(String timezone) {
         this.timezone = timezone;
+    }
+
+    public Boolean getBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(Boolean blocked) {
+        this.blocked = blocked;
     }
 
 }

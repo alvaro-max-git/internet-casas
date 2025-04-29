@@ -538,6 +538,11 @@ public class IohController {
             return new ResponseEntity<>("Cerradura o Host no encontrados", HttpStatus.BAD_REQUEST);
         }
 
+        // Verificamos que la cerradura no esté bloqueada
+        if (lock.getBlocked()) {
+            return new ResponseEntity<>("Cerradura bloqueada", HttpStatus.FORBIDDEN);
+        }
+
         // Try to open the lock (esto no logro que de ok porque tarda)
         boolean success = seamLockService.openLock(host, lock.getId());
 
@@ -574,9 +579,71 @@ public class IohController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // POST Bloquear una cerradura
+    @PostMapping("/locks/{lockId}/block")
+    public ResponseEntity<?> blockLock(@PathVariable String lockId) {
+        // 1. Obtener el Host autenticado
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Optional<User> userOpt = userRepository.findById(email);
 
+        if (userOpt.isEmpty() || !(userOpt.get() instanceof Host)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Acción no permitida o usuario no es Host.");
+        }
+        Host host = (Host) userOpt.get();
 
+        // 2. Buscar la cerradura
+        Optional<Lock> lockOpt = lockRepository.findById(lockId);
+        if (lockOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Lock lock = lockOpt.get();
 
+        // 3. Verificar propiedad
+        if (!lock.getPropietario().getEmail().equals(host.getEmail())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No eres el propietario de esta cerradura.");
+        }
+
+        // 4. Bloquear y guardar
+        lock.setBlocked(true);
+        lockRepository.save(lock);
+
+        System.out.println("🔒 Cerradura bloqueada: " + lockId + " por Host: " + host.getEmail());
+        return ResponseEntity.ok().body("Cerradura " + lockId + " bloqueada correctamente.");
+    }
+
+    // POST Desbloquear una cerradura
+    @PostMapping("/locks/{lockId}/unblock")
+    public ResponseEntity<?> unblockLock(@PathVariable String lockId) {
+        // 1. Obtener el Host autenticado
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Optional<User> userOpt = userRepository.findById(email);
+
+        if (userOpt.isEmpty() || !(userOpt.get() instanceof Host)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Acción no permitida o usuario no es Host.");
+        }
+        Host host = (Host) userOpt.get();
+
+        // 2. Buscar la cerradura
+        Optional<Lock> lockOpt = lockRepository.findById(lockId);
+        if (lockOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Lock lock = lockOpt.get();
+
+        // 3. Verificar propiedad
+        if (!lock.getPropietario().getEmail().equals(host.getEmail())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No eres el propietario de esta cerradura.");
+        }
+
+        // 4. Desbloquear y guardar
+        lock.setBlocked(false);
+        lockRepository.save(lock);
+
+        System.out.println("🔓 Cerradura desbloqueada: " + lockId + " por Host: " + host.getEmail());
+        return ResponseEntity.ok().body("Cerradura " + lockId + " desbloqueada correctamente.");
+    }
 
 /*
  * ===================================================================

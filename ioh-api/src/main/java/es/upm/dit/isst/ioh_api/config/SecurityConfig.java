@@ -66,6 +66,8 @@ public class SecurityConfig {
           .requestMatchers("/api/me/**").authenticated() // Filtro general
 
           .requestMatchers(HttpMethod.GET, "/api/locks/{lockId}").hasAnyRole("HOST", "USER")
+          .requestMatchers(HttpMethod.POST, "/api/locks/{lockId}/block").hasRole("HOST")
+          .requestMatchers(HttpMethod.POST, "/api/locks/{lockId}/unblock").hasRole("HOST")
           .anyRequest().denyAll() // O .authenticated(), según tu preferencia
         )
         // Desactivamos CSRF si estás haciendo llamadas AJAX desde React
