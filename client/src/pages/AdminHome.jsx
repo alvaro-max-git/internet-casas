@@ -99,8 +99,8 @@ function AdminHome() {
     >
       <img src={fotocerrradura} alt="Lock" className={styles.lockIcon} />
       <p><strong>Cerradura:</strong> {access.cerradura?.name || '(sin nombre)'}</p>
-      <p><strong>Usuario:</strong> {access.usuario || '—'}</p>
-      <p><strong>Token:</strong> {access.token || '—'}</p>
+      <p><strong>Fecha de Entrada:</strong> <br></br>{formatDate(access.fechaEntrada)}</p>
+      <p><strong>Fecha de Salida:</strong> <br></br>{formatDate(access.fechaSalida)}</p>
       {/* Show expiration date if expired */}
       {isExpired && <p><strong>Caducado:</strong> {new Date(access.fechaSalida).toLocaleString()}</p>}
 

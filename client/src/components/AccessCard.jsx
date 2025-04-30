@@ -13,6 +13,13 @@ function AccessCard({ access, color, onOpen, draggable, onDragStart }) {
     return currentDate < fechaEntrada || currentDate > fechaSalida;
   };
 
+    // Función para formatear las fechas de manera legible
+    const formatDate = (date) => {
+      if (!date) return '—';
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(date).toLocaleDateString('es-ES', options);
+    };
+
   return (
     <div
       className={styles.accessCard}
@@ -22,8 +29,8 @@ function AccessCard({ access, color, onOpen, draggable, onDragStart }) {
     >
       <img src={fotocerrradura} alt="Lock" className={styles.lockIcon} />
       <p><strong>Cerradura:</strong> {access.cerradura?.name || '(sin nombre)'}</p>
-      <p><strong>Usuario:</strong> {access.usuario || '—'}</p>
-      <p><strong>Token:</strong> {access.token || '—'}</p>
+      <p><strong>Fecha de Entrada:</strong> <br></br>{formatDate(access.fechaEntrada)}</p>
+      <p><strong>Fecha de Salida:</strong> <br></br>{formatDate(access.fechaSalida)}</p>
 
       {/* Mostrar "Acceso caducado" si la fecha actual está fuera del rango */}
       {isAccessExpired() ? (
