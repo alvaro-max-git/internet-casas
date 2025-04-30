@@ -7,7 +7,6 @@ import Register from './pages/Register';
 // Cliente
 import ClientHome from './pages/ClientHome';
 import Folder from './pages/Folder';
-import BluetoothSearch from './pages/BluetoothSearch';
 
 // Admin
 import AdminHome from './pages/AdminHome';
@@ -36,7 +35,6 @@ function AppRouter() {
       <Route path="/client/folder/:id" element={<Folder />} />
       <Route path="/client/add-folder/:id" element={<Folder />} />
       <Route path="/client/home" element={<ClientHome />} />
-      <Route path="/client/scan" element={<BluetoothSearch />} />
       <Route path="/client/access/:accessId/open" element={<LockOpened />} />
 
       {/* === ADMINISTRADOR === */}

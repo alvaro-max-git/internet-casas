@@ -2,9 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './AdminHome.module.css';
-import styles_folder from './Folder.module.css';
 import { FaPlus } from 'react-icons/fa';
-import BackButton from '../components/BackButton';
 import ToggleMenu from '../components/ToggleMenu';
 import { listAccessesOfCurrentUser, updateAccessFolder } from '../services/api';
 import AccessCard from '../components/AccessCard';
@@ -120,12 +118,11 @@ function ClientHome() {
                 onDrop={() => handleDropOnFolder(folderName)}
                 style={{ backgroundColor: '#F7D6E0', cursor: 'pointer' }}
               >
-                <FaPlus className={styles.lockIcon} />
-                <p><strong>📁 {folderName}</strong></p>
+                <h1><strong>📁 {folderName}</strong></h1>
                 <p>{count} acceso(s)</p>
                 {count === 0 && (
                   <button
-                    className={styles_folder.deleteButton}
+                    className={styles.deleteButton}
                     onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folderName); }}
                   >
                     Eliminar carpeta

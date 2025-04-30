@@ -1,6 +1,6 @@
-// src/pages/Folder.jsx
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import styles_folder from './Folder.module.css';
 import styles from './AdminHome.module.css';
 import AccessCard from '../components/AccessCard';
 import ToggleMenu from '../components/ToggleMenu';
@@ -11,13 +11,14 @@ function Folder() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const [dragCounter, setDragCounter] = useState(0);
 
   const carpetaNombre = state?.carpetaNombre;
   const [folderAccesses, setFolderAccesses] = useState(state?.accesos || []);
   const colores = JSON.parse(localStorage.getItem('accessColors') || '{}');
 
   const toggleMenu = (open) => setMenuOpen(open);
-
 
   if (!carpetaNombre) return <div>No se encontró la carpeta.</div>;
 
@@ -40,6 +41,22 @@ function Folder() {
     localStorage.setItem('draggedAccess', JSON.stringify({ access }));
   };
 
+  const handleDragEnter = () => {
+    setDragCounter(prev => {
+      const next = prev + 1;
+      if (next === 1) setIsDraggingOver(true);
+      return next;
+    });
+  };
+
+  const handleDragLeave = () => {
+    setDragCounter(prev => {
+      const next = prev - 1;
+      if (next === 0) setIsDraggingOver(false);
+      return next;
+    });
+  };
+
   const onDropOutside = async () => {
     const data = JSON.parse(localStorage.getItem('draggedAccess'));
     if (!data) return;
@@ -53,35 +70,46 @@ function Folder() {
   };
 
   return (
+    <div
+      className={styles_folder.pageWrapper}
+      onDragEnter={handleDragEnter}
+      onDragOver={e => e.preventDefault()}
+      onDragLeave={handleDragLeave}
+      onDrop={e => {
+        setIsDraggingOver(false);
+        setDragCounter(0);
+        onDropOutside();
+      }}
+    >
+      {isDraggingOver && (
+        <div className={styles_folder.fullscreenDrop}>
+          <div className={styles_folder.dropMessage}>🔽 Suelta aquí para remover</div>
+        </div>
+      )}
 
+      <div className={styles.container}>
+        <div className={styles.navContainer}>  
+          <BackButton to="/client/home" />
+          <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+        </div>
+        <div className={styles.mainContent}>
+          <h1 className={styles.greeting}>📁 {carpetaNombre}</h1>
+          <h2 className={styles.subtitle}>Accesos en esta carpeta</h2>
 
-     
-    <div className={styles.container}>
-      <div className={styles.navContainer}>  
-        <BackButton to="/client/home" />
-        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
-      </div>
-      <div className={styles.mainContent}>
-      <h1 className={styles.greeting}>📁 {carpetaNombre}</h1>
-      <h2 className={styles.subtitle}>Accesos en esta carpeta</h2>
-
-      <div
-        className={styles.accessList}
-        onDragOver={e => e.preventDefault()}
-        onDrop={onDropOutside}
-      >
-        {folderAccesses.map(access => (
-          <AccessCard
-            key={access.id}
-            access={access}
-            color={colores[access.id]}
-            onOpen={() => handleOpen(access)}
-            onDelete={() => handleRemove(access.id)}
-            draggable
-            onDragStart={e => onDragStart(e, access)}
-          />
-        ))}
-      </div>
+          <div className={styles.accessList}>
+            {folderAccesses.map(access => (
+              <AccessCard
+                key={access.id}
+                access={access}
+                color={colores[access.id]}
+                onOpen={() => handleOpen(access)}
+                onDelete={() => handleRemove(access.id)}
+                draggable
+                onDragStart={e => onDragStart(e, access)}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
