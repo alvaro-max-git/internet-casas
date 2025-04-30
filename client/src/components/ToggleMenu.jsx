@@ -57,11 +57,11 @@ function ToggleMenu({ menuOpen, toggleMenu }) {
                 </div>
               </>
             )}
-            <div className={styles.menuItem}>
+            {/* <div className={styles.menuItem}>
               <FaCog className={styles.icon} />
               <span>Configuración</span>
-            </div>
-            <div className={styles.menuItem} onClick={handleLogout}>
+            </div> */}
+            <div className={styles.menuItem2} onClick={handleLogout}>
               <FaSignOutAlt className={styles.icon} />
               <span>Cerrar sesión</span>
             </div>
