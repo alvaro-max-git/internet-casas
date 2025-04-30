@@ -90,6 +90,13 @@ function AdminHome() {
 
   const colores = JSON.parse(localStorage.getItem('accessColors') || '{}');
 
+  // Función para formatear las fechas de manera legible
+  const formatDate = (date) => {
+    if (!date) return '—';
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(date).toLocaleDateString('es-ES', options);
+  };
+
   // Helper function to render an access card
   const renderAccessCard = (access, isExpired = false) => (
     <div
