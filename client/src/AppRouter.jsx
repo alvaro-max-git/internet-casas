@@ -16,9 +16,6 @@ import CalendarAuth from './pages/admin/CalendarAuth';
 import AdminLogs from './pages/admin/AdminLogs';
 import MyLocks from './pages/admin/MyLocks';
 import AccessLoader from './pages/AccessLoader';
-
-// Legacy (por si los sigues usando)
-import Home from './pages/Home';
 import LockOpened from './pages/LockOpened';
 
 function AppRouter() {

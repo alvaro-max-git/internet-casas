@@ -1,8 +1,19 @@
 
+.background {
+  min-height: 100vh;
+  width: 100%;
+  background-image: url('/Background.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 100px; /* si necesitas espacio arriba */
+}
 .container {
     width: 100vw;
     min-height: 100vh;
-    background-color: #fff;
     position: relative; /* Para position absoluta en navContainer si deseas */
   }
 

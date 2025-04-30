@@ -118,6 +118,7 @@ function EditAccessForm() {
   };
 
   return (
+  <div className={styles.background}>
     <div className={styles.container}>
       <div className={styles.navContainer}>
         <BackButton to="/admin/home" className={styles.backButtonCustom} />
@@ -212,6 +213,7 @@ function EditAccessForm() {
           Guardar cambios
         </button>
       </form>
+    </div>
     </div>
   );
 }

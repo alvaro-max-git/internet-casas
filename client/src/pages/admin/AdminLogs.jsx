@@ -95,60 +95,69 @@ function AdminLogs() {
         window.print(); // Solución rápida: imprime/exporta como PDF desde navegador
     };
     return (
-        <div className={styles.container}>
-            <div className={styles.navContainer}>
-                <BackButton to="/admin/home" />
-                <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
-            </div>
-
-            <div className={styles.mainContent}>
-                <h1 className={styles.greeting}>Historial de accesos</h1>
-                <p className={styles.subtitle}>¿Quieres descargar este registro?</p>
-                <div style={{ marginBottom: '1rem' }}>
-                    <button className={styles.exportBtn} onClick={downloadCSV}>📄 Descargar CSV</button>
-                    <button className={styles.exportBtn} onClick={downloadPDF}>🖨️ Imprimir / PDF</button>
+        <div className={styles.background}>
+            <div className={styles.container}>
+                <div className={styles.navContainer}>
+                    <BackButton to="/admin/home" />
+                    <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
                 </div>
 
-                {events.length === 0 ? (
-                    <p className={styles.subtitle}>No hay eventos registrados.</p>
-                ) : (
-                    <div className={styles.logsWrapper}>
-                        <table className={styles.logsTable}>
-                            <thead>
-                                <tr>
-                                    <th>📅 Fecha</th>
-                                    <th>🔒 Evento</th>
-                                    <th>🔐 Cerradura</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {events.map((log, idx) => (
-                                    <tr key={idx}>
-                                        <td>{formatDate(log.created_at)}</td>
-                                        <td
-                                            className={
-                                                log.event_type === 'lock.locked'
-                                                    ? styles.lockedEvent
-                                                    : styles.unlockedEvent
-                                            }
-                                        >
-                                            {log.event_type === 'lock.locked' ? (
-                                                <>
-                                                    <FaLock style={{ marginRight: '6px' }} /> Cerrado
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <FaUnlock style={{ marginRight: '6px' }} /> Abierto
-                                                </>
-                                            )}
-                                        </td>
-                                        <td>{deviceNames[log.device_id] || log.device_id}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                <div className={styles.mainContent}>
+                    <h1 className={styles.greeting}>Historial de accesos</h1>
+                    <p className={styles.subtitle}>¿Quieres descargar este registro?</p>
+                    <div style={{ marginBottom: '1rem' }}>
+                        <button className={styles.exportBtn} onClick={downloadCSV}>📄 Descargar CSV</button>
+                        <button className={styles.exportBtn} onClick={downloadPDF}>🖨️ Imprimir / PDF</button>
                     </div>
-                )}
+
+                    {events.length === 0 ? (
+                        <p className={styles.subtitle}>No hay eventos registrados.</p>
+                    ) : (
+                        <div className={styles.logsWrapper}>
+                            <table className={styles.logsTable}>
+                                <thead>
+                                    <tr>
+                                        <th>📅 Fecha</th>
+                                        <th>🔒 Evento</th>
+                                        <th>🔐 Cerradura</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {events.slice(0, 6).map((log, idx) => (
+                                        <tr key={idx}>
+                                            <td>{formatDate(log.created_at)}</td>
+                                            <td
+                                                className={
+                                                    log.event_type === 'lock.locked'
+                                                        ? styles.lockedEvent
+                                                        : styles.unlockedEvent
+                                                }
+                                            >
+                                                {log.event_type === 'lock.locked' ? (
+                                                    <>
+                                                        <FaLock style={{ marginRight: '6px' }} /> Cerrado
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <FaUnlock style={{ marginRight: '6px' }} /> Abierto
+                                                    </>
+                                                )}
+                                            </td>
+                                            <td>{deviceNames[log.device_id] || log.device_id}</td>
+                                        </tr>
+                                    ))}
+                                    {events.length > 6 && (
+                                        <tr>
+                                            <td colSpan="3" style={{ textAlign: 'center', fontStyle: 'italic' }}>...</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+
+                            </table>
+                            <br></br>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

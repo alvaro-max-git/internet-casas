@@ -47,6 +47,7 @@ function AccessLoader() {
   };
 
   return (
+    <div className={styles.background}>
     <div className={styles.container}>
       {/* NAV */}
       <div className={styles.navContainer}>
@@ -73,6 +74,7 @@ function AccessLoader() {
           </button>
         </form>
       </div>
+    </div>
     </div>
   );
 }

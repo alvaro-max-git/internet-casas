@@ -79,6 +79,7 @@ function LockOpened() {
   };
 
   return (
+    <div className={styles.background}>
     <div className={styles.container}>
       <div className={styles.navContainer}>
         <BackButton to="/client/home" />
@@ -117,6 +118,7 @@ function LockOpened() {
           </button>
         )}
       </div>
+    </div>
     </div>
   );
 }

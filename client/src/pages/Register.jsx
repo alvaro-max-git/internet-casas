@@ -115,6 +115,7 @@ function Register() {
   };
 
   return (
+  <div className={styles.background}>
     <div className={styles.container}>
       <div className={styles.navContainer}>
         <BackButton to="/" />
@@ -274,6 +275,7 @@ function Register() {
         )}
       </div>
     </div>
+  </div>
   );
 }
 

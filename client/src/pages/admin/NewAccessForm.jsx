@@ -111,6 +111,7 @@ function NewAccessForm() {
   };
 
   return (
+    <div className={styles.background}>
     <div className={styles.container}>
       <div className={styles.navContainer}>
         <BackButton to="/admin/home" className={styles.backButtonCustom} />
@@ -211,6 +212,7 @@ function NewAccessForm() {
           Crear acceso
         </button>
       </form>
+    </div>
     </div>
   );
 }

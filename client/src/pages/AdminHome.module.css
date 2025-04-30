@@ -7,6 +7,7 @@
   position: relative; /* Para position absoluta en navContainer si deseas */
 }
 
+
 /* === CONTENEDOR NAV (BackButton + ToggleMenu) === */
 .navContainer {
   position: absolute;
@@ -48,6 +49,10 @@
   justify-content: flex-start;
   padding-top: 100px; /* para dejar espacio a la navContainer arriba */
   min-height: 100vh;  /* para que crezca con el contenido */
+  background-image: url('/Background.png');
+  background-size: cover;       /* hace zoom para cubrir todo */
+  background-repeat: no-repeat; /* evita que se repita */
+  background-position: center;  /* centra la imagen */
 }
 
 /* Título “Hola, Administrador” */
