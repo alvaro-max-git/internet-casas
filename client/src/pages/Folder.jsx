@@ -3,15 +3,21 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './AdminHome.module.css';
 import AccessCard from '../components/AccessCard';
+import ToggleMenu from '../components/ToggleMenu';
 import BackButton from '../components/BackButton';
 import { updateAccessFolder } from '../services/api';
 
 function Folder() {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const carpetaNombre = state?.carpetaNombre;
   const [folderAccesses, setFolderAccesses] = useState(state?.accesos || []);
   const colores = JSON.parse(localStorage.getItem('accessColors') || '{}');
+
+  const toggleMenu = (open) => setMenuOpen(open);
+
 
   if (!carpetaNombre) return <div>No se encontró la carpeta.</div>;
 
@@ -47,10 +53,15 @@ function Folder() {
   };
 
   return (
+
+
+     
     <div className={styles.container}>
       <div className={styles.navContainer}>  
         <BackButton to="/client/home" />
+        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       </div>
+      <div className={styles.mainContent}>
       <h1 className={styles.greeting}>📁 {carpetaNombre}</h1>
       <h2 className={styles.subtitle}>Accesos en esta carpeta</h2>
 
@@ -70,6 +81,7 @@ function Folder() {
             onDragStart={e => onDragStart(e, access)}
           />
         ))}
+      </div>
       </div>
     </div>
   );
