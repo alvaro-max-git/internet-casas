@@ -1,9 +1,18 @@
-// src/components/AccessCard.jsx
 import React from 'react';
 import fotocerrradura from '../assets/cerradura.png';
 import styles from '../pages/AdminHome.module.css'; // usa el mismo CSS
 
-function AccessCard({ access, color, onOpen, onDelete, draggable, onDragStart }) {
+function AccessCard({ access, color, draggable, onDragStart }) {
+  // Función para verificar si la fecha actual está dentro del rango de acceso
+  const isAccessExpired = () => {
+    const currentDate = new Date();
+    const fechaEntrada = new Date(access.fechaEntrada);
+    const fechaSalida = new Date(access.fechaSalida);
+    
+    // Verificar si la fecha actual está fuera del rango
+    return currentDate < fechaEntrada || currentDate > fechaSalida;
+  };
+
   return (
     <div
       className={styles.accessCard}
@@ -16,14 +25,15 @@ function AccessCard({ access, color, onOpen, onDelete, draggable, onDragStart })
       <p><strong>Usuario:</strong> {access.usuario || '—'}</p>
       <p><strong>Token:</strong> {access.token || '—'}</p>
 
-      {onOpen && (
+      {/* Mostrar "Acceso caducado" si la fecha actual está fuera del rango */}
+      {isAccessExpired() ? (
+        <div className={styles.expiredMessage}>
+          Acceso caducado
+        </div>
+      ) : (
+        // Si no está caducado, mostrar el botón "Abrir"
         <button className={styles.configureButton} onClick={() => onOpen(access)}>
           Abrir
-        </button>
-      )}
-      {onDelete && (
-        <button className={styles.deleteButton} onClick={() => onDelete(access.id)}>
-          Borrar
         </button>
       )}
     </div>

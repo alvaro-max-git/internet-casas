@@ -114,6 +114,16 @@
   transition: background-color 0.2s ease;
 }
 
+.expiredMessage {
+  background-color: #f0f0f0;
+  font-size: 14px;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 6px;
+  margin-top: 8px;
+  width: 100%;
+}
+
 .configureButton:hover {
   background-color: #761c8f;
   color: #fff;
