@@ -126,7 +126,7 @@ function AdminHome() {
   return (
     <div className={styles.container}>
       <div className={styles.navContainer}>
-        <BackButton to="/register" className={styles.backButtonCustom} />
+        {/* <BackButton to="/register" className={styles.backButtonCustom} /> */}
         <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       </div>
 

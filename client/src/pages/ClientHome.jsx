@@ -85,7 +85,7 @@ function ClientHome() {
   return (
     <div className={styles.container}>
       <div className={styles.navContainer}>
-        <BackButton to="/register" />
+        {/* <BackButton to="/register" /> */}
         <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       </div>
       <div className={styles.mainContent}>
