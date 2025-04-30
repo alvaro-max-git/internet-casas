@@ -2,7 +2,7 @@ import React from 'react';
 import fotocerrradura from '../assets/cerradura.png';
 import styles from '../pages/AdminHome.module.css'; // usa el mismo CSS
 
-function AccessCard({ access, color, draggable, onDragStart }) {
+function AccessCard({ access, color, onOpen, draggable, onDragStart }) {
   // Función para verificar si la fecha actual está dentro del rango de acceso
   const isAccessExpired = () => {
     const currentDate = new Date();
