@@ -98,23 +98,23 @@ function AdminLogs() {
         <div className={styles.background}>
             <div className={styles.container}>
                 <div className={styles.navContainer}>
-                    <BackButton to="/admin/home" />
-                    <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+                <BackButton to="/admin/home" id="admin_logs-back-button" />
+                <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} id="admin_logs-toggle-menu" />
                 </div>
 
                 <div className={styles.mainContent}>
                     <h1 className={styles.greeting}>Historial de accesos</h1>
                     <p className={styles.subtitle}>¿Quieres descargar este registro?</p>
                     <div style={{ marginBottom: '1rem' }}>
-                        <button className={styles.exportBtn} onClick={downloadCSV}>📄 Descargar CSV</button>
-                        <button className={styles.exportBtn} onClick={downloadPDF}>🖨️ Imprimir / PDF</button>
+                        <button id="download-csv-button" className={styles.exportBtn} onClick={downloadCSV}>📄 Descargar CSV</button>
+                        <button id="download-pdf-button" className={styles.exportBtn} onClick={downloadPDF}>🖨️ Imprimir / PDF</button>
                     </div>
 
                     {events.length === 0 ? (
                         <p className={styles.subtitle}>No hay eventos registrados.</p>
                     ) : (
                         <div className={styles.logsWrapper}>
-                            <table className={styles.logsTable}>
+                            <table className={styles.logsTable } id="events-table">
                                 <thead>
                                     <tr>
                                         <th>📅 Fecha</th>

@@ -147,8 +147,8 @@ function CalendarAuth() {
   return (
     <div className={styles.container}>
       <div className={styles.navContainer}>
-        <BackButton to="/admin/home" />
-        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+      <BackButton to="/admin/home" id="calendar-back-button" />
+      <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} id="calendar-toggle-menu" />
       </div>
 
       <div className={styles.mainContent}>
@@ -157,7 +157,7 @@ function CalendarAuth() {
         {!googleLoggedIn && (
           <div className={styles.googleLoginBox}>
             <p className={styles.subtitle}>Conecta con Google Calendar</p>
-            <button className={styles.googleLoginButton} onClick={login}>
+            <button className={styles.googleLoginButton} onClick={login} id="google-login-button">
               Iniciar sesión con Google
             </button>
           </div>
@@ -170,12 +170,12 @@ function CalendarAuth() {
                 Sesión iniciada como <strong>{googleName}</strong>
               </p>
 
-              <button className={styles.syncButton} onClick={handleLoadEvents}>
+              <button className={styles.syncButton} onClick={handleLoadEvents} id="sync-events-button">
                 <FaCalendarAlt style={{ marginRight: '8px' }} />
                 Cargar accesos en Google Calendar
               </button>
 
-              <button className={styles.logoutButton} onClick={handleGoogleLogout}>
+              <button className={styles.logoutButton} onClick={handleGoogleLogout} id="google-logout-button">
                 Cerrar sesión de Google
               </button>
             </div>

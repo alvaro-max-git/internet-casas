@@ -114,6 +114,7 @@ function AdminHome() {
       {/* Configure button only for active accesses */}
       {!isExpired && (
         <button
+        id={`configure-button-${access.id}`} // ← ID único
           className={styles.configureButton}
           onClick={() => handleConfigure(access.id)}
         >
@@ -121,6 +122,8 @@ function AdminHome() {
         </button>
       )}
       <button
+        id={`delete-button-${access.id}`} // ← ID único
+
         className={styles.deleteButton}
         onClick={() => handleDelete(access.id)}
         disabled={deletingAccessId === access.id}
@@ -134,7 +137,7 @@ function AdminHome() {
     <div className={styles.container}>
       <div className={styles.navContainer}>
         {/* <BackButton to="/register" className={styles.backButtonCustom} /> */}
-        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} id="toggle-menu-adminhome"/>
       </div>
 
       <div className={styles.mainContent}>
@@ -147,6 +150,7 @@ function AdminHome() {
 
           {/* Card to add new access */}
           <div
+          id="add-access-card"
             className={styles.accessCard}
             onClick={handleAddAccess}
             style={{ backgroundColor: '#DBD2DA', cursor: 'pointer' }}

@@ -35,23 +35,23 @@ function ToggleMenu({ menuOpen, toggleMenu }) {
   };
   return (
     <div>
-      <FaBars className={styles.hamburgerIcon} onClick={() => toggleMenu(true)} />
+      <FaBars id="menu-hamburguesa" className={styles.hamburgerIcon} onClick={() => toggleMenu(true)} />
       {menuOpen && (
         <div className={styles.overlay} onClick={() => toggleMenu(false)}>
           <div className={styles.menu} onClick={(e) => e.stopPropagation()}>
             {userType === 'host' && (
               <>
-                <div className={styles.menuItem} onClick={handleGoToLocks}>
+                <div id="menu-mis-cerraduras" className={styles.menuItem} onClick={handleGoToLocks}>
                   <FaLock className={styles.icon} />
                   <span>Mis cerraduras</span>
                 </div>
 
-                <div className={styles.menuItem} onClick={handleGoToCalendar}>
+                <div id="menu-google-calendar" className={styles.menuItem} onClick={handleGoToCalendar}>
                   <FaCalendarAlt className={styles.icon} />
                   <span>Google Calendar</span>
                 </div>
 
-                <div className={styles.menuItem} onClick={handleGoToLogs}>
+                <div id="menu-historial-accesos" className={styles.menuItem} onClick={handleGoToLogs}>
                   <FaHistory className={styles.icon} />
                   <span>Historial de accesos</span>
                 </div>
@@ -61,7 +61,7 @@ function ToggleMenu({ menuOpen, toggleMenu }) {
               <FaCog className={styles.icon} />
               <span>Configuración</span>
             </div> */}
-            <div className={styles.menuItem2} onClick={handleLogout}>
+            <div id="menu-cerrar-sesion" className={styles.menuItem2} onClick={handleLogout}>
               <FaSignOutAlt className={styles.icon} />
               <span>Cerrar sesión</span>
             </div>

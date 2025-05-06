@@ -51,8 +51,8 @@ function AccessLoader() {
     <div className={styles.container}>
       {/* NAV */}
       <div className={styles.navContainer}>
-        <BackButton to="/client/home" className={styles.backButtonCustom} />
-        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+        <BackButton to="/client/home" className={styles.backButtonCustom} id="back-button-accessloader" />
+        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} id="toggle-menu-accessloader"/>
       </div>
 
       <div className={styles.mainContent}>
@@ -63,13 +63,14 @@ function AccessLoader() {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <input
+            id="input-email-token"
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Token"
             className={styles.input}
           />
-          <button type="submit" className={styles.entrarButton} disabled={loading}>
+          <button id="submit-email-token" type="submit" className={styles.entrarButton} disabled={loading}>
             {loading ? 'Buscando...' : 'Entrar'}
           </button>
         </form>

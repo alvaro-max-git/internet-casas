@@ -114,8 +114,8 @@ function NewAccessForm() {
     <div className={styles.background}>
     <div className={styles.container}>
       <div className={styles.navContainer}>
-        <BackButton to="/admin/home" className={styles.backButtonCustom} />
-        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+      <BackButton to="/admin/home" id="new-access-form-back-button" />
+      <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} id="new-access-form-toggle-menu" />
       </div>
 
       <h2 className={styles.title}>Agregar nuevo acceso</h2>
@@ -125,6 +125,7 @@ function NewAccessForm() {
         <div className={styles.field}>
           <label>Cerradura</label>
           <select
+            id="select-lock"
             name="lockId"
             value={formData.lockId}
             onChange={handleChange}
@@ -143,6 +144,7 @@ function NewAccessForm() {
         <div className={styles.field}>
         <label>Token</label>
           <input
+            id="input-token"
             type="text"
             name="token"
             value={formData.token}
@@ -150,6 +152,7 @@ function NewAccessForm() {
             
           />
           <button
+            id="generate-token-button"
             type="button"
             className={styles.tokenButton}
             onClick={() =>
@@ -167,6 +170,7 @@ function NewAccessForm() {
         <div className={styles.field}>
           <label>Usuario</label>
           <input
+            id="input-usuario"
             type="text"
             name="usuario"
             value={formData.usuario}
@@ -178,6 +182,7 @@ function NewAccessForm() {
         <div className={styles.field}>
           <label>Color de tarjeta</label>
           <input
+            id="input-color"
             type="color"
             name="color"
             value={formData.color}
@@ -190,6 +195,7 @@ function NewAccessForm() {
           <div className={styles.field}>
             <label>Desde</label>
             <input
+              id="input-fecha-entrada"
               type="datetime-local"
               name="fechaEntrada"
               value={formData.fechaEntrada}
@@ -200,6 +206,7 @@ function NewAccessForm() {
           <div className={styles.field}>
             <label>Hasta</label>
             <input
+              id="input-fecha-salida"
               type="datetime-local"
               name="fechaSalida"
               value={formData.fechaSalida}
@@ -208,7 +215,7 @@ function NewAccessForm() {
           </div>
         </div>
 
-        <button type="submit" className={styles.button}>
+        <button id="submit-new-access" type="submit" className={styles.button}>
           Crear acceso
         </button>
       </form>

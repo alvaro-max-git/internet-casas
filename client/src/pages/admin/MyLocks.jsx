@@ -58,8 +58,8 @@ function MyLocks() {
   return (
     <div className={styles.container}>
       <div className={styles.navContainer}>
-        <BackButton to="/admin/home" />
-        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+      <BackButton to="/admin/home" id="mylocks-back-button" />
+      <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} id="mylocks-toggle-menu" />
       </div>
 
       <div className={styles.mainContent}>

@@ -121,8 +121,8 @@ function EditAccessForm() {
   <div className={styles.background}>
     <div className={styles.container}>
       <div className={styles.navContainer}>
-        <BackButton to="/admin/home" className={styles.backButtonCustom} />
-        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+      <BackButton to="/admin/home" id="edit-access-form-back-button" />
+      <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} id="edit-access-form-toggle-menu" />
       </div>
 
       <h2 className={styles.title}>Editar acceso</h2>
@@ -131,6 +131,7 @@ function EditAccessForm() {
         <div className={styles.field}>
           <label>Cerradura</label>
           <select
+            id="edit-select-lock"
             name="lockId"
             value={formData.lockId}
             onChange={handleChange}
@@ -148,12 +149,14 @@ function EditAccessForm() {
         <div className={styles.field}>
           <label>Token</label>
           <input
+            id="edit-input-token"
             type="text"
             name="token"
             value={formData.token}
             onChange={handleChange}
           />
           <button
+            id="edit-generate-token-button"
             type="button"
             className={styles.tokenButton}
             onClick={() =>
@@ -170,6 +173,7 @@ function EditAccessForm() {
         <div className={styles.field}>
           <label>Usuario</label>
           <input
+            id="edit-input-usuario"
             type="text"
             name="usuario"
             value={formData.usuario}
@@ -180,6 +184,7 @@ function EditAccessForm() {
         <div className={styles.field}>
           <label>Color de tarjeta</label>
           <input
+            id="edit-input-color"
             type="color"
             name="color"
             value={formData.color}
@@ -191,6 +196,7 @@ function EditAccessForm() {
           <div className={styles.field}>
             <label>Desde</label>
             <input
+              id="edit-input-fecha-entrada"
               type="datetime-local"
               name="fechaEntrada"
               value={formData.fechaEntrada}
@@ -201,6 +207,7 @@ function EditAccessForm() {
           <div className={styles.field}>
             <label>Hasta</label>
             <input
+              id="edit-input-fecha-salida"
               type="datetime-local"
               name="fechaSalida"
               value={formData.fechaSalida}
@@ -209,7 +216,7 @@ function EditAccessForm() {
           </div>
         </div>
 
-        <button type="submit" className={styles.button}>
+        <button id="submit-edit-access" type="submit" className={styles.button}>
           Guardar cambios
         </button>
       </form>

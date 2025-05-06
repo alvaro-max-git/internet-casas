@@ -242,7 +242,7 @@ function Register() {
               onChange={handleChange}
               required
             />
-            <button type="submit" className={styles.loginButton}>
+            <button id="user-login-button-confirm" type="submit" className={styles.loginButton}>
               Iniciar sesión
             </button>
           </form>
@@ -268,7 +268,7 @@ function Register() {
               onChange={handleChange}
               required
             />
-            <button type="submit" className={styles.loginButton}>
+            <button id="host-login-button-confirm" type="submit" className={styles.loginButton}>
               Iniciar sesión
             </button>
           </form>
