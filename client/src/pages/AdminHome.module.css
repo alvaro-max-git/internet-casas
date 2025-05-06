@@ -1,14 +1,36 @@
-/* src/pages/AdminHome.module.css */
+/* === ESTILOS GLOBALES PARA EVITAR SOBRANTES Y DESBORDES === */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* === CONTENEDOR PRINCIPAL === */
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* CENTRA verticalmente */
+  height: 100vh; /* ajusta exactamente a la pantalla */
+  width: 100vw;
+  background-image: url('/Background.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 20px; /* para evitar que el contenido esté pegado a los bordes */
+  box-sizing: border-box;
+  overflow: hidden; /* evita scroll */
+}
 
 .container {
   width: 100vw;
-  min-height: 100vh;
+  height: 100vh;
   background-color: #fff;
-  position: relative; /* Para position absoluta en navContainer si deseas */
+  position: relative;
 }
 
-
-/* === CONTENEDOR NAV (BackButton + ToggleMenu) === */
 .navContainer {
   position: absolute;
   top: 60px;
@@ -16,13 +38,11 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  z-index: 999; /* Para que quede por encima del contenido */
+  z-index: 999;
 }
 
-/* Si deseas ajustar el back button en particular */
 .backButtonCustom {
-  /* Sin 'position: absolute' aquí, lo maneja navContainer */
-  margin-left: 0; /* Ajusta si quieres moverlo */
+  margin-left: 0;
 }
 
 .deleteFolder {
@@ -33,29 +53,13 @@
   border-radius: 6px;
   cursor: pointer;
   margin-top: 8px;
-  width: 200px; /* Define un ancho fijo para el botón */
+  width: 200px;
   display: block;
-  margin-left: auto; /* Centra el botón horizontalmente */
-  margin-right: auto; /* Centra el botón horizontalmente */
+  margin-left: auto;
+  margin-right: auto;
   transition: background-color 0.2s ease;
 }
 
-
-/* === CONTENEDOR PRINCIPAL === */
-.mainContent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding-top: 100px; /* para dejar espacio a la navContainer arriba */
-  min-height: 100vh;  /* para que crezca con el contenido */
-  background-image: url('/Background.png');
-  background-size: cover;       /* hace zoom para cubrir todo */
-  background-repeat: no-repeat; /* evita que se repita */
-  background-position: center;  /* centra la imagen */
-}
-
-/* Título “Hola, Administrador” */
 .greeting {
   text-align: center;
   font-size: 35px;
@@ -144,7 +148,7 @@
   color: #fff;
 }
 
-/* === CONTENEDOR GOOGLE LOGIN === */
+/* ===  GOOGLE LOGIN === */
 .googleLoginBox {
   text-align: center;
   margin-top: 2rem;
@@ -173,7 +177,6 @@
   background-color: #357ae8;
 }
 
-
 .calendarFrameWrapper {
   width: 100vw;
   display: flex;
@@ -183,18 +186,16 @@
 
 .calendarIframe {
   width: 100%;
-  max-width: 1000px; /* Antes estaba en 1400 */
+  max-width: 1000px;
   height: 700px;
   border: none;
   border-radius: 12px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
-
-
 .syncButton,
 .logoutButton {
-  width: 260px; /* ⬅️ Mismo ancho fijo */
+  width: 260px;
   padding: 12px 24px;
   font-size: 16px;
   font-weight: 600;
@@ -206,12 +207,11 @@
   justify-content: center;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin: 0.5rem auto; /* centrados y espaciados */
+  margin: 0.5rem auto;
 }
 
-/* ✅ Colores individuales (manteniendo los tuyos) */
 .syncButton {
-  background-color: #34A853; /* Verde Google */
+  background-color: #34A853;
   color: white;
   box-shadow: 0 4px 12px rgba(52, 168, 83, 0.3);
 }
@@ -232,9 +232,7 @@
   transform: translateY(-2px) scale(1.02);
 }
 
-
-/* ===  LOGS DE ACCESO === */
-
+/* === LOGS DE ACCESO === */
 .logsWrapper {
   width: 100%;
   overflow-x: auto;

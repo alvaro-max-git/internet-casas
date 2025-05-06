@@ -1,86 +1,96 @@
-
 .background {
   min-height: 100vh;
-  width: 100%;
   background-image: url('/Background.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  
+  /* CENTRAR FORMULARIO */
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding-top: 100px; /* si necesitas espacio arriba */
+  align-items: center; /* <- antes era flex-start */
+  padding: 20px; /* espacio interno para que no quede pegado en pantallas pequeñas */
+  box-sizing: border-box;
 }
 
 .container {
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 2rem;
-    background-color: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-  }
-  
-  .title {
-    text-align: center;
-    color: #294d67;
-    font-size: 24px;
-    margin-bottom: 1.5rem;
-  }
-  
-  .form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .field {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .field label {
-    margin-bottom: 4px;
-    font-weight: 500;
-    color: #444;
-  }
-  
-  .field input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
-  }
-  
-  .fieldGroup {
-    display: flex;
-    gap: 1rem;
-  }
-  
-  .button {
-    padding: 12px;
-    background-color: #761c8f;
-    color: white;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 1rem;
-  }
-  
-  .button:hover {
-    background-color: #5c1570;
-  }
+  width: 100%;
+  max-width: 500px;
+  padding: 2rem;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-sizing: border-box;
+}
 
-  /* === CONTENEDOR NAV (BackButton + ToggleMenu) === */
+.title {
+  text-align: center;
+  color: #294d67;
+  font-size: 24px;
+  margin-bottom: 1.5rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  margin-bottom: 4px;
+  font-weight: 500;
+  color: #444;
+}
+
+.field input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.field select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.fieldGroup {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap; /* <- permite adaptar en pantallas pequeñas */
+}
+
+.button {
+  padding: 12px;
+  background-color: #761c8f;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.button:hover {
+  background-color: #5c1570;
+}
+
+/* === CONTENEDOR NAV (BackButton + ToggleMenu) === */
 .navContainer {
   position: absolute;
-  top: 60px;
+  top: 50px;
   left: 40px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  z-index: 999; /* Para que quede por encima del contenido */
+  z-index: 999;
 }
 
 /* Estilo del botón de Generar Token */
@@ -111,9 +121,17 @@
   gap: 8px;
 }
 
-.field select {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
+/* Extra: hacer inputs más fluidos en móviles */
+@media (max-width: 480px) {
+  .fieldGroup {
+    flex-direction: column;
+  }
+
+  .container {
+    padding: 1.5rem;
+  }
+
+  .title {
+    font-size: 20px;
+  }
 }

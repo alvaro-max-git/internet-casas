@@ -123,7 +123,7 @@ function AdminLogs() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {events.slice(0, 6).map((log, idx) => (
+                                    {events.slice(0, 20).map((log, idx) => (
                                         <tr key={idx}>
                                             <td>{formatDate(log.created_at)}</td>
                                             <td
@@ -146,7 +146,7 @@ function AdminLogs() {
                                             <td>{deviceNames[log.device_id] || log.device_id}</td>
                                         </tr>
                                     ))}
-                                    {events.length > 6 && (
+                                    {events.length > 20 && (
                                         <tr>
                                             <td colSpan="3" style={{ textAlign: 'center', fontStyle: 'italic' }}>...</td>
                                         </tr>
