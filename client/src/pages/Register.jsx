@@ -130,7 +130,7 @@ function Register() {
 
         {view === 'initial' && (
           <>
-            <button className={styles.registerButton} onClick={goToRegisterChoice}>
+            <button id="register-button"className={styles.registerButton} onClick={goToRegisterChoice}>
               Regístrate
             </button>
             <p className={styles.loginLink} onClick={goToLoginChoice}>
@@ -141,10 +141,10 @@ function Register() {
 
         {view === 'registerChoice' && (
           <div className={styles.loginChoice}>
-            <button className={styles.clientButton} onClick={() => setView('registerUser')}>
+            <button id="user-register-button"  className={styles.clientButton} onClick={() => setView('registerUser')}>
               Registrarse como Usuario
             </button>
-            <button className={styles.adminButton} onClick={() => setView('registerHost')}>
+            <button id="host-register-button" className={styles.adminButton} onClick={() => setView('registerHost')}>
               Registrarse como Host
             </button>
           </div>
@@ -152,10 +152,10 @@ function Register() {
 
         {view === 'loginChoice' && (
           <div className={styles.loginChoice}>
-            <button className={styles.clientButton} onClick={() => setView('loginUser')}>
+            <button id="user-login-button" className={styles.clientButton} onClick={() => setView('loginUser')}>
               Iniciar sesión como Usuario
             </button>
-            <button className={styles.adminButton} onClick={() => setView('loginHost')}>
+            <button id="host-login-button" className={styles.adminButton} onClick={() => setView('loginHost')}>
               Iniciar sesión como Host
             </button>
           </div>
@@ -181,7 +181,7 @@ function Register() {
               onChange={handleChange}
               required
             />
-            <button type="submit" className={styles.loginButton}>
+            <button id="user-register-button-confirm" type="submit" className={styles.loginButton}>
               Registrar Usuario
             </button>
           </form>
@@ -216,7 +216,7 @@ function Register() {
               onChange={handleChange}
               required
             />
-            <button type="submit" className={styles.loginButton}>
+            <button id="host-register-button-confirm" type="submit" className={styles.loginButton}>
               Registrar Host
             </button>
           </form>

@@ -45,14 +45,14 @@ public class HostregistercreateaccesuserTest {
   public void hostregistercreateaccesuser() {
     driver.get("http://localhost:5173/register");
     driver.manage().window().setSize(new Dimension(1050, 825));
-    driver.findElement(By.cssSelector(".\\_registerButton_1o6nq_79")).click();
-    driver.findElement(By.cssSelector(".\\_adminButton_1o6nq_139")).click();
+    driver.findElement(By.id("register-button")).click();
+    driver.findElement(By.id("host-register-button")).click();
     driver.findElement(By.name("email")).click();
     driver.findElement(By.name("email")).sendKeys("host@host.com");
     driver.findElement(By.name("password")).sendKeys("1234");
     driver.findElement(By.name("seamApiKey")).click();
     driver.findElement(By.name("seamApiKey")).sendKeys("seam_testKpVb_t1Qiw82sFJRv31ihiqjnVuQh");
-    driver.findElement(By.cssSelector(".\\_loginButton_1o6nq_243")).click();
+    driver.findElement(By.id("host-register-button-confirm")).click();
 
     // Añadir espera explícita aquí
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // Espera hasta 10 segundos
