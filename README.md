@@ -48,3 +48,11 @@ Este repositorio contiene la versión **MVP funcional**, con las siguientes func
 - Gestión de sesiones con tokens temporales
 
 
+## Licencia(License)
+
+Este software se atiene a la licencia MIT (ver LICENSE)
+This software is MIT licensed (see LICENSE)
+
+
+
+
