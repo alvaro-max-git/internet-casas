@@ -9,7 +9,6 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-top: 100px; /* si necesitas espacio arriba */
 }
 .container {
     width: 100vw;
