@@ -17,7 +17,7 @@ public class Access {
     private Long id;  // PK autoincrement
 
     @ManyToOne
-    private Host host; // El host que crea/posee este acceso (dueño de la cerradura)
+    private Host host; // El host que crea/posee este acceso (dueño de la cerradur)
 
     @ManyToOne
     private Lock cerradura; // Referencia a la cerradura a la que da acceso
