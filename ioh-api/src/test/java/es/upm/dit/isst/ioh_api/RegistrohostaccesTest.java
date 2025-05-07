@@ -3,27 +3,22 @@ package es.upm.dit.isst.ioh_api;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
-import static org.junit.jupiter.api.Assertions.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
 import java.time.Duration;
-import java.util.*;
 
 public class RegistrohostaccesTest {
   private WebDriver driver;
-  private Map<String, Object> vars;
   JavascriptExecutor js;
 
   @BeforeEach
   public void setUp() {
     driver = new FirefoxDriver();
     js = (JavascriptExecutor) driver;
-    vars = new HashMap<String, Object>();
   }
 
   @AfterEach
@@ -48,7 +43,6 @@ public class RegistrohostaccesTest {
     WebElement addAccessCard = wait.until(ExpectedConditions.elementToBeClickable(By.id("add-access-card")));
     addAccessCard.click();
 
-    WebElement dropdown = driver.findElement(By.id("select-lock"));
 // --- Interacción con el <select> de cerraduras ---
     // 1. Esperar a que el <select> esté presente y sea clickeable
     WebElement selectLockElement = wait.until(ExpectedConditions.elementToBeClickable(By.id("select-lock")));
