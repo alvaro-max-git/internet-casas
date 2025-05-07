@@ -1,0 +1,1377 @@
+{
+	"info": {
+		"_postman_id": "8a55ea95-b8a9-4d47-b883-871a7f342545",
+		"name": "ISST",
+		"description": "Pruebas de Postman para el proyecto IoH",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43559823",
+		"_collection_link": "https://warped-capsule-2206.postman.co/workspace/4f5901dd-24d5-462b-84ce-ec053f379043/collection/43559823-8a55ea95-b8a9-4d47-b883-871a7f342545?action=share&source=collection_link&creator=43559823"
+	},
+	"item": [
+		{
+			"name": "IoH",
+			"item": [
+				{
+					"name": "AuthEndpoints",
+					"item": [
+						{
+							"name": "UserRegister",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint del registro de usuario\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(201))\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Respuesta contiene email, tipo y token\", function() {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property('email');\r",
+											"    pm.expect(jsonData).to.have.property('tipo');\r",
+											"    pm.expect(jsonData).to.have.property('token');\r",
+											"    pm.expect(jsonData.tipo).to.equal('user');\r",
+											"});\r",
+											"\r",
+											"// Guarda el token para usar en otras peticiones\r",
+											"if (pm.response.code === 201) {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.environment.set(\"userAuthToken\", jsonData.token);\r",
+											"};"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cache-Control",
+										"value": "no-cache",
+										"name": "cache-control",
+										"type": "text"
+									},
+									{
+										"key": "Postman-Token",
+										"value": "<calculated when request is sent>",
+										"name": "postman-token",
+										"type": "text"
+									},
+									{
+										"key": "Content-Length",
+										"value": "0",
+										"name": "content-length",
+										"type": "text"
+									},
+									{
+										"key": "Host",
+										"value": "<calculated when request is sent>",
+										"name": "host",
+										"type": "text"
+									},
+									{
+										"key": "User-Agent",
+										"value": "PostmanRuntime/7.39.1",
+										"name": "user-agent",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "*/*",
+										"name": "accept",
+										"type": "text"
+									},
+									{
+										"key": "Accept-Encoding",
+										"value": "gzip, deflate, br",
+										"name": "accept-encoding",
+										"type": "text"
+									},
+									{
+										"key": "Connection",
+										"value": "keep-alive",
+										"name": "connection",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"usuario@ejemplo.com\",\r\n    \"password\": \"1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:8443/api/auth/register/user",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"auth",
+										"register",
+										"user"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "HostRegister",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint del registro de host\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(201))\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Respuesta contiene email, tipo y token\", function() {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property('email');\r",
+											"    pm.expect(jsonData).to.have.property('tipo');\r",
+											"    pm.expect(jsonData).to.have.property('token');\r",
+											"    pm.expect(jsonData.tipo).to.equal('host');\r",
+											"});\r",
+											"\r",
+											"// Guarda el token para usar en otras peticiones\r",
+											"if (pm.response.code === 201) {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.environment.set(\"hostAuthToken\", jsonData.token);\r",
+											"};"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"value": "JSESSIONID=E6D799BDAC90F7849546B571AF48AE29",
+										"name": "cookie",
+										"type": "text"
+									},
+									{
+										"key": "Cache-Control",
+										"value": "no-cache",
+										"name": "cache-control",
+										"type": "text"
+									},
+									{
+										"key": "Postman-Token",
+										"value": "<calculated when request is sent>",
+										"name": "postman-token",
+										"type": "text"
+									},
+									{
+										"key": "Content-Length",
+										"value": "0",
+										"name": "content-length",
+										"type": "text"
+									},
+									{
+										"key": "Host",
+										"value": "<calculated when request is sent>",
+										"name": "host",
+										"type": "text"
+									},
+									{
+										"key": "User-Agent",
+										"value": "PostmanRuntime/7.39.1",
+										"name": "user-agent",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "*/*",
+										"name": "accept",
+										"type": "text"
+									},
+									{
+										"key": "Accept-Encoding",
+										"value": "gzip, deflate, br",
+										"name": "accept-encoding",
+										"type": "text"
+									},
+									{
+										"key": "Connection",
+										"value": "keep-alive",
+										"name": "connection",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"host@ejemplo.com\",\r\n    \"password\": \"1234\",\r\n    \"seamApiKey\": \"seam_testLfBX_4T34Q2BSxknA8KS92pf83PWr\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:8443/api/auth/register/host",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"auth",
+										"register",
+										"host"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UserLogin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint del login de usuario\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Respuesta contiene email, tipo y token\", function() {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property('email');\r",
+											"    pm.expect(jsonData).to.have.property('tipo');\r",
+											"    pm.expect(jsonData).to.have.property('token');\r",
+											"    pm.expect(jsonData.tipo).to.equal('user');\r",
+											"});\r",
+											"\r",
+											"// Guarda el token para usar en otras peticiones\r",
+											"if (pm.response.code === 201) {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.environment.set(\"userToken\", jsonData.token);\r",
+											"};"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{userAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userAuthToken}}",
+										"name": "authorization",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "JSESSIONID=A7DF4151CF3BAD277BF965ED40CC2B21",
+										"name": "cookie",
+										"type": "text"
+									},
+									{
+										"key": "Cache-Control",
+										"value": "no-cache",
+										"name": "cache-control",
+										"type": "text"
+									},
+									{
+										"key": "Postman-Token",
+										"value": "<calculated when request is sent>",
+										"name": "postman-token",
+										"type": "text"
+									},
+									{
+										"key": "Content-Length",
+										"value": "0",
+										"name": "content-length",
+										"type": "text"
+									},
+									{
+										"key": "Host",
+										"value": "<calculated when request is sent>",
+										"name": "host",
+										"type": "text"
+									},
+									{
+										"key": "User-Agent",
+										"value": "PostmanRuntime/7.39.1",
+										"name": "user-agent",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "*/*",
+										"name": "accept",
+										"type": "text"
+									},
+									{
+										"key": "Accept-Encoding",
+										"value": "gzip, deflate, br",
+										"name": "accept-encoding",
+										"type": "text"
+									},
+									{
+										"key": "Connection",
+										"value": "keep-alive",
+										"name": "connection",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"usuario@ejemplo.com\",\r\n    \"password\": \"1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:8443/api/auth/login",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "HostLogin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint del login de host\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Respuesta contiene email, tipo y token\", function() {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property('email');\r",
+											"    pm.expect(jsonData).to.have.property('tipo');\r",
+											"    pm.expect(jsonData).to.have.property('token');\r",
+											"    pm.expect(jsonData.tipo).to.equal('host');\r",
+											"});\r",
+											"\r",
+											"// Guarda el token para usar en otras peticiones\r",
+											"if (pm.response.code === 201) {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.environment.set(\"hostToken\", jsonData.token);\r",
+											"};"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{hostAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userAuthToken}}",
+										"name": "authorization",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "JSESSIONID=A7DF4151CF3BAD277BF965ED40CC2B21",
+										"name": "cookie",
+										"type": "text"
+									},
+									{
+										"key": "Cache-Control",
+										"value": "no-cache",
+										"name": "cache-control",
+										"type": "text"
+									},
+									{
+										"key": "Postman-Token",
+										"value": "<calculated when request is sent>",
+										"name": "postman-token",
+										"type": "text"
+									},
+									{
+										"key": "Content-Length",
+										"value": "0",
+										"name": "content-length",
+										"type": "text"
+									},
+									{
+										"key": "Host",
+										"value": "<calculated when request is sent>",
+										"name": "host",
+										"type": "text"
+									},
+									{
+										"key": "User-Agent",
+										"value": "PostmanRuntime/7.39.1",
+										"name": "user-agent",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "*/*",
+										"name": "accept",
+										"type": "text"
+									},
+									{
+										"key": "Accept-Encoding",
+										"value": "gzip, deflate, br",
+										"name": "accept-encoding",
+										"type": "text"
+									},
+									{
+										"key": "Connection",
+										"value": "keep-alive",
+										"name": "connection",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"host@ejemplo.com\",\r\n    \"password\": \"1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:8443/api/auth/login",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UserLogout",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint del logout de usuario\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{userAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userAuthToken}}",
+										"name": "authorization",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "JSESSIONID=A7DF4151CF3BAD277BF965ED40CC2B21",
+										"name": "cookie",
+										"type": "text"
+									},
+									{
+										"key": "Cache-Control",
+										"value": "no-cache",
+										"name": "cache-control",
+										"type": "text"
+									},
+									{
+										"key": "Postman-Token",
+										"value": "<calculated when request is sent>",
+										"name": "postman-token",
+										"type": "text"
+									},
+									{
+										"key": "Content-Length",
+										"value": "0",
+										"name": "content-length",
+										"type": "text"
+									},
+									{
+										"key": "Host",
+										"value": "<calculated when request is sent>",
+										"name": "host",
+										"type": "text"
+									},
+									{
+										"key": "User-Agent",
+										"value": "PostmanRuntime/7.39.1",
+										"name": "user-agent",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "*/*",
+										"name": "accept",
+										"type": "text"
+									},
+									{
+										"key": "Accept-Encoding",
+										"value": "gzip, deflate, br",
+										"name": "accept-encoding",
+										"type": "text"
+									},
+									{
+										"key": "Connection",
+										"value": "keep-alive",
+										"name": "connection",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:8443/api/auth/logout",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"auth",
+										"logout"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "HostLogout",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint del logout de host\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{hostAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userAuthToken}}",
+										"name": "authorization",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "JSESSIONID=A7DF4151CF3BAD277BF965ED40CC2B21",
+										"name": "cookie",
+										"type": "text"
+									},
+									{
+										"key": "Cache-Control",
+										"value": "no-cache",
+										"name": "cache-control",
+										"type": "text"
+									},
+									{
+										"key": "Postman-Token",
+										"value": "<calculated when request is sent>",
+										"name": "postman-token",
+										"type": "text"
+									},
+									{
+										"key": "Content-Length",
+										"value": "0",
+										"name": "content-length",
+										"type": "text"
+									},
+									{
+										"key": "Host",
+										"value": "<calculated when request is sent>",
+										"name": "host",
+										"type": "text"
+									},
+									{
+										"key": "User-Agent",
+										"value": "PostmanRuntime/7.39.1",
+										"name": "user-agent",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "*/*",
+										"name": "accept",
+										"type": "text"
+									},
+									{
+										"key": "Accept-Encoding",
+										"value": "gzip, deflate, br",
+										"name": "accept-encoding",
+										"type": "text"
+									},
+									{
+										"key": "Connection",
+										"value": "keep-alive",
+										"name": "connection",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:8443/api/auth/logout",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"auth",
+										"logout"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Pruebas de los endpoints de autenticación /auth. Necesarias para obtener el token de sesión requerido en otras pruebas.",
+					"auth": {
+						"type": "noauth"
+					}
+				},
+				{
+					"name": "MeEndpoints",
+					"item": [
+						{
+							"name": "MeUser",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint /me de un usuario\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Respuesta contiene email y tipo\", function() {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property('email');\r",
+											"    pm.expect(jsonData).to.have.property('tipo');\r",
+											"    pm.expect(jsonData.tipo).to.equal('user');\r",
+											"});\r",
+											"\r",
+											"// Guarda el token para usar en otras peticiones\r",
+											"if (pm.response.code === 201) {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.environment.set(\"userToken\", jsonData.token);\r",
+											"};"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{userAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:8443/api/me",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "MeHost",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint /me de un host\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Respuesta contiene email y tipo\", function() {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property('email');\r",
+											"    pm.expect(jsonData).to.have.property('tipo');\r",
+											"    pm.expect(jsonData.tipo).to.equal('host');\r",
+											"});\r",
+											"\r",
+											"// Guarda el token para usar en otras peticiones\r",
+											"if (pm.response.code === 201) {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.environment.set(\"hostToken\", jsonData.token);\r",
+											"};"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{hostAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:8443/api/me",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "MeAccessesHost",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint /me/accesses de un host\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});\r",
+											"\r",
+											"// Guarda el token para usar en otras peticiones\r",
+											"if (pm.response.code === 201) {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.environment.set(\"hostToken\", jsonData.token);\r",
+											"};"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{hostAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:8443/api/me/accesses",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"me",
+										"accesses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "MeLock-Events",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint /me/lock-events de un host\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});\r",
+											"\r",
+											"// Guarda el token para usar en otras peticiones\r",
+											"if (pm.response.code === 201) {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.environment.set(\"hostToken\", jsonData.token);\r",
+											"};"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{hostAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:8443/api/me/lock-events",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"me",
+										"lock-events"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "MeLocks",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint /me/locks\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});\r",
+											"\r",
+											"\r",
+											"if (pm.response.code === 200) {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    \r",
+											"    // Verificar que hay cerraduras en la respuesta\r",
+											"    if (jsonData && jsonData.length > 0) {\r",
+											"        // Guardar el ID de la primera cerradura\r",
+											"        var firstLockId = jsonData[0].id;\r",
+											"        pm.environment.set(\"lockId\", firstLockId);\r",
+											"        \r",
+											"        console.log(\"ID de cerradura guardado: \" + firstLockId);\r",
+											"    }\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{hostAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{hostAuthToken}}",
+										"name": "authorization",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "JSESSIONID=768B789122946F7D9C95ED6EFA0CD4AE",
+										"name": "cookie",
+										"type": "text"
+									},
+									{
+										"key": "Cache-Control",
+										"value": "no-cache",
+										"name": "cache-control",
+										"type": "text"
+									},
+									{
+										"key": "Postman-Token",
+										"value": "<calculated when request is sent>",
+										"name": "postman-token",
+										"type": "text"
+									},
+									{
+										"key": "Host",
+										"value": "<calculated when request is sent>",
+										"name": "host",
+										"type": "text"
+									},
+									{
+										"key": "User-Agent",
+										"value": "PostmanRuntime/7.39.1",
+										"name": "user-agent",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "*/*",
+										"name": "accept",
+										"type": "text"
+									},
+									{
+										"key": "Accept-Encoding",
+										"value": "gzip, deflate, br",
+										"name": "accept-encoding",
+										"type": "text"
+									},
+									{
+										"key": "Connection",
+										"value": "keep-alive",
+										"name": "connection",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://localhost:8443/api/me/locks",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"me",
+										"locks"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "MeAccessesUser",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint /me/accesses de un usuario\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});\r",
+											"\r",
+											"// Guarda el token para usar en otras peticiones\r",
+											"if (pm.response.code === 201) {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.environment.set(\"userToken\", jsonData.token);\r",
+											"};"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{userAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:8443/api/me/accesses",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"me",
+										"accesses"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "LocksEndpoints",
+					"item": [
+						{
+							"name": "LocksLockId",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint /locks/{{lockId}}, !!HAY QUE HABER EJECUTADO EL DE meHost para guardar un lockId\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});\r",
+											"\r",
+											"// Guarda el token para usar en otras peticiones\r",
+											"if (pm.response.code === 201) {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.environment.set(\"hostToken\", jsonData.token);\r",
+											"};"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{hostAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:8443/api/locks/{{lockId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"locks",
+										"{{lockId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "LocksBlock",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint /locks/{{lockId}/block}, !!HAY QUE HABER EJECUTADO EL DE meHost para guardar un lockId\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});\r",
+											"\r",
+											"// Verifica que la respuesta contenga la palabra \"correctamente\"\r",
+											"pm.test(\"Respuesta contiene la palabra 'correctamente'\", function() {\r",
+											"    const responseText = pm.response.text();\r",
+											"    pm.expect(responseText).to.include(\"correctamente\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{hostAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:8443/api/locks/{{lockId}}/block",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"locks",
+										"{{lockId}}",
+										"block"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "LocksUnblock",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint /locks/{{lockId}/unblock}, !!HAY QUE HABER EJECUTADO EL DE meHost para guardar un lockId\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});\r",
+											"\r",
+											"// Verifica que la respuesta contenga la palabra \"correctamente\"\r",
+											"pm.test(\"Respuesta contiene la palabra 'correctamente'\", function() {\r",
+											"    const responseText = pm.response.text();\r",
+											"    pm.expect(responseText).to.include(\"correctamente\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{hostAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:8443/api/locks/{{lockId}}/unblock",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"locks",
+										"{{lockId}}",
+										"unblock"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "AccessesEndpoints",
+					"item": [
+						{
+							"name": "Accesses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint /accesses, !!HAY QUE HABER EJECUTADO EL DE meHost para guardar un lockId\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{hostAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    cerradura:{id: \"f16dfacb-cf97-4053-a091-2ad918356bdb\"}\r\n    fechaEntrada: \"2099-05-07T17:05:00\"\r\n    fechaSalida: \"2099-05-08T17:05:00\"\r\n    token:\"1234\"\r\n    usuario: \"usuario@ejemplo.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "javascript"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:8443/api/accesses",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"accesses"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Batería de pruebas para ioh-api con postman. Para probar los endpoints que requieren token hay que registrarse y hacer login usando las peticiones ya configuradas a los endpoints correspondientes, de manera que se guarde el token."
+		}
+	]
+}
