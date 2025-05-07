@@ -97,7 +97,7 @@ function LockOpened() {
           Cerradura: <span className={styles.lockName}>{lock?.name || 'Desconocida'}</span>
         </h2>
 
-        <p className={styles.statusText}>
+        <p id="status-text" className={styles.statusText}>
           <strong>Estado actual:{" "}</strong>
           {isLocked === null ? "Cargando..." : isLocked ? "🔒 Cerrada" : "🔓 Abierta"}
         </p>
