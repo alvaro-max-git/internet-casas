@@ -17,22 +17,22 @@ public class Access {
     private Long id;  // PK autoincrement
 
     @ManyToOne
-    private Host host; // El host que crea/posee este acceso (dueño de la cerradur)
+    private Host host; // El host que crea/posee este acceso (dueño de la cerradura)
 
     @ManyToOne
     private Lock cerradura; // Referencia a la cerradura a la que da acceso
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime fechaEntrada;
+    private LocalDateTime fechaEntrada; // Fecha y hora desde la que es válido el acceso
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime fechaSalida;
+    private LocalDateTime fechaSalida; // Fecha y hora hasta la que es válido el acceso
 
     // Para simplificar, guardamos un token y el “usuario” (aunque no sea un User real)
-    private String token;   
+    private String token;   // Token de acceso, puede funcionar como identificador de seguridad
     private String usuario; // p.ej. "guest1@ejemplo.com" si no queremos Modelar un user completo
 
-    private String carpeta;
+    private String carpeta; // Identificador de carpeta virtual o grupo al que pertenece el acceso
 
     public Access() {
     }
@@ -46,7 +46,6 @@ public class Access {
         this.token = token;
         this.usuario = usuario;
         this.carpeta = carpeta;
-
     }
 
     public Long getId() {
@@ -109,6 +108,7 @@ public class Access {
     public void setUsuario(String usuario) {
         this.usuario = usuario;
     }
+
     //Métodos auxiliares
 
     public boolean isExpired() {

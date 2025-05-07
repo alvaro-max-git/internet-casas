@@ -5,21 +5,21 @@ import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotEmpty;
 
 @Entity
-@DiscriminatorValue("HOST")
+@DiscriminatorValue("HOST") // Indica que esta subclase de User se discrimina como "HOST" en la herencia
 public class Host extends User {
+
     @NotEmpty
-    private String seamApiKey;
+    private String seamApiKey; // Clave API para integración con el servicio de cerraduras Seam
 
     private String googleAccessToken; // 🆕 Añadido para almacenar el token de Google
 
-
     public Host() {
-        super();
+        super(); // Llama al constructor de la clase padre (User)
     }
 
     public Host(String email, String password, Role role, String seamApiKey) {
-        super(email, password, role);
-        this.seamApiKey = seamApiKey;
+        super(email, password, role); // Inicializa los campos heredados
+        this.seamApiKey = seamApiKey; // Establece la clave Seam específica del host
     }
 
     public String getSeamApiKey() {
