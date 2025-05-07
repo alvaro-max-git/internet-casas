@@ -120,9 +120,10 @@ class IohControllerTest {
         assertEquals("host", body.get("tipo"));
         assertEquals("jwt", body.get("token"));
 
-        System.out.println("registerHost_ShouldReturnCreated: OK");
         // Verifica que se llamó a la sincronización
         verify(seamLockService).syncLocksFromSeam(any(Host.class));
+
+        System.out.println("registerHost_ShouldReturnCreated: OK");
     }
 
     // Prueba: login exitoso con credenciales válidas
@@ -218,8 +219,8 @@ class IohControllerTest {
         assertEquals(2, locks.size());
         assertEquals("lock1", ((Lock)locks.get(0)).getId());
         assertEquals("lock2", ((Lock)locks.get(1)).getId());
+        verify(seamLockService).syncLocksFromSeam(host);
 
         System.out.println("getMyLocks_ShouldReturnLocks: OK");
-        verify(seamLockService).syncLocksFromSeam(host);
     }
 }
