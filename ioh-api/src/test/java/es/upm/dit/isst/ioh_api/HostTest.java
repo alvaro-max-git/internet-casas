@@ -1,8 +1,8 @@
 package es.upm.dit.isst.ioh_api;
 
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.After;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -15,14 +15,14 @@ public class HostTest {
   private WebDriverWait wait;
   private JavascriptExecutor js;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     driver = new FirefoxDriver();
     wait   = new WebDriverWait(driver, Duration.ofSeconds(10));
     js     = (JavascriptExecutor) driver;
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     driver.quit();
   }
