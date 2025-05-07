@@ -2,10 +2,10 @@
 
 package es.upm.dit.isst.ioh_api;
 
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.After;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsNot.not;
 import org.openqa.selenium.By;
@@ -31,13 +31,13 @@ public class HostregistercreateaccesuserTest {
   private WebDriver driver;
   private Map<String, Object> vars;
   JavascriptExecutor js;
-  @Before
+  @BeforeEach
   public void setUp() {
     driver = new FirefoxDriver();
     js = (JavascriptExecutor) driver;
     vars = new HashMap<String, Object>();
   }
-  @After
+  @AfterEach
   public void tearDown() {
     driver.quit();
   }
