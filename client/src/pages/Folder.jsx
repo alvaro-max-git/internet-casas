@@ -89,8 +89,8 @@ function Folder() {
 
       <div className={styles.container}>
         <div className={styles.navContainer}>  
-          <BackButton to="/client/home" />
-          <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+          <BackButton to="/client/home" id="folder-back-button"/>
+          <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} id="folder-toggle-menu" />
         </div>
         <div className={styles.mainContent}>
           <h1 className={styles.greeting}>📁 {carpetaNombre}</h1>
@@ -99,6 +99,7 @@ function Folder() {
           <div className={styles.accessList}>
             {folderAccesses.map(access => (
               <AccessCard
+                id={`folder-access-card-${access.id}`}  // ← ID de la tarjeta en carpeta
                 key={access.id}
                 access={access}
                 color={colores[access.id]}

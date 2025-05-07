@@ -2,7 +2,7 @@ import React from 'react';
 import fotocerrradura from '../assets/cerradura.png';
 import styles from '../pages/AdminHome.module.css'; // usa el mismo CSS
 
-function AccessCard({ access, color, onOpen, draggable, onDragStart }) {
+function AccessCard({ access, color, onOpen, draggable, onDragStart, id }) {
   // Función para verificar si la fecha actual está dentro del rango de acceso
   const isAccessExpired = () => {
     const currentDate = new Date();
@@ -22,6 +22,7 @@ function AccessCard({ access, color, onOpen, draggable, onDragStart }) {
 
   return (
     <div
+      id={id} // Aquí se usa el id recibido como prop
       className={styles.accessCard}
       style={{ backgroundColor: color || '#D4EFFF' }}
       draggable={draggable}
@@ -39,7 +40,9 @@ function AccessCard({ access, color, onOpen, draggable, onDragStart }) {
         </div>
       ) : (
         // Si no está caducado, mostrar el botón "Abrir"
-        <button className={styles.configureButton} onClick={() => onOpen(access)}>
+        <button 
+        id={`open-button-${access.id}`} // ← ID único
+        className={styles.configureButton} onClick={() => onOpen(access)}>
           Abrir
         </button>
       )}

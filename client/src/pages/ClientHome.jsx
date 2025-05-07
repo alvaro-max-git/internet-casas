@@ -84,7 +84,7 @@ function ClientHome() {
     <div className={styles.container}>
       <div className={styles.navContainer}>
         {/* <BackButton to="/register" /> */}
-        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu}  id="toggle-menu-clienthome" />
       </div>
       <div className={styles.mainContent}>
         <h1 className={styles.greeting}>Hola Cliente</h1>
@@ -94,6 +94,7 @@ function ClientHome() {
           {/* Accesos sin carpeta */}
           {freeAccesses.map(access => (
             <AccessCard
+              id={`access-card-${access.id}`} // 🆕 ID para la tarjeta
               key={access.id}
               access={access}
               color={colores[access.id]}
@@ -108,6 +109,7 @@ function ClientHome() {
             const count = accesses.filter(a => a.carpeta === folderName).length;
             return (
               <div
+                id={folderId} // 🆕 ID para la carpeta
                 key={folderName}
                 className={styles.accessCard}
                 onClick={() => navigate(
@@ -122,6 +124,7 @@ function ClientHome() {
                 <p>{count} acceso(s)</p>
                 {count === 0 && (
                   <button
+                    id={`delete-folder-${folderId}`} // 🆕 ID botón eliminar carpeta
                     className={styles.deleteButton}
                     onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folderName); }}
                   >
@@ -134,6 +137,7 @@ function ClientHome() {
 
           {/* Añadir acceso por token */}
           <div
+            id="add-access-token-card" // 🆕 ID
             className={styles.accessCard}
             onClick={handleAccessByToken}
             style={{ backgroundColor: '#E2F0CB', cursor: 'pointer' }}
@@ -144,6 +148,7 @@ function ClientHome() {
 
           {/* Crear carpeta vacía */}
           <div
+            id="create-folder-card" // 🆕 ID
             className={styles.accessCard}
             onClick={handleCreateFolder}
             style={{ backgroundColor: '#FDE2E4', cursor: 'pointer' }}
