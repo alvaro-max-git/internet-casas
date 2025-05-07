@@ -10,27 +10,28 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 
 @Entity
-@Table(name="usuario")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Table(name="usuario") // La tabla se llamará "usuario" en la base de datos
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // Estrategia de herencia: una única tabla para todas las subclases
 public class User {
 
     @Id @Email
-    private String email;
+    private String email; // Clave primaria e identificador del usuario, validado como email
 
-    private String password;
+    private String password; // Contraseña del usuario (idealmente almacenada en forma hash)
 
     @Enumerated(EnumType.STRING)
-    private Role role;
-
+    private Role role; // Rol del usuario (USER, HOST, ADMIN), almacenado como texto en la BD
 
     public User() {
     }
 
+    // Constructor sin contraseña
     public User(String email, Role role) {
         this.email = email;
         this.role = role;
     }
 
+    // Constructor completo
     public User(String email, String password, Role role) {
         this.email = email;
         this.password = password;

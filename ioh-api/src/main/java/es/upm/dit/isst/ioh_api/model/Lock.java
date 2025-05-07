@@ -13,17 +13,17 @@ public class Lock {
     private String id; // El ID que te proporciona Seam (PK)
 
     @ManyToOne
-    private Host propietario; // El host dueño de la cerradura
+    private Host propietario; // El host dueño de la cerradura (relación muchos-a-uno)
 
-    private String name;
-    private Boolean locked;
-    private Boolean blocked = false;
-    
-    private Double batteryLevel;
-    private String batteryStatus;  // "low", "medium", "full"
-    private String manufacturer;
-    private String model;
-    private String timezone;
+    private String name; // Nombre personalizado de la cerradura
+    private Boolean locked; // Estado de bloqueo actual (true si está bloqueada)
+    private Boolean blocked = false; // Flag que indica si la cerradura está bloqueada por motivos lógicos (ej. revocación)
+
+    private Double batteryLevel; // Nivel de batería en porcentaje (ej. 87.5)
+    private String batteryStatus;  // Estado de la batería: "low", "medium", "full"
+    private String manufacturer; // Fabricante del dispositivo
+    private String model; // Modelo del dispositivo
+    private String timezone; // Zona horaria de la cerradura, útil para entradas/salidas programadas
 
     public Lock() {
     }
@@ -112,5 +112,4 @@ public class Lock {
     public void setBlocked(Boolean blocked) {
         this.blocked = blocked;
     }
-
 }
