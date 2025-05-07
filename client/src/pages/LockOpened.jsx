@@ -82,8 +82,8 @@ function LockOpened() {
     <div className={styles.background}>
     <div className={styles.container}>
       <div className={styles.navContainer}>
-        <BackButton to="/client/home" />
-        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+        <BackButton to="/client/home" id="lockopened-back-button"/>
+        <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu}  id="lockopened-toggle-menu"/>
       </div>
 
       <div className={styles.mainContent}>
@@ -104,6 +104,7 @@ function LockOpened() {
 
         {isLocked !== false && (
           <button
+            id="open-lock-button"
             className={styles.openButton}
             onClick={handleUnlock}
             disabled={loading}
