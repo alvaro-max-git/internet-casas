@@ -11,19 +11,16 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.JavascriptExecutor;
-import java.util.*;
 import java.time.Duration;
 
 public class UserTest {
   private WebDriver driver;
-  private Map<String, Object> vars;
   JavascriptExecutor js;
 
   @BeforeEach
   public void setUp() {
     driver = new FirefoxDriver(); // Or new ChromeDriver();
     js = (JavascriptExecutor) driver;
-    vars = new HashMap<String, Object>();
   }
 
   @AfterEach
