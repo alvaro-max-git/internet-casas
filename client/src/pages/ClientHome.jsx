@@ -1,4 +1,3 @@
-// src/pages/ClientHome.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './AdminHome.module.css';
@@ -83,7 +82,6 @@ function ClientHome() {
   return (
     <div className={styles.container}>
       <div className={styles.navContainer}>
-        {/* <BackButton to="/register" /> */}
         <ToggleMenu menuOpen={menuOpen} toggleMenu={toggleMenu}  id="toggle-menu-clienthome" />
       </div>
       <div className={styles.mainContent}>
@@ -91,10 +89,9 @@ function ClientHome() {
         <h2 className={styles.subtitle}>Tus accesos</h2>
 
         <div className={styles.accessList}>
-          {/* Accesos sin carpeta */}
           {freeAccesses.map(access => (
             <AccessCard
-              id={`access-card-${access.id}`} // 🆕 ID para la tarjeta
+              id={`access-card-${access.id}`}
               key={access.id}
               access={access}
               color={colores[access.id]}
@@ -104,12 +101,11 @@ function ClientHome() {
             />
           ))}
 
-          {/* Carpetas (siempre visibles) */}
           {folders.map(folderName => {
             const count = accesses.filter(a => a.carpeta === folderName).length;
             return (
               <div
-                id={folderId} // 🆕 ID para la carpeta
+                id={`folder-${folderName}`}
                 key={folderName}
                 className={styles.accessCard}
                 onClick={() => navigate(
@@ -124,7 +120,7 @@ function ClientHome() {
                 <p>{count} acceso(s)</p>
                 {count === 0 && (
                   <button
-                    id={`delete-folder-${folderId}`} // 🆕 ID botón eliminar carpeta
+                    id={`delete-folder-${folderName}`}
                     className={styles.deleteButton}
                     onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folderName); }}
                   >
@@ -135,9 +131,8 @@ function ClientHome() {
             );
           })}
 
-          {/* Añadir acceso por token */}
           <div
-            id="add-access-token-card" // 🆕 ID
+            id="add-access-token-card"
             className={styles.accessCard}
             onClick={handleAccessByToken}
             style={{ backgroundColor: '#E2F0CB', cursor: 'pointer' }}
@@ -146,9 +141,8 @@ function ClientHome() {
             <p><strong>Añadir acceso con token</strong></p>
           </div>
 
-          {/* Crear carpeta vacía */}
           <div
-            id="create-folder-card" // 🆕 ID
+            id="create-folder-card"
             className={styles.accessCard}
             onClick={handleCreateFolder}
             style={{ backgroundColor: '#FDE2E4', cursor: 'pointer' }}
