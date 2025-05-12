@@ -5,7 +5,7 @@
 		"description": "Pruebas de Postman para el proyecto IoH",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "43559823",
-		"_collection_link": "https://warped-capsule-2206.postman.co/workspace/4f5901dd-24d5-462b-84ce-ec053f379043/collection/43559823-8a55ea95-b8a9-4d47-b883-871a7f342545?action=share&source=collection_link&creator=43559823"
+		"_collection_link": "https://warped-capsule-2206.postman.co/workspace/My-Workspace~4f5901dd-24d5-462b-84ce-ec053f379043/collection/43559823-8a55ea95-b8a9-4d47-b883-871a7f342545?action=share&source=collection_link&creator=43559823"
 	},
 	"item": [
 		{
@@ -402,7 +402,7 @@
 											"// Guarda el token para usar en otras peticiones\r",
 											"if (pm.response.code === 201) {\r",
 											"    var jsonData = pm.response.json();\r",
-											"    pm.environment.set(\"hostToken\", jsonData.token);\r",
+											"    pm.environment.set(\"hostAuthToken\", jsonData.token);\r",
 											"};"
 										],
 										"type": "text/javascript",
@@ -827,7 +827,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Test endpoint /me de un host\", function() {\r",
+											"pm.test(\"Test endpoint /me de un host Hay que haber hecho registro y login para que se guarde el token\", function() {\r",
 											"    pm.expect(pm.response.to.have.status(200))\r",
 											"});\r",
 											"\r",
@@ -906,6 +906,57 @@
 										{
 											"key": "token",
 											"value": "{{hostAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:8443/api/me/accesses",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"me",
+										"accesses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "MeAccessesUser",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint /me/accesses de un usuario\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});\r",
+											"\r",
+											"// Guarda el token para usar en otras peticiones\r",
+											"if (pm.response.code === 201) {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.environment.set(\"userToken\", jsonData.token);\r",
+											"};"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{userAuthToken}}",
 											"type": "string"
 										}
 									]
@@ -1097,57 +1148,6 @@
 								}
 							},
 							"response": []
-						},
-						{
-							"name": "MeAccessesUser",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Test endpoint /me/accesses de un usuario\", function() {\r",
-											"    pm.expect(pm.response.to.have.status(200))\r",
-											"});\r",
-											"\r",
-											"// Guarda el token para usar en otras peticiones\r",
-											"if (pm.response.code === 201) {\r",
-											"    var jsonData = pm.response.json();\r",
-											"    pm.environment.set(\"userToken\", jsonData.token);\r",
-											"};"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{userAuthToken}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "https://localhost:8443/api/me/accesses",
-									"protocol": "https",
-									"host": [
-										"localhost"
-									],
-									"port": "8443",
-									"path": [
-										"api",
-										"me",
-										"accesses"
-									]
-								}
-							},
-							"response": []
 						}
 					]
 				},
@@ -1315,16 +1315,21 @@
 					"name": "AccessesEndpoints",
 					"item": [
 						{
-							"name": "Accesses",
+							"name": "accesses",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Test endpoint /accesses, !!HAY QUE HABER EJECUTADO EL DE meHost para guardar un lockId\", function() {\r",
+											"pm.test(\"Test endpoint /accesses\", function() {\r",
 											"    pm.expect(pm.response.to.have.status(200))\r",
 											"});\r",
-											""
+											"\r",
+											"// Verifica que la respuesta contenga la palabra \"correctamente\"\r",
+											"pm.test(\"Respuesta contiene la palabra 'correctamente'\", function() {\r",
+											"    const responseText = pm.response.text();\r",
+											"    pm.expect(responseText).to.include(\"correctamente\");\r",
+											"});"
 										],
 										"type": "text/javascript",
 										"packages": {}
@@ -1346,15 +1351,15 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    cerradura:{id: \"f16dfacb-cf97-4053-a091-2ad918356bdb\"}\r\n    fechaEntrada: \"2099-05-07T17:05:00\"\r\n    fechaSalida: \"2099-05-08T17:05:00\"\r\n    token:\"1234\"\r\n    usuario: \"usuario@ejemplo.com\"\r\n}",
+									"raw": "{\r\n    \"cerradura\": {\r\n        \"id\": \"7506121c-5b2e-4e30-b39c-c556d2ea89d5\"\r\n    },\r\n    \"token\": \"1234\",\r\n    \"usuario\": \"usuario@ejemplo.com\",\r\n    \"fechaEntrada\": \"2025-05-10T14:07:00\",\r\n    \"fechaSalida\": \"2055-11-26T14:07:00\"\r\n}",
 									"options": {
 										"raw": {
-											"language": "javascript"
+											"language": "text"
 										}
 									}
 								},
 								"url": {
-									"raw": "https://localhost:8443/api/accesses",
+									"raw": "https://localhost:8443/api/locks/accesses",
 									"protocol": "https",
 									"host": [
 										"localhost"
@@ -1362,7 +1367,234 @@
 									"port": "8443",
 									"path": [
 										"api",
+										"locks",
 										"accesses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "accessesUpdate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint /accesses\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});\r",
+											"\r",
+											"// Verifica que la respuesta contenga la palabra \"correctamente\"\r",
+											"pm.test(\"Respuesta contiene la palabra 'correctamente'\", function() {\r",
+											"    const responseText = pm.response.text();\r",
+											"    pm.expect(responseText).to.include(\"correctamente\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{hostAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"cerradura\": {\r\n        \"id\": \"7506121c-5b2e-4e30-b39c-c556d2ea89d5\"\r\n    },\r\n    \"token\": \"1234\",\r\n    \"usuario\": \"usuario@ejemplo.com\",\r\n    \"fechaEntrada\": \"2025-05-10T14:07:00\",\r\n    \"fechaSalida\": \"2055-11-26T14:07:00\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:8443/api/locks/accesses",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"locks",
+										"accesses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "accessesOpen",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint /acceses/1/open HAY QUE HABE CREADO ACCESO ANTES\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{hostAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"cerradura\": {\r\n        \"id\": \"7506121c-5b2e-4e30-b39c-c556d2ea89d5\"\r\n    },\r\n    \"token\": \"1234\",\r\n    \"usuario\": \"usuario@ejemplo.com\",\r\n    \"fechaEntrada\": \"2025-05-10T14:07:00\",\r\n    \"fechaSalida\": \"2055-11-26T14:07:00\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:8443/api/accesses/1/open",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"accesses",
+										"1",
+										"open"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "accessesDelete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint /acceses DELETE\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{hostAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"cerradura\": {\r\n        \"id\": \"7506121c-5b2e-4e30-b39c-c556d2ea89d5\"\r\n    },\r\n    \"token\": \"1234\",\r\n    \"usuario\": \"usuario@ejemplo.com\",\r\n    \"fechaEntrada\": \"2025-05-10T14:07:00\",\r\n    \"fechaSalida\": \"2055-11-26T14:07:00\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:8443/api/accesses/2",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"accesses",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "accessesGet",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test endpoint /acceses GET HAY QUE HABERLO CREADO ANTES\", function() {\r",
+											"    pm.expect(pm.response.to.have.status(200))\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{hostAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"cerradura\": {\r\n        \"id\": \"7506121c-5b2e-4e30-b39c-c556d2ea89d5\"\r\n    },\r\n    \"token\": \"1234\",\r\n    \"usuario\": \"usuario@ejemplo.com\",\r\n    \"fechaEntrada\": \"2025-05-10T14:07:00\",\r\n    \"fechaSalida\": \"2055-11-26T14:07:00\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:8443/api/accesses/1",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"accesses",
+										"1"
 									]
 								}
 							},
