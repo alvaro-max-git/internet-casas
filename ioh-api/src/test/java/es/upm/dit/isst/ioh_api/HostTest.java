@@ -72,7 +72,7 @@ public class HostTest {
 
     // fijamos 07-may-2025 12:00 y 09-may-2025 12:00
     js.executeScript(jsSetDate, entrada, "2025-05-07T12:00:00");
-    js.executeScript(jsSetDate, salida,  "2025-05-09T12:00:00");
+    js.executeScript(jsSetDate, salida,  "2025-06-09T12:00:00");
 
     // ─── Logs para depurar ───
     System.out.println("🛈 [DEBUG] Fecha entrada (DOM) = " + entrada.getAttribute("value"));
